@@ -1,0 +1,11 @@
+streamlit
+pandas
+numpy
+openpyxl
+plotly
+matplotlib
+networkx
+seaborn
+pyvis
+scipy
+streamlit-aggrid
