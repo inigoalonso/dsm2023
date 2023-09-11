@@ -2,10 +2,16 @@
 # DSM 2023 Workshop
 This app helps the participants of the DSM Industry Sprint Workshop.
 """
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+
+
+####################
+# Formatting       #
+####################
 
 # Set wide display, if not done before
 try:
@@ -41,10 +47,130 @@ def add_logo():
     )
 add_logo()
 
-
 # st.header('Industry Sprint Workshop 2023')
-
 st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
+
+####################
+
+
+with st.expander("Potential yearly market in the each region (trucks)"):
+    markets =[10000,20000,100000]
+    markets[0] = st.slider('Artic',   0, 200000, markets[0])
+    markets[1] = st.slider('Desert',  0, 200000, markets[1])
+    markets[2] = st.slider('Indoors', 0, 200000, markets[2])
+
+
+
+df_designs_original = pd.DataFrame(
+    [
+        {"Name": "Only front steering",               "Min_R": 10.7, "FC": 6.5, "EC": 0.1, "Price": 100, "Cost": 90},
+        {"Name": "Front + Back steering (hydraulic)", "Min_R": 7.6,  "FC": 3.5, "EC": 0.1, "Price": 100, "Cost": 90},
+        {"Name": "Front + Back steering (electric)",  "Min_R": 7.6,  "FC": 0.1, "EC": 3.5, "Price": 105, "Cost": 95},
+    ]
+)
+
+df_designs_edited = st.data_editor(
+    df_designs_original,
+    #num_rows="dynamic",
+    )
+
+market_shares_artic = []
+
+for i in range(len(df_designs_edited)):
+    market_shares_artic.append(0.25 * (
+        1 / ( 1 + ((df_designs_edited["Min_R"][i]-10) * 0.5) ** 2) + 
+        1 - (0.5)**(  2/df_designs_edited["FC"][i]) +
+        1 - (0.5)**(0.5/df_designs_edited["EC"][i]) +
+        1 - (0.5)**( 20/df_designs_edited["Price"][i])    
+    ))
+    # st.metric(label="Market", value=f"{100*market_shares[i]:.2f} %", delta="1.2 °F")
+
+market_shares_desert = []
+
+for i in range(len(df_designs_edited)):
+    market_shares_desert.append(0.25 * (
+        1 / ( 1 + ((df_designs_edited["Min_R"][i]-10) * 0.5) ** 2) + 
+        1 - (0.5)**(  2/df_designs_edited["FC"][i]) +
+        1 - (0.5)**(0.5/df_designs_edited["EC"][i]) +
+        1 - (0.5)**( 20/df_designs_edited["Price"][i])    
+    ))
+
+market_shares_special = []
+
+for i in range(len(df_designs_edited)):
+    market_shares_special.append(0.25 * (
+        1 - (0.5)**( 20/df_designs_edited["Min_R"][i]) + 
+        1 - (0.5)**(  2/df_designs_edited["FC"][i]) +
+        1 - (0.5)**(0.5/df_designs_edited["EC"][i]) +
+        1 - (0.5)**( 20/df_designs_edited["Price"][i])    
+    ))
+
+import plotly.graph_objects as go
+
+categories = ['Artic','Desert', 'Special', 'Artic']
+
+from plotly.subplots import make_subplots
+
+fig = make_subplots(
+    rows=1, cols=2,
+    specs=[[{"type": "polar"}, {"type": "bar"}]],
+    subplot_titles=("Expected market shares", "Expected yearly revenue"),
+)
+
+fig.add_trace(go.Scatterpolar(
+    r=[market_shares_artic[0], market_shares_desert[0], market_shares_special[0], market_shares_artic[0]],
+    theta=categories,
+    name='System 1',),
+    row=1, col=1,
+    )
+fig.add_trace(go.Scatterpolar(
+    r=[market_shares_artic[1], market_shares_desert[1], market_shares_special[1], market_shares_artic[1]],
+    theta=categories,
+    name='System 2'),
+    row=1, col=1,)
+fig.add_trace(go.Scatterpolar(
+    r=[market_shares_artic[2], market_shares_desert[2], market_shares_special[2], market_shares_artic[2]],
+    theta=categories,
+    name='System 3'),
+    row=1, col=1,)
+
+fig.add_trace(go.Bar(
+    name='Artic',
+    y=[markets[0]*market_shares_artic[0], markets[0]*market_shares_artic[1], markets[0]*market_shares_artic[2]],
+    x=['System 1', 'System 2', 'System 3'],),
+    row=1, col=2)
+fig.add_trace(go.Bar(
+    name='Desert',
+    y=[markets[1]*market_shares_desert[0], markets[1]*market_shares_desert[1], markets[1]*market_shares_desert[2]],
+    x=['System 1', 'System 2', 'System 3'],),
+    row=1, col=2)
+fig.add_trace(go.Bar(
+    name='Special',
+    y=[markets[2]*market_shares_special[0], markets[2]*market_shares_special[1], markets[2]*market_shares_special[2]],
+    x=['System 1', 'System 2', 'System 3'],),
+    row=1, col=2)
+
+fig.update_layout(
+    polar=dict(
+        radialaxis=dict(
+            visible=True,
+            range=[0, 1]
+    )),
+    showlegend=True
+)
+
+
+
+st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+
+
+
+
+
+
+
+####################
+st.divider()
 
 # with st.sidebar:
 #     # Upload files
