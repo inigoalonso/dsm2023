@@ -56,7 +56,7 @@ add_logo()
 
 ####################
 
-markets =[10000,20000,50000]
+markets =[10000,20000,40000]
 
 if False:
     col1, col2 = st.columns(2)
