@@ -52,11 +52,11 @@ add_logo()
 #set_bg('assets/background.png')
 
 # st.header('Industry Sprint Workshop 2023')
-st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
+# st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
 ####################
 
-markets =[10000,20000,100000]
+markets =[10000,20000,50000]
 
 if False:
     col1, col2 = st.columns(2)
@@ -79,9 +79,9 @@ if False:
 
 df_designs_original = pd.DataFrame(
     [
-        {"name": "System 1", "description": "Only front steering",               "min_R": 10.7, "FC": 6.5, "EC": 0.1, "price": 100, "cost": 90},
-        {"name": "System 2", "description": "Front + Back steering (hydraulic)", "min_R": 7.6,  "FC": 3.5, "EC": 0.1, "price": 100, "cost": 90},
-        {"name": "System 3", "description": "Front + Back steering (electric)",  "min_R": 7.6,  "FC": 0.1, "EC": 3.5, "price": 100, "cost": 90},
+        {"name": "System 1", "description": "Only front steering",               "min_R": 10.7, "FC": 6.5, "EC": 0.5, "price": 100, "cost": 90},
+        {"name": "System 2", "description": "Front + Back steering (hydraulic)", "min_R": 7.6,  "FC": 3.5, "EC": 0.5, "price": 110, "cost": 100},
+        {"name": "System 3", "description": "Front + Back steering (electric)",  "min_R": 7.6,  "FC": 0.1, "EC": 3.5, "price": 110, "cost": 100},
     ]
 )
 
@@ -108,7 +108,7 @@ with st.expander("Designs", expanded=True):
                 min_value=0,
                 max_value=50,
                 step=0.1,
-                format="%d m",
+                format="%.1f m",
             ),
             "FC": st.column_config.NumberColumn(
                 "Fuel Cons.",
@@ -116,7 +116,7 @@ with st.expander("Designs", expanded=True):
                 min_value=0,
                 max_value=50,
                 step=0.1,
-                format="%d km/L",
+                format="%.1f km/L",
             ),
             "EC": st.column_config.NumberColumn(
                 "Electricity Cons.",
@@ -124,7 +124,7 @@ with st.expander("Designs", expanded=True):
                 min_value=0,
                 max_value=50,
                 step=0.1,
-                format="%d kWh",
+                format="%.1f kWh",
             ),
             "price": st.column_config.NumberColumn(
                 "Price",
@@ -132,7 +132,7 @@ with st.expander("Designs", expanded=True):
                 min_value=0,
                 max_value=500,
                 step=0.1,
-                format="%d k€",
+                format="%.1f k€",
             ),
             "cost": st.column_config.NumberColumn(
                 "Cost",
@@ -140,21 +140,22 @@ with st.expander("Designs", expanded=True):
                 min_value=0,
                 max_value=500,
                 step=0.1,
-                format="%d k€",
+                format="%.1f k€",
             ),
         },
         )
 
+
 market_shares_artic = []
 
 for i in range(len(df_designs_edited)):
+    a = 1 / ( 1 + ((df_designs_edited["min_R"][i]-10) * 0.5) ** 2)
+    b = 1 - (0.5)**(  1/df_designs_edited["FC"][i])
+    c = 1 - (0.5)**(  1/df_designs_edited["EC"][i])
+    d = 1 - (0.5)**( 20/df_designs_edited["price"][i])
     market_shares_artic.append(0.25 * (
-        1 / ( 1 + ((df_designs_edited["min_R"][i]-10) * 0.5) ** 2) + 
-        1 - (0.5)**(  2/df_designs_edited["FC"][i]) +
-        1 - (0.5)**(0.5/df_designs_edited["EC"][i]) +
-        1 - (0.5)**( 20/df_designs_edited["price"][i])    
+        a+b+c+d
     ))
-    # st.metric(label="Market", value=f"{100*market_shares[i]:.2f} %", delta="1.2 °F")
 
 market_shares_desert = []
 
@@ -202,18 +203,44 @@ fig_polar.add_trace(go.Scatterpolar(
     theta=categories,
     name='System 3'),)
 
-revenue_artic   = [df_designs_edited["price"][0]*markets[0]*market_shares_artic[0],   df_designs_edited["price"][0]*markets[0]*market_shares_artic[1],   df_designs_edited["price"][0]*markets[0]*market_shares_artic[2]]
-revenue_desert  = [df_designs_edited["price"][1]*markets[1]*market_shares_desert[0],  df_designs_edited["price"][1]*markets[1]*market_shares_desert[1],  df_designs_edited["price"][1]*markets[1]*market_shares_desert[2]]
-revenue_special = [df_designs_edited["price"][2]*markets[2]*market_shares_special[0], df_designs_edited["price"][2]*markets[2]*market_shares_special[1], df_designs_edited["price"][2]*markets[2]*market_shares_special[2]]
+
+units_artic          = [markets[0]*market_shares_artic[0],   markets[0]*market_shares_artic[1],   markets[0]*market_shares_artic[2]]
+units_desert         = [markets[1]*market_shares_desert[0],  markets[1]*market_shares_desert[1],  markets[1]*market_shares_desert[2]]
+units_special        = [markets[2]*market_shares_special[0], markets[2]*market_shares_special[1], markets[2]*market_shares_special[2]]
+
+revenue_artic        = [df_designs_edited["price"][0]*units_artic[0],   df_designs_edited["price"][1]*units_artic[1],   df_designs_edited["price"][2]*units_artic[2]]
+revenue_desert       = [df_designs_edited["price"][0]*units_desert[0],  df_designs_edited["price"][1]*units_desert[1],  df_designs_edited["price"][2]*units_desert[2]]
+revenue_special      = [df_designs_edited["price"][0]*units_special[0], df_designs_edited["price"][1]*units_special[1], df_designs_edited["price"][2]*units_special[2]]
+
+unit_profit_system_1 = df_designs_edited["price"][0] - df_designs_edited["cost"][0]
+unit_profit_system_2 = df_designs_edited["price"][1] - df_designs_edited["cost"][1]
+unit_profit_system_3 = df_designs_edited["price"][2] - df_designs_edited["cost"][2]
+
+profit_artic         = [unit_profit_system_1*  units_artic[0], 
+                        unit_profit_system_2*  units_artic[1], 
+                        unit_profit_system_3*  units_artic[2]]
+
+profit_desert        = [unit_profit_system_1* units_desert[0], 
+                        unit_profit_system_2* units_desert[1], 
+                        unit_profit_system_3* units_desert[2]]
+
+profit_special       = [unit_profit_system_1*units_special[0], 
+                        unit_profit_system_2*units_special[1], 
+                        unit_profit_system_3*units_special[2]]
 
 revenue_system_1 = revenue_artic[0] + revenue_desert[0] + revenue_special[0]
 revenue_system_2 = revenue_artic[1] + revenue_desert[1] + revenue_special[1]
 revenue_system_3 = revenue_artic[2] + revenue_desert[2] + revenue_special[2]
 
+profit_system_1  = profit_artic[0] + profit_desert[0] + profit_special[0]
+profit_system_2  = profit_artic[1] + profit_desert[1] + profit_special[1]
+profit_system_3  = profit_artic[2] + profit_desert[2] + profit_special[2]
+
 fig_bar.add_trace(go.Bar(
     name='Artic',
     y=revenue_artic,
-    x=['System 1', 'System 2', 'System 3'],),)
+    x=['System 1', 'System 2', 'System 3'],
+    ),)
 fig_bar.add_trace(go.Bar(
     name='Desert',
     y=revenue_desert,
@@ -247,17 +274,29 @@ with st.expander("Results", expanded=True):
 
     st.header('Revenue totals')
 
-    col_metrics_1, col_metrics_2, col_metrics_3 = st.columns(3)
+    col_revenues_1, col_revenues_2, col_revenues_3 = st.columns(3)
 
-    with col_metrics_1:
-        st.metric(label="System 1", value=f"{revenue_system_1/1000000:.2f} MEuros", delta="")
+    with col_revenues_1:
+        st.metric(label="System 1", value=f"{revenue_system_1/1000000:.3f} M€", delta="")
 
-    with col_metrics_2:
-        st.metric(label="System 2", value=f"{revenue_system_2/1000000:.2f} MEuros", delta="")
+    with col_revenues_2:
+        st.metric(label="System 2", value=f"{revenue_system_2/1000000:.3f} M€", delta="")
 
-    with col_metrics_3:
-        st.metric(label="System 3", value=f"{revenue_system_3/1000000:.2f} MEuros", delta="")
+    with col_revenues_3:
+        st.metric(label="System 3", value=f"{revenue_system_3/1000000:.3f} M€", delta="")
 
+    st.header('Profit totals')
+
+    col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
+
+    with col_profits_1:
+        st.metric(label="System 1", value=f"{profit_system_1/1000000:.3f} M€", delta="")
+
+    with col_profits_2:
+        st.metric(label="System 2", value=f"{profit_system_2/1000000:.3f} M€", delta="")
+
+    with col_profits_3:
+        st.metric(label="System 3", value=f"{profit_system_3/1000000:.3f} M€", delta="")
 
 if False:
 
