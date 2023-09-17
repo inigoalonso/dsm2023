@@ -10,6 +10,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from utils import set_bg
+
 ####################
 # Formatting       #
 ####################
@@ -19,9 +21,7 @@ try:
     st.set_page_config(
         layout="wide",
         page_title="Industry Sprint Workshop 2023 - The 25th International DSM Conference",
-        # page_icon="🚚",
-        page_icon="favicon.jpg",
-        # initial_sidebar_state="expanded",
+        page_icon="assets/favicon.jpg",
         )
 except:
     pass
@@ -30,6 +30,7 @@ except:
 hide_st_style = """<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>"""
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
+# Add a logo
 def add_logo():
     # https://discuss.streamlit.io/t/put-logo-and-title-above-on-top-of-page-navigation-in-sidebar-of-multipage-app/28213/4
     st.markdown(
@@ -47,6 +48,8 @@ def add_logo():
         unsafe_allow_html=True,
     )
 add_logo()
+
+#set_bg('assets/background.png')
 
 # st.header('Industry Sprint Workshop 2023')
 st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
