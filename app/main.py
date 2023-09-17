@@ -27,7 +27,7 @@ except:
     pass
 
 # Hide the menu and the footer
-hide_st_style = """<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>"""
+hide_st_style = """<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} </style>"""
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Add a logo
@@ -56,23 +56,25 @@ st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collabor
 
 ####################
 
-col1, col2 = st.columns(2)
+markets =[10000,20000,100000]
 
-with col1:
-    with st.expander("Help"):
-        st.markdown("""
-        This app helps the participants of the DSM Industry Sprint Workshop.
-        """)
+if False:
+    col1, col2 = st.columns(2)
 
-with col2:
-    with st.expander("Inputs"):
-        st.markdown("""
-                    **Potential yearly market for each application (# of trucks)**
-                    """)
-        markets =[10000,20000,100000]
-        markets[0] = st.slider('Artic',   0, 200000, markets[0])
-        markets[1] = st.slider('Desert',  0, 200000, markets[1])
-        markets[2] = st.slider('Special', 0, 200000, markets[2])
+    with col1:
+        with st.expander("Help"):
+            st.markdown("""
+            This app helps the participants of the DSM Industry Sprint Workshop.
+            """)
+
+    with col2:
+        with st.expander("Inputs"):
+            st.markdown("""
+                        **Potential yearly market for each application (# of trucks)**
+                        """)
+            markets[0] = st.slider('Artic',   0, 200000, markets[0])
+            markets[1] = st.slider('Desert',  0, 200000, markets[1])
+            markets[2] = st.slider('Special', 0, 200000, markets[2])
 
 
 df_designs_original = pd.DataFrame(
@@ -230,70 +232,76 @@ fig.update_layout(
     showlegend=True
 )
 
+with st.expander("Results", expanded=True):
 
-col_plot_1, col_plot_2 = st.columns(2)
+    col_plot_1, col_plot_2 = st.columns(2)
 
-with col_plot_1:
-    st.plotly_chart(fig_polar, theme="streamlit", use_container_width=True)
+    with col_plot_1:
+        st.header('Market share')
+        st.plotly_chart(fig_polar, theme="streamlit", use_container_width=True)
 
-with col_plot_2:
-    st.plotly_chart(fig_bar, theme="streamlit", use_container_width=True)
-
-
-col_metrics_1, col_metrics_2, col_metrics_3 = st.columns(3)
-
-with col_metrics_1:
-    st.metric(label="System 1", value=f"{revenue_system_1/1000000:.2f} MEuros", delta="")
-
-with col_metrics_2:
-    st.metric(label="System 2", value=f"{revenue_system_2/1000000:.2f} MEuros", delta="")
-
-with col_metrics_3:
-    st.metric(label="System 3", value=f"{revenue_system_3/1000000:.2f} MEuros", delta="")
+    with col_plot_2:
+        st.header('Revenues')
+        st.plotly_chart(fig_bar, theme="streamlit", use_container_width=True)
 
 
+    st.header('Revenue totals')
 
-####################
-st.divider()
-####################
+    col_metrics_1, col_metrics_2, col_metrics_3 = st.columns(3)
 
-with st.expander("Other stuff"):
+    with col_metrics_1:
+        st.metric(label="System 1", value=f"{revenue_system_1/1000000:.2f} MEuros", delta="")
 
-    df_dsm = pd.DataFrame(
-        np.random.rand(30, 30),
-        columns=('col %d' % i for i in range(30)))
+    with col_metrics_2:
+        st.metric(label="System 2", value=f"{revenue_system_2/1000000:.2f} MEuros", delta="")
 
-    for i in range(30):
-        df_dsm[f'col {i}'][i] = 'nan'
-        #df_dsm.loc[:, (f'col {i}', i)] = 'nan'
+    with col_metrics_3:
+        st.metric(label="System 3", value=f"{revenue_system_3/1000000:.2f} MEuros", delta="")
 
-    product_elements = [f"Element {i}" for i in range(1, 31)]
 
-    fig_dsm = px.imshow(
-        df_dsm,
-        labels=dict(x="", y=""),
-        x=product_elements,
-        y=product_elements,
-        color_continuous_scale=[[0, '#D81B60'],
-                        [0.5, '#FFB000'],
-                        [1, '#004D40']],
-        #title='Combined Risk Matrix',
-        width=900,
-        height=900,
-        text_auto='.2f',
-        aspect='equal',
-    )
-    fig_dsm.update_layout(
-        xaxis={"side": "top"},
-        yaxis={'side': 'left'},
-    )
-    st.plotly_chart(
-        fig_dsm, 
-        use_container_width=True,
-        config={
-            'displaylogo': False,
-            'modeBarButtonsToRemove': ['sendDataToCloud', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines']
-        }
-    )
+if False:
+
+    ####################
+    st.divider()
+    ####################
+
+    with st.expander("Other stuff"):
+
+        df_dsm = pd.DataFrame(
+            np.random.rand(30, 30),
+            columns=('col %d' % i for i in range(30)))
+
+        for i in range(30):
+            df_dsm[f'col {i}'][i] = 'nan'
+            #df_dsm.loc[:, (f'col {i}', i)] = 'nan'
+
+        product_elements = [f"Element {i}" for i in range(1, 31)]
+
+        fig_dsm = px.imshow(
+            df_dsm,
+            labels=dict(x="", y=""),
+            x=product_elements,
+            y=product_elements,
+            color_continuous_scale=[[0, '#D81B60'],
+                            [0.5, '#FFB000'],
+                            [1, '#004D40']],
+            #title='Combined Risk Matrix',
+            width=900,
+            height=900,
+            text_auto='.2f',
+            aspect='equal',
+        )
+        fig_dsm.update_layout(
+            xaxis={"side": "top"},
+            yaxis={'side': 'left'},
+        )
+        st.plotly_chart(
+            fig_dsm, 
+            use_container_width=True,
+            config={
+                'displaylogo': False,
+                'modeBarButtonsToRemove': ['sendDataToCloud', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'toggleSpikelines']
+            }
+        )
 
 
