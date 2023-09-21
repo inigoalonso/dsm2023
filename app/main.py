@@ -22,23 +22,6 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 
 ####################
-# Setup            #
-####################
-
-# Authenticate to Firestore with the JSON account key.
-key_dict = json.loads(st.secrets["textkey"])
-creds = service_account.Credentials.from_service_account_info(key_dict)
-db = firestore.Client(credentials=creds, project="dsm2023isw")
-
-# Timestamp string
-now = datetime.datetime.now()
-timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-
-# Disable SettingWithCopyWarning from pandas
-# https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
-pd.options.mode.chained_assignment = None  # default='warn'
-
-####################
 # Formatting       #
 ####################
 
@@ -52,8 +35,47 @@ try:
 except:
     pass
 
-# Hide the menu and the footer
-st.markdown(("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;} </style>"""), unsafe_allow_html=True)
+# Hide the top decoration menu, footer, and top padding
+hide_streamlit_style = """
+                <style>
+                div[data-testid="stDecoration"] {
+                visibility: hidden;
+                height: 0%;
+                position: fixed;
+                }
+                #MainMenu {
+                visibility: hidden;
+                height: 0%;
+                }
+                footer {
+                visibility: hidden;
+                height: 0%;
+                }
+                #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0rem;}
+                </style>
+                """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+####################
+# Setup            #
+####################
+
+# Authenticate to Firestore with the JSON account key.
+@st.cache_resource
+def authenticate_to_firestore():
+    key_dict = json.loads(st.secrets["textkey"])
+    creds = service_account.Credentials.from_service_account_info(key_dict)
+    db = firestore.Client(credentials=creds, project="dsm2023isw")
+    return db
+db = authenticate_to_firestore()
+
+# Timestamp string
+now = datetime.datetime.now()
+timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+
+# Disable SettingWithCopyWarning from pandas
+# https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
+pd.options.mode.chained_assignment = None  # default='warn'
 
 ####################
 # Functions        #
@@ -68,6 +90,7 @@ def on_data_update(data):
 ####################
 
 st.title('Industry Sprint Workshop 2023')
+st.caption('_The 25th International DSM Conference_')
 st.subheader("Workshop Facilitator")
 #st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
