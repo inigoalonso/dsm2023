@@ -125,7 +125,7 @@ with st.expander("Info", expanded=True):
         help="Please check this box to consent to the use of your data for research purposes.",
         )
 
-    if not (role and experience and group != "Select" and consent):
+    if not (role and experience and (group != "Select") and consent):
         warning = st.warning(
             body="Please make sure to enter your role, experience, and group correctly.",
             icon="⚠️",
@@ -148,10 +148,10 @@ with st.expander("Info", expanded=True):
 
 # Market shares
 @st.cache_data
-def market_shares():
+def market_shares_inputs():
     markets = [10000, 20000, 40000]
     return markets
-markets = market_shares()
+markets = market_shares_inputs()
 
 # Original designs
 @st.cache_data
@@ -203,7 +203,7 @@ def designs_original():
 df_designs_original = designs_original()
 
 # If the user has filled in the intro form correctly
-if (role and experience and group != "Select" and consent):
+if (role and experience and (group != "Select") and consent):
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Inputs", 
@@ -232,7 +232,6 @@ if (role and experience and group != "Select" and consent):
             st.markdown(
                 """**Systems under consideration**"""
             )
-
             df_designs_edited = st.data_editor(
                 df_designs_original,
                 num_rows="dynamic",
@@ -320,8 +319,9 @@ if (role and experience and group != "Select" and consent):
                 c = (1 - (0.5) ** (1 / df_designs_edited["EC"][i]) - 0.3)
                 d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
-                market_shares_artic.append(0.2 * (a + b + c + d + e))
-                print(i, a, b, c, d, market_shares_artic)
+                market_share = 0.2 * (a + b + c + d + e)
+                market_shares_artic.append(market_share)
+                print(i, a, b, c, d, e, market_shares_artic)
 
             for i in range(len(df_designs_edited)):
                 a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
@@ -329,8 +329,9 @@ if (role and experience and group != "Select" and consent):
                 c = (1 - (0.5) ** (0.5 / df_designs_edited["EC"][i]) - 0.3)
                 d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
-                market_shares_desert.append(0.2 * (a + b + c + d + e))
-                print(i, a, b, c, d, market_shares_desert)
+                market_share = 0.2 * (a + b + c + d + e)
+                market_shares_desert.append(market_share)
+                print(i, a, b, c, d, e, market_shares_desert)
 
             for i in range(len(df_designs_edited)):
                 a = (1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3)
@@ -338,8 +339,9 @@ if (role and experience and group != "Select" and consent):
                 c = (1 - (0.5) ** (2 / df_designs_edited["EC"][i]) - 0.3)
                 d = (1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
-                market_shares_special.append(0.2 * (a + b + c + d + e))
-                print(i, a, b, c, d, market_shares_special)
+                market_share = 0.2 * (a + b + c + d + e)
+                market_shares_special.append(market_share)
+                print(i, a, b, c, d, e, market_shares_special)
 
             categories = ["Artic", "Desert", "Special", "Artic"]
 
