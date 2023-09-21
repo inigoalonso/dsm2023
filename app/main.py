@@ -90,8 +90,8 @@ def on_data_update(data):
 ####################
 
 st.title('Industry Sprint Workshop 2023')
-st.caption('_The 25th International DSM Conference_')
-st.subheader("Workshop Facilitator")
+st.caption('**Workshop Facilitator** for _The 25th International DSM Conference_')
+#st.subheader("Workshop Facilitator")
 #st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
 with st.expander("Info", expanded=True):
@@ -700,9 +700,13 @@ if (role and experience and group != "Select" and consent):
 ic("Here's the session state:")
 ic([key for key in st.session_state.keys()])
 #ic(st.session_state["data_editor"])
-sessions_ref = db.collection("session_states").document(participants_id)
-# And then uploading the data to that reference
-sessions_ref.set({
-    "role": role,
-    "group": group
-})
+
+try:
+    sessions_ref = db.collection("session_states").document(participants_id)
+    # And then uploading the data to that reference
+    sessions_ref.set({
+        "role": role,
+        "group": group
+    })
+except:
+    pass
