@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 #from icecream import ic
-from vega_datasets import data
+#from vega_datasets import data
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
