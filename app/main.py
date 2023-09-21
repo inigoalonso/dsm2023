@@ -13,7 +13,7 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
-from icecream import ic
+#from icecream import ic
 from vega_datasets import data
 import plotly.express as px
 import plotly.graph_objects as go
@@ -82,7 +82,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 ####################
 
 def on_data_update(data):
-    ic("Data updated:", data)
+    print("Data updated:", data)
 
 
 ####################
@@ -321,7 +321,7 @@ if (role and experience and group != "Select" and consent):
                 d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_shares_artic.append(0.2 * (a + b + c + d + e))
-                ic(i, a, b, c, d, market_shares_artic)
+                print(i, a, b, c, d, market_shares_artic)
 
             for i in range(len(df_designs_edited)):
                 a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
@@ -330,7 +330,7 @@ if (role and experience and group != "Select" and consent):
                 d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_shares_desert.append(0.2 * (a + b + c + d + e))
-                ic(i, a, b, c, d, market_shares_desert)
+                print(i, a, b, c, d, market_shares_desert)
 
             for i in range(len(df_designs_edited)):
                 a = (1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3)
@@ -339,7 +339,7 @@ if (role and experience and group != "Select" and consent):
                 d = (1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3)
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_shares_special.append(0.2 * (a + b + c + d + e))
-                ic(i, a, b, c, d, market_shares_special)
+                print(i, a, b, c, d, market_shares_special)
 
             categories = ["Artic", "Desert", "Special", "Artic"]
 
@@ -679,8 +679,8 @@ if (role and experience and group != "Select" and consent):
 
     questions_tab1.write("What is the minimum turning radius of a truck?")
 
-ic("Here's the session state:")
-ic([key for key in st.session_state.keys()])
+print("Here's the session state:")
+print([key for key in st.session_state.keys()])
 #ic(st.session_state["data_editor"])
 
 try:
