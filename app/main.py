@@ -117,14 +117,15 @@ with st.expander("Info", expanded=True):
     group = info_col3.selectbox(
         label='Workshop group',
         help="Select your assigned group here.",
-        options=('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12')
+        options=('Select', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'),
+        index=0,
         )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of your data for research purposes.",
         )
 
-    if not (role and experience and group):
+    if not (role and experience and group != "Select" and consent):
         warning = st.warning(
             body="Please make sure to enter your role, experience, and group correctly.",
             icon="⚠️",
@@ -144,7 +145,7 @@ with st.expander("Info", expanded=True):
             icon="👍",
             )
 
-if (role and experience and group):
+if (role and experience and group != "Select" and consent):
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Inputs", 
