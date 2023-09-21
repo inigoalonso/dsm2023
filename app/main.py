@@ -3,6 +3,10 @@
 This app helps the participants of the DSM Industry Sprint Workshop.
 """
 
+####################
+# Imports          #
+####################
+
 import datetime
 import json
 import altair as alt
