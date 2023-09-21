@@ -95,24 +95,29 @@ st.subheader("Workshop Facilitator")
 #st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
 with st.expander("Info", expanded=True):
+
     st.markdown(
             """
             Please fill in the following information to start the workshop.
             """
         )
-    role = st.text_input(
-        label="Role",
-        help="Enter your role here.",
+
+    info_col1, info_col2, info_col3 = st.columns(3)
+
+    role = info_col1.text_input(
+        label="Professional role",
+        help="Enter your professional role here.",
         )
-    experience = st.number_input(
-        label="Experience",
-        help="Enter your years experience here.",
+    experience = info_col2.number_input(
+        label="Professional experience (years)",
+        help="Enter your years of professional experience here.",
         min_value=0,
         max_value=100,
         )
-    group = st.text_input(
-        label="Group",
-        help="Enter your group here.",
+    group = info_col3.selectbox(
+        label='Workshop group',
+        help="Select your assigned group here.",
+        options=('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12')
         )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
