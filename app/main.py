@@ -145,6 +145,64 @@ with st.expander("Info", expanded=True):
             icon="👍",
             )
 
+
+# Market shares
+@st.cache_data
+def market_shares():
+    markets = [10000, 20000, 40000]
+    return markets
+markets = market_shares()
+
+# Original designs
+@st.cache_data
+def designs_original():
+    df_designs_original = pd.DataFrame(
+        [
+            {
+                "name": "System 1",
+                "description": "Only front steering",
+                "min_R": 10.7,
+                "FC": 6.5,
+                "EC": 0.5,
+                "reliability": 0.95,
+                "price": 100,
+                "cost": 90,
+                "market_share_1": 0,
+                "market_share_2": 0,
+                "market_share_3": 0,
+            },
+            {
+                "name": "System 2",
+                "description": "Front + Back steering (hydraulic)",
+                "min_R": 7.6,
+                "FC": 3.5,
+                "EC": 0.5,
+                "reliability": 0.9,
+                "price": 110,
+                "cost": 100,
+                "market_share_1": 0,
+                "market_share_2": 0,
+                "market_share_3": 0,
+            },
+            {
+                "name": "System 3",
+                "description": "Front + Back steering (electric)",
+                "min_R": 7.6,
+                "FC": 0.1,
+                "EC": 3.5,
+                "reliability": 0.9,
+                "price": 110,
+                "cost": 100,
+                "market_share_1": 0,
+                "market_share_2": 0,
+                "market_share_3": 0,
+            },
+        ]
+    )
+    return df_designs_original
+df_designs_original = designs_original()
+
+# If the user has filled in the intro form correctly
 if (role and experience and group != "Select" and consent):
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -164,58 +222,15 @@ if (role and experience and group != "Select" and consent):
         st.subheader("Inputs")
         with st.expander("Markets", expanded=False):
             st.markdown(
-                """
-                        **Potential yearly market for each application (# of trucks)**
-                        """
+                """**Potential yearly market for each application (# of trucks)**"""
             )
-            markets = [10000, 20000, 40000]
             markets[0] = st.slider("Artic", 0, 200000, markets[0])
             markets[1] = st.slider("Desert", 0, 200000, markets[1])
             markets[2] = st.slider("Special", 0, 200000, markets[2])
         
         with st.expander("Systems", expanded=True):
-            df_designs_original = pd.DataFrame(
-                [
-                    {
-                        "name": "System 1",
-                        "description": "Only front steering",
-                        "min_R": 10.7,
-                        "FC": 6.5,
-                        "EC": 0.5,
-                        "reliability": 0.95,
-                        "price": 100,
-                        "cost": 90,
-                        "market_share_1": 0,
-                        "market_share_2": 0,
-                        "market_share_3": 0,
-                    },
-                    {
-                        "name": "System 2",
-                        "description": "Front + Back steering (hydraulic)",
-                        "min_R": 7.6,
-                        "FC": 3.5,
-                        "EC": 0.5,
-                        "reliability": 0.9,
-                        "price": 110,
-                        "cost": 100,
-                        "market_share_1": 0,
-                        "market_share_2": 0,
-                        "market_share_3": 0,
-                    },
-                    {
-                        "name": "System 3",
-                        "description": "Front + Back steering (electric)",
-                        "min_R": 7.6,
-                        "FC": 0.1,
-                        "EC": 3.5,
-                        "reliability": 0.9,
-                        "price": 110,
-                        "cost": 100,
-                        "market_share_1": 0,
-                        "market_share_2": 0,
-                        "market_share_3": 0,
-                    },
-                ]
+            st.markdown(
+                """**Systems under consideration**"""
             )
 
             df_designs_edited = st.data_editor(
@@ -289,20 +304,11 @@ if (role and experience and group != "Select" and consent):
                         format="%.1f k€",
                         disabled=True,
                     ),
-                    "market_share_1": "Market 1",
+                    "market_share_1": None,
                     "market_share_2": None,
                     "market_share_3": None,
                 },
             )
-
-            ic("Here's the session state:")
-            ic(st.session_state["data_editor"])
-            sessions_ref = db.collection("session_states").document(participants_id)
-            # And then uploading the data to that reference
-            sessions_ref.set({
-                "role": role,
-                "group": group
-            })
 
             market_shares_artic = []
             market_shares_desert = []
@@ -660,8 +666,10 @@ if (role and experience and group != "Select" and consent):
     with tab5:
         st.subheader("Questionnaire")
         with st.form(key="questionnaire_form"):
-            st.subheader("To develop my solution to the challenge, I based my reasoning on...")
-            st.write("Please rate the following options from 0 (not at all) to 5 (very much).")
+            st.markdown(
+                """**To develop my solution to the challenge, I based my reasoning on...**"""
+            )
+            st.caption("Please rate the following options from 0 (not at all) to 5 (very much).")
             q1 = st.slider("My previous experience", key="q1", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
             q2 = st.slider("Discussion with my colleagues", key="q2", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
             q3 = st.slider("Risk registry", key="q3", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
@@ -671,7 +679,7 @@ if (role and experience and group != "Select" and consent):
             q7 = st.slider("Risk propagation matrices", key="q7", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
             q8 = st.slider("Risk mitigations registry", key="q8", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
             # Submit button
-            submit_button = st.form_submit_button(label="Submit")
+            submit_button = st.form_submit_button(label="Submit", help="Click here to submit your answers.")
 
         questions_tab5 = st.expander("Questions", expanded=False)
 
@@ -688,3 +696,13 @@ if (role and experience and group != "Select" and consent):
         )
 
     questions_tab1.write("What is the minimum turning radius of a truck?")
+
+ic("Here's the session state:")
+ic([key for key in st.session_state.keys()])
+#ic(st.session_state["data_editor"])
+sessions_ref = db.collection("session_states").document(participants_id)
+# And then uploading the data to that reference
+sessions_ref.set({
+    "role": role,
+    "group": group
+})
