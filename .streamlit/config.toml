@@ -6,3 +6,6 @@ backgroundColor="#fafafa"
 secondaryBackgroundColor="#F0F2F6"
 textColor="#232323"
 font="sans serif"
+
+[browser]
+gatherUsageStats = false
