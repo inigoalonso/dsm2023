@@ -162,9 +162,9 @@ def designs_original():
                 "name": "System 1",
                 "description": "Only front steering",
                 "min_R": 10.7,
-                "FC": 6.5,
+                "FC": 0.3,
                 "EC": 0.5,
-                "reliability": 0.95,
+                "reliability": 0.92,
                 "price": 100,
                 "cost": 90,
                 "market_share_1": 0,
@@ -175,9 +175,9 @@ def designs_original():
                 "name": "System 2",
                 "description": "Front + Back steering (hydraulic)",
                 "min_R": 7.6,
-                "FC": 3.5,
+                "FC": 0.35,
                 "EC": 0.5,
-                "reliability": 0.9,
+                "reliability": 0.8,
                 "price": 110,
                 "cost": 100,
                 "market_share_1": 0,
@@ -188,8 +188,8 @@ def designs_original():
                 "name": "System 3",
                 "description": "Front + Back steering (electric)",
                 "min_R": 7.6,
-                "FC": 0.1,
-                "EC": 3.5,
+                "FC": 0.25,
+                "EC": 1.5,
                 "reliability": 0.9,
                 "price": 110,
                 "cost": 100,
@@ -262,11 +262,11 @@ if (role and experience and group != "Select" and consent):
                     ),
                     "FC": st.column_config.NumberColumn(
                         "Fuel Cons.",
-                        help="Fuel consumption in km/L",
+                        help="Fuel consumption in L/km",
                         min_value=0,
                         max_value=50,
-                        step=0.1,
-                        format="%.1f km/L",
+                        step=0.01,
+                        format="%.2f L/km",
                         disabled=True,
                     ),
                     "EC": st.column_config.NumberColumn(
@@ -314,50 +314,32 @@ if (role and experience and group != "Select" and consent):
             market_shares_desert = []
             market_shares_special = []
 
-            def calculate_market_shares():
-                for i in range(len(df_designs_edited)):
-                    a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2)
-                    b = 1 - (0.5) ** (1 / df_designs_edited["FC"][i])
-                    c = 1 - (0.5) ** (1 / df_designs_edited["EC"][i])
-                    d = 1 - (0.5) ** (20 / df_designs_edited["price"][i])
-                    df_designs_edited["market_share_1"][i] = (0.25 * (a + b + c + d))
-            calculate_market_shares()
+            for i in range(len(df_designs_edited)):
+                a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
+                b = (1 - (0.5) ** (0.1 / df_designs_edited["FC"][i]) - 0.3)
+                c = (1 - (0.5) ** (1 / df_designs_edited["EC"][i]) - 0.3)
+                d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
+                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+                market_shares_artic.append(0.2 * (a + b + c + d + e))
+                ic(i, a, b, c, d, market_shares_artic)
 
             for i in range(len(df_designs_edited)):
-                a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2)
-                b = 1 - (0.5) ** (1 / df_designs_edited["FC"][i])
-                c = 1 - (0.5) ** (1 / df_designs_edited["EC"][i])
-                d = 1 - (0.5) ** (20 / df_designs_edited["price"][i])
-                market_shares_artic.append(0.25 * (a + b + c + d))
+                a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
+                b = (1 - (0.5) ** (0.5 / df_designs_edited["FC"][i]) - 0.3)
+                c = (1 - (0.5) ** (0.5 / df_designs_edited["EC"][i]) - 0.3)
+                d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
+                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+                market_shares_desert.append(0.2 * (a + b + c + d + e))
+                ic(i, a, b, c, d, market_shares_desert)
 
             for i in range(len(df_designs_edited)):
-                market_shares_desert.append(
-                    0.25
-                    * (
-                        1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2)
-                        + 1
-                        - (0.5) ** (2 / df_designs_edited["FC"][i])
-                        + 1
-                        - (0.5) ** (0.5 / df_designs_edited["EC"][i])
-                        + 1
-                        - (0.5) ** (20 / df_designs_edited["price"][i])
-                    )
-                )
-
-            for i in range(len(df_designs_edited)):
-                market_shares_special.append(
-                    0.25
-                    * (
-                        1
-                        - (0.5) ** (20 / df_designs_edited["min_R"][i])
-                        + 1
-                        - (0.5) ** (2 / df_designs_edited["FC"][i])
-                        + 1
-                        - (0.5) ** (0.5 / df_designs_edited["EC"][i])
-                        + 1
-                        - (0.5) ** (20 / df_designs_edited["price"][i])
-                    )
-                )
+                a = (1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3)
+                b = (1 - (0.5) ** (2 / df_designs_edited["FC"][i]) - 0.3)
+                c = (1 - (0.5) ** (2 / df_designs_edited["EC"][i]) - 0.3)
+                d = (1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3)
+                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+                market_shares_special.append(0.2 * (a + b + c + d + e))
+                ic(i, a, b, c, d, market_shares_special)
 
             categories = ["Artic", "Desert", "Special", "Artic"]
 
@@ -525,7 +507,7 @@ if (role and experience and group != "Select" and consent):
             color='system:N',
             opacity=alt.value(0.5)
         )
-        st.altair_chart(chart_markets, theme="streamlit")
+        #st.altair_chart(chart_markets, theme="streamlit")
 
         col_market_1, col_market_2 = st.columns(2)
         with col_market_1:
@@ -573,67 +555,69 @@ if (role and experience and group != "Select" and consent):
 
     with tab3:
         st.subheader("Risk Identification")
-        df_dsm = pd.DataFrame(
-            np.random.rand(31, 31), columns=("col %d" % i for i in range(31))
-        )
 
-        for i in range(31):
-            df_dsm[f"col {i}"][i] = "nan"
-            # df_dsm.loc[:, (f'col {i}', i)] = 'nan'
+        with st.expander("Risk location", expanded=True):
+            df_dsm = pd.DataFrame(
+                np.random.rand(31, 31), columns=("col %d" % i for i in range(31))
+            )
 
-        product_elements = [f"Element {i}" for i in range(1, 32)]
+            for i in range(31):
+                df_dsm[f"col {i}"][i] = "nan"
+                # df_dsm.loc[:, (f'col {i}', i)] = 'nan'
 
-        fig_dsm = px.imshow(
-            df_dsm,
-            labels=dict(x="", y=""),
-            x=product_elements,
-            y=product_elements,
-            color_continuous_scale=[[0, "#D81B60"], [0.5, "#FFB000"], [1, "#004D40"]],
-            # title='Combined Risk Matrix',
-            width=900,
-            height=900,
-            text_auto=".2f",
-            aspect="equal",
-        )
-        fig_dsm.update_layout(
-            xaxis={"side": "top"},
-            yaxis={"side": "left"},
-        )
-        st.plotly_chart(
-            fig_dsm,
-            use_container_width=True,
-            config={
-                "displaylogo": False,
-                "modeBarButtonsToRemove": [
-                    "sendDataToCloud",
-                    "select2d",
-                    "lasso2d",
-                    "zoomIn2d",
-                    "zoomOut2d",
-                    "autoScale2d",
-                    "resetScale2d",
-                    "hoverClosestCartesian",
-                    "hoverCompareCartesian",
-                    "toggleSpikelines",
-                ],
-            },
-        )
-        # Compute x^2 + y^2 across a 2D grid
-        x, y = np.meshgrid(range(1, len(product_elements)), range(1, len(product_elements)))
-        distance = x ** 2 + y ** 2
+            product_elements = [f"Element {i}" for i in range(1, 32)]
 
-        # Convert this grid to columnar data expected by Altair
-        source = pd.DataFrame({ 'x': x.ravel(),
-                                'y': y.ravel(),
-                                'z': distance.ravel()})
+            fig_dsm = px.imshow(
+                df_dsm,
+                labels=dict(x="", y=""),
+                x=product_elements,
+                y=product_elements,
+                color_continuous_scale=[[0, "#D81B60"], [0.5, "#FFB000"], [1, "#004D40"]],
+                # title='Combined Risk Matrix',
+                width=900,
+                height=900,
+                text_auto=".2f",
+                aspect="equal",
+            )
+            fig_dsm.update_layout(
+                xaxis={"side": "top"},
+                yaxis={"side": "left"},
+            )
+            st.plotly_chart(
+                fig_dsm,
+                use_container_width=True,
+                config={
+                    "displaylogo": False,
+                    "modeBarButtonsToRemove": [
+                        "sendDataToCloud",
+                        "select2d",
+                        "lasso2d",
+                        "zoomIn2d",
+                        "zoomOut2d",
+                        "autoScale2d",
+                        "resetScale2d",
+                        "hoverClosestCartesian",
+                        "hoverCompareCartesian",
+                        "toggleSpikelines",
+                    ],
+                },
+            )
+            # Compute x^2 + y^2 across a 2D grid
+            x, y = np.meshgrid(range(1, len(product_elements)), range(1, len(product_elements)))
+            distance = x ** 2 + y ** 2
 
-        chart = alt.Chart(source).mark_rect().encode(
-            x='x:O',
-            y='y:O',
-            color='z:Q'
-        )
+            # Convert this grid to columnar data expected by Altair
+            source = pd.DataFrame({ 'x': x.ravel(),
+                                    'y': y.ravel(),
+                                    'z': distance.ravel()})
 
-        st.altair_chart(chart, theme="streamlit")
+            chart = alt.Chart(source).mark_rect().encode(
+                x='x:O',
+                y='y:O',
+                color='z:Q'
+            )
+
+            st.altair_chart(chart, theme="streamlit")
 
         questions_tab3 = st.expander("Questions", expanded=False)
 
@@ -644,18 +628,16 @@ if (role and experience and group != "Select" and consent):
     with tab4:
         st.subheader("Risk Mitigation")
 
-        source = data.barley()
-
-        st.write(source)
-
-        chart = alt.Chart(source).mark_bar().encode(
-            x='year:O',
-            y='sum(yield):Q',
-            color='year:N',
-            column='site:N'
-        )
-
-        st.altair_chart(chart, theme="streamlit")
+        with st.expander("Risk registry", expanded=False):
+            source = data.barley()
+            st.write(source)
+            chart = alt.Chart(source).mark_bar().encode(
+                x='year:O',
+                y='sum(yield):Q',
+                color='year:N',
+                column='site:N'
+            )
+            st.altair_chart(chart, theme="streamlit")
 
         questions_tab4 = st.expander("Questions", expanded=False)
 
