@@ -67,7 +67,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 ####################
 
 
-# Authenticate to Firestore with the JSON account key.
+# Authenticate to Firestore
 @st.cache_resource
 def authenticate_to_firestore():
     key_dict = json.loads(st.secrets["textkey"])
@@ -178,19 +178,7 @@ with st.expander("Info", expanded=True):
             """
     )
 
-    info_col1, info_col2, info_col3 = st.columns(3)
-
-    role = info_col1.text_input(
-        label="Professional role",
-        help="Enter your professional role here.",
-    )
-    experience = info_col2.number_input(
-        label="Professional experience (years)",
-        help="Enter your years of professional experience here.",
-        min_value=0,
-        max_value=100,
-    )
-    group = info_col3.selectbox(
+    group = st.selectbox(
         label="Workshop group",
         help="Select your assigned group here.",
         options=(
@@ -215,17 +203,17 @@ with st.expander("Info", expanded=True):
         help="Please check this box to consent to the use of your data for research purposes.",
     )
 
-    if not (role and experience and (group != "Select") and consent):
+    if not ((group != "Select") and consent):
         warning = st.warning(
             body="Please make sure to enter your role, experience, and group correctly.",
             icon="⚠️",
         )
     else:
         # Creating a NEW document for each participant
-        participants_id = timestamp + "_" + role
-        participants_ref = db.collection("participants").document(participants_id)
+        session_id = get_session_id()
+        session_ref = db.collection("sessions").document(session_id)
         # And then uploading the data to that reference
-        participants_ref.set({"role": role, "group": group, "experience": experience})
+        session_ref.set({"session_id": session_id, "timestamp": timestamp, "group": group})
         st.success(
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
             icon="👍",
@@ -320,7 +308,7 @@ if "df_designs" not in st.session_state:
     calculate_ms()
 
 # If the user has filled in the intro form correctly
-if role and experience and (group != "Select") and consent:
+if (group != "Select") and consent:
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
         [
             "Inputs",
@@ -450,7 +438,7 @@ if role and experience and (group != "Select") and consent:
                 a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
                 d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a +  d + e)
+                market_share = 0.2 * (a + d + e)
                 market_shares_artic.append(market_share)
                 print(i, a, d, e, market_shares_artic)
 
@@ -458,7 +446,7 @@ if role and experience and (group != "Select") and consent:
                 a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
                 d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a +  d + e)
+                market_share = 0.2 * (a + d + e)
                 market_shares_desert.append(market_share)
                 print(i, a, d, e, market_shares_desert)
 
@@ -466,7 +454,7 @@ if role and experience and (group != "Select") and consent:
                 a = 1 - (0.5) ** (50 / editable_df["min_R"][i]) - 0.3
                 d = 1 - (0.5) ** (500 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a +  d + e)
+                market_share = 0.2 * (a + d + e)
                 market_shares_special.append(market_share)
                 print(i, a, d, e, market_shares_special)
 
@@ -833,6 +821,7 @@ if role and experience and (group != "Select") and consent:
     with tab5:
         st.subheader("Questionnaire")
         with st.form(key="questionnaire_form"):
+            
             st.markdown(
                 """**To develop my solution to the challenge, I based my reasoning on...**"""
             )
@@ -902,6 +891,24 @@ if role and experience and (group != "Select") and consent:
                 max_value=5.0,
                 value=2.5,
                 step=0.1,
+            )
+            st.markdown(
+                """**Demographic information**"""
+            )
+            st.caption(
+                "Please fill in the following information. It will be used for research purposes only."
+            )
+            person_col1, person_col2 = st.columns(2)
+
+            role = person_col1.text_input(
+                label="Professional role",
+                help="Enter your professional role here.",
+            )
+            experience = person_col2.number_input(
+                label="Professional experience (years)",
+                help="Enter your years of professional experience here.",
+                min_value=0,
+                max_value=100,
             )
             # Submit button
             submit_button = st.form_submit_button(
