@@ -175,32 +175,29 @@ with st.expander("Info", expanded=True):
             """
     )
 
-    group = st.selectbox(
+    group = st.radio(
         label="Workshop group",
         help="Select your assigned group here.",
         options=(
-            "Select",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
+            "Make sure to select your group",
+            "Group 1",
+            "Group 2",
+            "Group 3",
+            "Group 4",
+            "Group 5",
+            "Group 6",
+            "Group 7",
+            "Group 8",
+            "Group 9",
+            "Group 10",
         ),
-        index=0,
     )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of your data for research purposes.",
     )
 
-    if not ((group != "Select") and consent):
+    if not ((group != "Make sure to select your group") and consent):
         warning = st.warning(
             body="Please make sure to enter your role, experience, and group correctly.",
             icon="⚠️",
@@ -345,7 +342,7 @@ risks = [
 ]
 
 # If the user has filled in the intro form correctly
-if (group != "Select") and consent:
+if (group != "Make sure to select your group") and consent:
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
             "1. Analyze Value",
