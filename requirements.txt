@@ -2,7 +2,6 @@ streamlit
 pandas
 numpy
 openpyxl
-altair
 plotly
 matplotlib
 networkx
@@ -12,4 +11,4 @@ scipy
 streamlit-aggrid
 google-cloud-firestore
 google-auth-oauthlib
-icecream
+streamlit-echarts
