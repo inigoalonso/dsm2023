@@ -7,6 +7,8 @@ This app helps the participants of the DSM Industry Sprint Workshop.
 # Imports          #
 ####################
 
+from __future__ import annotations
+
 import datetime
 import json
 import altair as alt
@@ -15,6 +17,7 @@ import pandas as pd
 import streamlit as st
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+
 # from icecream import ic
 # from vega_datasets import data
 import plotly.express as px
@@ -106,6 +109,18 @@ def get_session_id() -> str:
     return session_info._session_id
 
 
+def calculate_ms(new_df: pd.DataFrame | None = None):
+    if new_df is not None:
+        if new_df.equals(st.session_state["df_designs"]):
+            return
+        st.session_state["df_designs"] = new_df
+
+    df_designs = st.session_state["df_designs"]
+    df_designs["market_share_1"] = df_designs["FC"] * 2
+    st.session_state["df_designs"] = df_designs
+    st.experimental_rerun()
+
+
 ####################
 # Head             #
 ####################
@@ -114,6 +129,7 @@ st.title("Industry Sprint Workshop 2023")
 st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
 # st.subheader("Workshop Facilitator")
 # st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
+
 
 with st.expander("Info", expanded=True):
     st.markdown(
@@ -187,9 +203,8 @@ markets = market_shares_inputs()
 
 
 # Original designs
-@st.cache_data
-def designs_original():
-    df_designs_original = pd.DataFrame(
+if "df_designs" not in st.session_state:
+    st.session_state.df_designs = pd.DataFrame(
         [
             {
                 "name": "System 1",
@@ -232,10 +247,7 @@ def designs_original():
             },
         ]
     )
-    return df_designs_original
-
-
-df_designs_original = designs_original()
+    calculate_ms()
 
 # If the user has filled in the intro form correctly
 if role and experience and (group != "Select") and consent:
@@ -266,12 +278,12 @@ if role and experience and (group != "Select") and consent:
 
         with st.expander("Systems", expanded=True):
             st.markdown("""**Systems under consideration**""")
-            df_designs_edited = st.data_editor(
-                df_designs_original,
+            editable_df = st.data_editor(
+                st.session_state["df_designs"],
+                key="data",
                 num_rows="dynamic",
                 use_container_width=False,
                 hide_index=True,
-                key="data_editor",
                 on_change=on_data_update(data="df test"),
                 column_config={
                     "name": st.column_config.TextColumn(
@@ -337,42 +349,52 @@ if role and experience and (group != "Select") and consent:
                         format="%.1f k€",
                         disabled=True,
                     ),
-                    "market_share_1": None,
+                    "market_share_1": st.column_config.NumberColumn(
+                        "Market share 1",
+                        help="Market share in %",
+                        min_value=0,
+                        max_value=100,
+                        step=0.01,
+                        format="%.2f",
+                        disabled=True,
+                    ),
                     "market_share_2": None,
                     "market_share_3": None,
                 },
             )
 
+            calculate_ms(editable_df)
+
             market_shares_artic = []
             market_shares_desert = []
             market_shares_special = []
 
-            for i in range(len(df_designs_edited)):
-                a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5
-                b = 1 - (0.5) ** (0.1 / df_designs_edited["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (1 / df_designs_edited["EC"][i]) - 0.3
-                d = 1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3
-                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+            for i in range(len(editable_df)):
+                a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
+                b = 1 - (0.5) ** (0.1 / editable_df["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (1 / editable_df["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
+                e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_artic.append(market_share)
                 print(i, a, b, c, d, e, market_shares_artic)
 
-            for i in range(len(df_designs_edited)):
-                a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5
-                b = 1 - (0.5) ** (0.5 / df_designs_edited["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (0.5 / df_designs_edited["EC"][i]) - 0.3
-                d = 1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3
-                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+            for i in range(len(editable_df)):
+                a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
+                b = 1 - (0.5) ** (0.5 / editable_df["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (0.5 / editable_df["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
+                e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_desert.append(market_share)
                 print(i, a, b, c, d, e, market_shares_desert)
 
-            for i in range(len(df_designs_edited)):
-                a = 1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3
-                b = 1 - (0.5) ** (2 / df_designs_edited["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (2 / df_designs_edited["EC"][i]) - 0.3
-                d = 1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3
-                e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
+            for i in range(len(editable_df)):
+                a = 1 - (0.5) ** (50 / editable_df["min_R"][i]) - 0.3
+                b = 1 - (0.5) ** (2 / editable_df["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (2 / editable_df["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (500 / editable_df["price"][i]) - 0.3
+                e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_special.append(market_share)
                 print(i, a, b, c, d, e, market_shares_special)
@@ -396,30 +418,24 @@ if role and experience and (group != "Select") and consent:
             ]
 
             revenue_artic = [
-                df_designs_edited["price"][0] * units_artic[0],
-                df_designs_edited["price"][1] * units_artic[1],
-                df_designs_edited["price"][2] * units_artic[2],
+                editable_df["price"][0] * units_artic[0],
+                editable_df["price"][1] * units_artic[1],
+                editable_df["price"][2] * units_artic[2],
             ]
             revenue_desert = [
-                df_designs_edited["price"][0] * units_desert[0],
-                df_designs_edited["price"][1] * units_desert[1],
-                df_designs_edited["price"][2] * units_desert[2],
+                editable_df["price"][0] * units_desert[0],
+                editable_df["price"][1] * units_desert[1],
+                editable_df["price"][2] * units_desert[2],
             ]
             revenue_special = [
-                df_designs_edited["price"][0] * units_special[0],
-                df_designs_edited["price"][1] * units_special[1],
-                df_designs_edited["price"][2] * units_special[2],
+                editable_df["price"][0] * units_special[0],
+                editable_df["price"][1] * units_special[1],
+                editable_df["price"][2] * units_special[2],
             ]
 
-            unit_profit_system_1 = (
-                df_designs_edited["price"][0] - df_designs_edited["cost"][0]
-            )
-            unit_profit_system_2 = (
-                df_designs_edited["price"][1] - df_designs_edited["cost"][1]
-            )
-            unit_profit_system_3 = (
-                df_designs_edited["price"][2] - df_designs_edited["cost"][2]
-            )
+            unit_profit_system_1 = editable_df["price"][0] - editable_df["cost"][0]
+            unit_profit_system_2 = editable_df["price"][1] - editable_df["cost"][1]
+            unit_profit_system_3 = editable_df["price"][2] - editable_df["cost"][2]
 
             profit_artic = [
                 unit_profit_system_1 * units_artic[0],
@@ -685,15 +701,15 @@ if role and experience and (group != "Select") and consent:
     with tab4:
         st.subheader("Risk Mitigation")
 
-        with st.expander("Risk registry", expanded=False):
-            source = data.barley()
-            st.write(source)
-            chart = (
-                alt.Chart(source)
-                .mark_bar()
-                .encode(x="year:O", y="sum(yield):Q", color="year:N", column="site:N")
-            )
-            st.altair_chart(chart, theme="streamlit")
+        # with st.expander("Risk registry", expanded=False):
+        #     source = data.barley()
+        #     st.write(source)
+        #     chart = (
+        #         alt.Chart(source)
+        #         .mark_bar()
+        #         .encode(x="year:O", y="sum(yield):Q", color="year:N", column="site:N")
+        #     )
+        #     st.altair_chart(chart, theme="streamlit")
 
         questions_tab4 = st.expander("Questions", expanded=False)
 
