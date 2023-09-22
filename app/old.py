@@ -26,3 +26,21 @@
 # Sidebar          #
 
 # st.sidebar.header("Navigation")
+
+
+import altair as alt
+
+            # Compute x^2 + y^2 across a 2D grid
+            x, y = np.meshgrid(
+                range(1, len(product_elements)), range(1, len(product_elements))
+            )
+            distance = x**2 + y**2
+
+            # Convert this grid to columnar data expected by Altair
+            source = pd.DataFrame(
+                {"x": x.ravel(), "y": y.ravel(), "z": distance.ravel()}
+            )
+
+            chart = alt.Chart(source).mark_rect().encode(x="x:O", y="y:O", color="z:Q")
+
+            st.altair_chart(chart, theme="streamlit")
