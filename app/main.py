@@ -346,9 +346,8 @@ risks = [
 
 # If the user has filled in the intro form correctly
 if (group != "Select") and consent:
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
-            "Inputs",
             "1. Analyze Value",
             "2. Identify Risks",
             "3. Mitigate Risks",
@@ -593,13 +592,6 @@ if (group != "Select") and consent:
                 ]
             )
 
-        questions_tab1 = st.expander("Questions", expanded=False)
-
-    ####################
-    # Tab 2            #
-    ####################
-
-    with tab2:
         st.subheader("1. Analyze Value")
         with st.expander("Market share", expanded=True):
             markets_col1, markets_col2 = st.columns(2)
@@ -677,13 +669,13 @@ if (group != "Select") and consent:
                     delta="",
                 )
 
-        questions_tab2 = st.expander("Questions", expanded=False)
+        questions_tab1 = st.expander("Questions", expanded=False)
 
     ####################
-    # Tab 3            #
+    # Tab 2            #
     ####################
 
-    with tab3:
+    with tab2:
         st.subheader("2. Identify Risks")
 
         with st.expander("Technical risk registry", expanded=True):
@@ -979,14 +971,14 @@ if (group != "Select") and consent:
                 selected_points = []
                 st.write("The selected points are: ", value)
 
-        questions_tab3 = st.expander("Questions", expanded=False)
+        questions_tab2 = st.expander("Questions", expanded=False)
 
 
     ####################
-    # Tab 4            #
+    # Tab 3            #
     ####################
 
-    with tab4:
+    with tab3:
         st.subheader("3. Mitigate Risks")
 
         mitigations = [
@@ -1035,6 +1027,150 @@ if (group != "Select") and consent:
                 label="Submit", help="Click here to submit your answers."
             )
 
+        questions_tab3 = st.expander("Questions", expanded=False)
+
+    ####################
+    # Tab 4            #
+    ####################
+
+    with tab4:
+        # show text if time is over 3pm
+        if datetime.datetime.now().hour <= 15:
+            st.error(
+                "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
+                icon="🕒"
+            )
+        else:
+            st.subheader("Questionnaire")
+            with st.form(key="questionnaire_form"):
+                st.markdown(
+                    """**To develop my solution to the challenge, I based my reasoning on...**"""
+                )
+                st.caption(
+                    "Please rate the following options from 0 (not at all) to 5 (very much)."
+                )
+                q1 = st.slider(
+                    "My previous experience",
+                    key="q1",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q2 = st.slider(
+                    "Discussion with my colleagues",
+                    key="q2",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q3 = st.slider(
+                    "Risk registry",
+                    key="q3",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q4 = st.slider(
+                    "Value analysis models",
+                    key="q4",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q5 = st.slider(
+                    "Binary DSMs",
+                    key="q5",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q6 = st.slider(
+                    "Numerical (Spatial) DSMs",
+                    key="q6",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q7 = st.slider(
+                    "Risk propagation matrices",
+                    key="q7",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                q8 = st.slider(
+                    "Risk mitigations registry",
+                    key="q8",
+                    min_value=0.0,
+                    max_value=5.0,
+                    value=2.5,
+                    step=0.1,
+                )
+                st.divider()
+                st.markdown("""**Demographic information**""")
+                st.caption(
+                    "Please fill in the following information. It will be used for research purposes only."
+                )
+                person_col1, person_col2 = st.columns(2)
+
+                role = person_col1.text_input(
+                    label="Professional role",
+                    help="Enter your professional role here.",
+                )
+                experience = person_col2.number_input(
+                    label="Professional experience (years)",
+                    help="Enter your years of professional experience here.",
+                    min_value=0,
+                    max_value=100,
+                )
+                st.divider()
+                # Submit button
+                submit_button = st.form_submit_button(
+                    label="Submit", help="Click here to submit your answers."
+                )
+                if submit_button:
+                    #
+                    session_id = get_session_id()
+                    response_ref = db.collection("responses").document(session_id)
+                    # And then uploading the data to that reference
+                    response_ref.set(
+                        {
+                            "session_id": session_id,
+                            "timestamp": timestamp,
+                            "group": group,
+                            "role": role,
+                            "experience": experience,
+                            "q1": q1,
+                            "q2": q2,
+                            "q3": q3,
+                            "q4": q4,
+                            "q5": q5,
+                            "q6": q6,
+                            "q7": q7,
+                            "q8": q8,
+                            "consent": consent,
+                            "session_state": st.session_state["data"],
+                        }
+                    )
+                    st.success(
+                        body="Your answers have been submitted. Thank you for participating!",
+                        icon="👍",
+                    )
+
         questions_tab4 = st.expander("Questions", expanded=False)
 
     ####################
@@ -1042,143 +1178,6 @@ if (group != "Select") and consent:
     ####################
 
     with tab5:
-        st.subheader("Questionnaire")
-        with st.form(key="questionnaire_form"):
-            st.markdown(
-                """**To develop my solution to the challenge, I based my reasoning on...**"""
-            )
-            st.caption(
-                "Please rate the following options from 0 (not at all) to 5 (very much)."
-            )
-            q1 = st.slider(
-                "My previous experience",
-                key="q1",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q2 = st.slider(
-                "Discussion with my colleagues",
-                key="q2",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q3 = st.slider(
-                "Risk registry",
-                key="q3",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q4 = st.slider(
-                "Value analysis models",
-                key="q4",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q5 = st.slider(
-                "Binary DSMs",
-                key="q5",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q6 = st.slider(
-                "Numerical (Spatial) DSMs",
-                key="q6",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q7 = st.slider(
-                "Risk propagation matrices",
-                key="q7",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            q8 = st.slider(
-                "Risk mitigations registry",
-                key="q8",
-                min_value=0.0,
-                max_value=5.0,
-                value=2.5,
-                step=0.1,
-            )
-            st.divider()
-            st.markdown("""**Demographic information**""")
-            st.caption(
-                "Please fill in the following information. It will be used for research purposes only."
-            )
-            person_col1, person_col2 = st.columns(2)
-
-            role = person_col1.text_input(
-                label="Professional role",
-                help="Enter your professional role here.",
-            )
-            experience = person_col2.number_input(
-                label="Professional experience (years)",
-                help="Enter your years of professional experience here.",
-                min_value=0,
-                max_value=100,
-            )
-            st.divider()
-            # Submit button
-            submit_button = st.form_submit_button(
-                label="Submit", help="Click here to submit your answers."
-            )
-            if submit_button:
-                #
-                session_id = get_session_id()
-                response_ref = db.collection("responses").document(session_id)
-                # And then uploading the data to that reference
-                response_ref.set(
-                    {
-                        "session_id": session_id,
-                        "timestamp": timestamp,
-                        "group": group,
-                        "role": role,
-                        "experience": experience,
-                        "q1": q1,
-                        "q2": q2,
-                        "q3": q3,
-                        "q4": q4,
-                        "q5": q5,
-                        "q6": q6,
-                        "q7": q7,
-                        "q8": q8,
-                        "consent": consent,
-                        "session_state": st.session_state["data"],
-                    }
-                )
-                st.success(
-                    body="Your answers have been submitted. Thank you for participating!",
-                    icon="👍",
-                )
-
-        questions_tab5 = st.expander("Questions", expanded=False)
-
-    ####################
-    # Tab 6            #
-    ####################
-
-    with tab6:
         st.subheader("Help")
         with st.expander("How to use this webapp?", expanded=True):
             st.markdown(
@@ -1233,8 +1232,7 @@ if (group != "Select") and consent:
             )
 
     questions_tab1.write("What is the minimum turning radius of a truck?")
-    questions_tab2.write("what do you thiunk?")
-    questions_tab3.selectbox(
+    questions_tab2.selectbox(
                 "Risk",
                 risks,
                 help="Select the risk you would like to add to the risk mitigation registry.",
