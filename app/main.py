@@ -13,13 +13,16 @@ import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
-#from icecream import ic
-#from vega_datasets import data
+from streamlit import runtime
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+# from icecream import ic
+# from vega_datasets import data
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from google.cloud import firestore
 from google.oauth2 import service_account
+
 
 ####################
 # Formatting       #
@@ -60,6 +63,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Setup            #
 ####################
 
+
 # Authenticate to Firestore with the JSON account key.
 @st.cache_resource
 def authenticate_to_firestore():
@@ -67,6 +71,8 @@ def authenticate_to_firestore():
     creds = service_account.Credentials.from_service_account_info(key_dict)
     db = firestore.Client(credentials=creds, project="dsm2023isw")
     return db
+
+
 db = authenticate_to_firestore()
 
 # Timestamp string
@@ -81,69 +87,93 @@ pd.options.mode.chained_assignment = None  # default='warn'
 # Functions        #
 ####################
 
+
 def on_data_update(data):
     print("Data updated:", data)
+
+
+def get_session_id() -> str:
+    """Get the Session ID for the current session."""
+    try:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+        session_info = runtime.get_instance().get_client(ctx.session_id)
+        if session_info is None:
+            return None
+    except Exception as e:
+        return None
+    return session_info._session_id
 
 
 ####################
 # Head             #
 ####################
 
-st.title('Industry Sprint Workshop 2023')
-st.caption('**Workshop Facilitator** for _The 25th International DSM Conference_')
-#st.subheader("Workshop Facilitator")
-#st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
+st.title("Industry Sprint Workshop 2023")
+st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
+# st.subheader("Workshop Facilitator")
+# st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
 with st.expander("Info", expanded=True):
-
     st.markdown(
-            """
+        """
             Please fill in the following information to start the workshop.
             """
-        )
+    )
 
     info_col1, info_col2, info_col3 = st.columns(3)
 
     role = info_col1.text_input(
         label="Professional role",
         help="Enter your professional role here.",
-        )
+    )
     experience = info_col2.number_input(
         label="Professional experience (years)",
         help="Enter your years of professional experience here.",
         min_value=0,
         max_value=100,
-        )
+    )
     group = info_col3.selectbox(
-        label='Workshop group',
+        label="Workshop group",
         help="Select your assigned group here.",
-        options=('Select', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'),
+        options=(
+            "Select",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+        ),
         index=0,
-        )
+    )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of your data for research purposes.",
-        )
+    )
 
     if not (role and experience and (group != "Select") and consent):
         warning = st.warning(
             body="Please make sure to enter your role, experience, and group correctly.",
             icon="⚠️",
-            )
+        )
     else:
         # Creating a NEW document for each participant
-        participants_id = timestamp+"_"+role
+        participants_id = timestamp + "_" + role
         participants_ref = db.collection("participants").document(participants_id)
         # And then uploading the data to that reference
-        participants_ref.set({
-            "role": role,
-            "group": group,
-            "experience": experience
-        })
+        participants_ref.set({"role": role, "group": group, "experience": experience})
         st.success(
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
             icon="👍",
-            )
+        )
 
 
 # Market shares
@@ -151,7 +181,10 @@ with st.expander("Info", expanded=True):
 def market_shares_inputs():
     markets = [10000, 20000, 40000]
     return markets
+
+
 markets = market_shares_inputs()
+
 
 # Original designs
 @st.cache_data
@@ -200,19 +233,22 @@ def designs_original():
         ]
     )
     return df_designs_original
+
+
 df_designs_original = designs_original()
 
 # If the user has filled in the intro form correctly
-if (role and experience and (group != "Select") and consent):
-
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "Inputs", 
-        "Value Analysis", 
-        "Risk Identification", 
-        "Risk Mitigation", 
-        "Questionnaire", 
-        "Help"
-    ])
+if role and experience and (group != "Select") and consent:
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+        [
+            "Inputs",
+            "Value Analysis",
+            "Risk Identification",
+            "Risk Mitigation",
+            "Questionnaire",
+            "Help",
+        ]
+    )
 
     ####################
     # Tab 1            #
@@ -227,11 +263,9 @@ if (role and experience and (group != "Select") and consent):
             markets[0] = st.slider("Artic", 0, 200000, markets[0])
             markets[1] = st.slider("Desert", 0, 200000, markets[1])
             markets[2] = st.slider("Special", 0, 200000, markets[2])
-        
+
         with st.expander("Systems", expanded=True):
-            st.markdown(
-                """**Systems under consideration**"""
-            )
+            st.markdown("""**Systems under consideration**""")
             df_designs_edited = st.data_editor(
                 df_designs_original,
                 num_rows="dynamic",
@@ -314,30 +348,30 @@ if (role and experience and (group != "Select") and consent):
             market_shares_special = []
 
             for i in range(len(df_designs_edited)):
-                a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
-                b = (1 - (0.5) ** (0.1 / df_designs_edited["FC"][i]) - 0.3)
-                c = (1 - (0.5) ** (1 / df_designs_edited["EC"][i]) - 0.3)
-                d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
+                a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5
+                b = 1 - (0.5) ** (0.1 / df_designs_edited["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (1 / df_designs_edited["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_artic.append(market_share)
                 print(i, a, b, c, d, e, market_shares_artic)
 
             for i in range(len(df_designs_edited)):
-                a = (1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5)
-                b = (1 - (0.5) ** (0.5 / df_designs_edited["FC"][i]) - 0.3)
-                c = (1 - (0.5) ** (0.5 / df_designs_edited["EC"][i]) - 0.3)
-                d = (1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3)
+                a = 1 / (1 + ((df_designs_edited["min_R"][i] - 10) * 0.5) ** 2) - 0.5
+                b = 1 - (0.5) ** (0.5 / df_designs_edited["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (0.5 / df_designs_edited["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (50 / df_designs_edited["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_desert.append(market_share)
                 print(i, a, b, c, d, e, market_shares_desert)
 
             for i in range(len(df_designs_edited)):
-                a = (1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3)
-                b = (1 - (0.5) ** (2 / df_designs_edited["FC"][i]) - 0.3)
-                c = (1 - (0.5) ** (2 / df_designs_edited["EC"][i]) - 0.3)
-                d = (1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3)
+                a = 1 - (0.5) ** (50 / df_designs_edited["min_R"][i]) - 0.3
+                b = 1 - (0.5) ** (2 / df_designs_edited["FC"][i]) - 0.3
+                c = 1 - (0.5) ** (2 / df_designs_edited["EC"][i]) - 0.3
+                d = 1 - (0.5) ** (500 / df_designs_edited["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / df_designs_edited["reliability"][i])
                 market_share = 0.2 * (a + b + c + d + e)
                 market_shares_special.append(market_share)
@@ -377,9 +411,15 @@ if (role and experience and (group != "Select") and consent):
                 df_designs_edited["price"][2] * units_special[2],
             ]
 
-            unit_profit_system_1 = df_designs_edited["price"][0] - df_designs_edited["cost"][0]
-            unit_profit_system_2 = df_designs_edited["price"][1] - df_designs_edited["cost"][1]
-            unit_profit_system_3 = df_designs_edited["price"][2] - df_designs_edited["cost"][2]
+            unit_profit_system_1 = (
+                df_designs_edited["price"][0] - df_designs_edited["cost"][0]
+            )
+            unit_profit_system_2 = (
+                df_designs_edited["price"][1] - df_designs_edited["cost"][1]
+            )
+            unit_profit_system_3 = (
+                df_designs_edited["price"][2] - df_designs_edited["cost"][2]
+            )
 
             profit_artic = [
                 unit_profit_system_1 * units_artic[0],
@@ -414,7 +454,6 @@ if (role and experience and (group != "Select") and consent):
     ####################
 
     with tab2:
-
         fig_polar = go.Figure()
 
         fig_bar = go.Figure()
@@ -463,8 +502,6 @@ if (role and experience and (group != "Select") and consent):
             ),
         )
 
-
-
         fig_bar.add_trace(
             go.Bar(
                 name="Artic",
@@ -492,24 +529,35 @@ if (role and experience and (group != "Select") and consent):
         )
 
         st.subheader("Market share")
-        
-        source = pd.DataFrame({
-            'market': ['Artic', 'Desert', 'Special'],
-            'system1': [market_shares_artic[0], market_shares_artic[1], market_shares_artic[2]],
-            'system2': [market_shares_desert[0], market_shares_desert[1], market_shares_desert[2]],
-            'system3': [market_shares_special[0], market_shares_special[1], market_shares_special[2]],
-        })
-        chart_markets = alt.Chart(source, width=500).transform_window(
-            index='count()'
-        ).transform_fold(
-            ['Artic', 'Desert', 'Special']
-        ).mark_line().encode(
-            x='market:N',
-            y='share:Q',
-            color='system:N',
-            opacity=alt.value(0.5)
+
+        source = pd.DataFrame(
+            {
+                "market": ["Artic", "Desert", "Special"],
+                "system1": [
+                    market_shares_artic[0],
+                    market_shares_artic[1],
+                    market_shares_artic[2],
+                ],
+                "system2": [
+                    market_shares_desert[0],
+                    market_shares_desert[1],
+                    market_shares_desert[2],
+                ],
+                "system3": [
+                    market_shares_special[0],
+                    market_shares_special[1],
+                    market_shares_special[2],
+                ],
+            }
         )
-        #st.altair_chart(chart_markets, theme="streamlit")
+        chart_markets = (
+            alt.Chart(source, width=500)
+            .transform_window(index="count()")
+            .transform_fold(["Artic", "Desert", "Special"])
+            .mark_line()
+            .encode(x="market:N", y="share:Q", color="system:N", opacity=alt.value(0.5))
+        )
+        # st.altair_chart(chart_markets, theme="streamlit")
 
         col_market_1, col_market_2 = st.columns(2)
         with col_market_1:
@@ -540,14 +588,19 @@ if (role and experience and (group != "Select") and consent):
         col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
 
         with col_profits_1:
-            st.metric(label="System 1", value=f"{profit_system_1/1000000:.3f} M€", delta="")
+            st.metric(
+                label="System 1", value=f"{profit_system_1/1000000:.3f} M€", delta=""
+            )
 
         with col_profits_2:
-            st.metric(label="System 2", value=f"{profit_system_2/1000000:.3f} M€", delta="")
+            st.metric(
+                label="System 2", value=f"{profit_system_2/1000000:.3f} M€", delta=""
+            )
 
         with col_profits_3:
-            st.metric(label="System 3", value=f"{profit_system_3/1000000:.3f} M€", delta="")
-
+            st.metric(
+                label="System 3", value=f"{profit_system_3/1000000:.3f} M€", delta=""
+            )
 
         questions_tab2 = st.expander("Questions", expanded=False)
 
@@ -574,7 +627,11 @@ if (role and experience and (group != "Select") and consent):
                 labels=dict(x="", y=""),
                 x=product_elements,
                 y=product_elements,
-                color_continuous_scale=[[0, "#D81B60"], [0.5, "#FFB000"], [1, "#004D40"]],
+                color_continuous_scale=[
+                    [0, "#D81B60"],
+                    [0.5, "#FFB000"],
+                    [1, "#004D40"],
+                ],
                 # title='Combined Risk Matrix',
                 width=900,
                 height=900,
@@ -605,19 +662,17 @@ if (role and experience and (group != "Select") and consent):
                 },
             )
             # Compute x^2 + y^2 across a 2D grid
-            x, y = np.meshgrid(range(1, len(product_elements)), range(1, len(product_elements)))
-            distance = x ** 2 + y ** 2
+            x, y = np.meshgrid(
+                range(1, len(product_elements)), range(1, len(product_elements))
+            )
+            distance = x**2 + y**2
 
             # Convert this grid to columnar data expected by Altair
-            source = pd.DataFrame({ 'x': x.ravel(),
-                                    'y': y.ravel(),
-                                    'z': distance.ravel()})
-
-            chart = alt.Chart(source).mark_rect().encode(
-                x='x:O',
-                y='y:O',
-                color='z:Q'
+            source = pd.DataFrame(
+                {"x": x.ravel(), "y": y.ravel(), "z": distance.ravel()}
             )
+
+            chart = alt.Chart(source).mark_rect().encode(x="x:O", y="y:O", color="z:Q")
 
             st.altair_chart(chart, theme="streamlit")
 
@@ -633,11 +688,10 @@ if (role and experience and (group != "Select") and consent):
         with st.expander("Risk registry", expanded=False):
             source = data.barley()
             st.write(source)
-            chart = alt.Chart(source).mark_bar().encode(
-                x='year:O',
-                y='sum(yield):Q',
-                color='year:N',
-                column='site:N'
+            chart = (
+                alt.Chart(source)
+                .mark_bar()
+                .encode(x="year:O", y="sum(yield):Q", color="year:N", column="site:N")
             )
             st.altair_chart(chart, theme="streamlit")
 
@@ -653,17 +707,77 @@ if (role and experience and (group != "Select") and consent):
             st.markdown(
                 """**To develop my solution to the challenge, I based my reasoning on...**"""
             )
-            st.caption("Please rate the following options from 0 (not at all) to 5 (very much).")
-            q1 = st.slider("My previous experience", key="q1", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q2 = st.slider("Discussion with my colleagues", key="q2", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q3 = st.slider("Risk registry", key="q3", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q4 = st.slider("Value analysis models", key="q4", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q5 = st.slider("Binary DSMs", key="q5", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q6 = st.slider("Numerical (Spatial) DSMs", key="q6", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q7 = st.slider("Risk propagation matrices", key="q7", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
-            q8 = st.slider("Risk mitigations registry", key="q8", min_value=0.0, max_value=5.0, value=2.5, step=0.1)
+            st.caption(
+                "Please rate the following options from 0 (not at all) to 5 (very much)."
+            )
+            q1 = st.slider(
+                "My previous experience",
+                key="q1",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q2 = st.slider(
+                "Discussion with my colleagues",
+                key="q2",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q3 = st.slider(
+                "Risk registry",
+                key="q3",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q4 = st.slider(
+                "Value analysis models",
+                key="q4",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q5 = st.slider(
+                "Binary DSMs",
+                key="q5",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q6 = st.slider(
+                "Numerical (Spatial) DSMs",
+                key="q6",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q7 = st.slider(
+                "Risk propagation matrices",
+                key="q7",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
+            q8 = st.slider(
+                "Risk mitigations registry",
+                key="q8",
+                min_value=0.0,
+                max_value=5.0,
+                value=2.5,
+                step=0.1,
+            )
             # Submit button
-            submit_button = st.form_submit_button(label="Submit", help="Click here to submit your answers.")
+            submit_button = st.form_submit_button(
+                label="Submit", help="Click here to submit your answers."
+            )
 
         questions_tab5 = st.expander("Questions", expanded=False)
 
@@ -683,14 +797,11 @@ if (role and experience and (group != "Select") and consent):
 
 print("Here's the session state:")
 print([key for key in st.session_state.keys()])
-#ic(st.session_state["data_editor"])
+# ic(st.session_state["data_editor"])
 
 try:
     sessions_ref = db.collection("session_states").document(participants_id)
     # And then uploading the data to that reference
-    sessions_ref.set({
-        "role": role,
-        "group": group
-    })
+    sessions_ref.set({"role": role, "group": group})
 except:
     pass
