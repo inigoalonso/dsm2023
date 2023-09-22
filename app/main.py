@@ -700,15 +700,15 @@ if (group != "Select") and consent:
             system = st.selectbox(
                 label="System",
                 help="Select the system you would like to plot.",
-                options=("System 1", "System 2", "System 3"),
+                options=("System 1 - Only front steering", "System 2 - Front + Back steering (hydraulic)", "System 3 - Front + Back steering (electric)"),
                 index=0,
             )
 
-            if system == "System 1":
+            if system == "System 1 - Only front steering":
                 n = 16
-            elif system == "System 2":
+            elif system == "System 2 - Front + Back steering (hydraulic)":
                 n = 18
-            elif system == "System 3":
+            elif system == "System 3 - Front + Back steering (electric)":
                 n = 25
             else:
                 n = 10
