@@ -116,7 +116,39 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
         st.session_state["df_designs"] = new_df
 
     df_designs = st.session_state["df_designs"]
-    df_designs["market_share_1"] = df_designs["FC"] * 2
+    df_designs["market_share_1"] = df_designs["price"] * 2
+    df_designs["market_share_2"] = df_designs["price"] * 3
+    df_designs["market_share_3"] = df_designs["price"] * 4
+    df_designs["market_units_1"] = df_designs["market_share_1"] * market_sizes[0]
+    df_designs["market_units_2"] = df_designs["market_share_2"] * market_sizes[1]
+    df_designs["market_units_3"] = df_designs["market_share_3"] * market_sizes[2]
+    df_designs["market_revenue_1"] = df_designs["price"] * df_designs["market_units_1"]
+    df_designs["market_revenue_2"] = df_designs["price"] * df_designs["market_units_2"]
+    df_designs["market_revenue_3"] = df_designs["price"] * df_designs["market_units_3"]
+    df_designs["market_profit_1"] = (
+        df_designs["price"] - df_designs["cost"]
+    ) * df_designs["market_units_1"]
+    df_designs["market_profit_2"] = (
+        df_designs["price"] - df_designs["cost"]
+    ) * df_designs["market_units_2"]
+    df_designs["market_profit_3"] = (
+        df_designs["price"] - df_designs["cost"]
+    ) * df_designs["market_units_3"]
+    df_designs["total_units"] = (
+        df_designs["market_units_1"]
+        + df_designs["market_units_2"]
+        + df_designs["market_units_3"]
+    )
+    df_designs["total_revenue"] = (
+        df_designs["market_revenue_1"]
+        + df_designs["market_revenue_2"]
+        + df_designs["market_revenue_3"]
+    )
+    df_designs["total_profit"] = (
+        df_designs["market_profit_1"]
+        + df_designs["market_profit_2"]
+        + df_designs["market_profit_3"]
+    )
     st.session_state["df_designs"] = df_designs
     st.experimental_rerun()
 
@@ -125,10 +157,18 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
 # Head             #
 ####################
 
-st.title("Industry Sprint Workshop 2023")
-st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
-# st.subheader("Workshop Facilitator")
-# st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
+# Logo and title
+col_logo, col_title = st.columns([0.2, 1])
+with col_logo:
+    st.write("")
+    st.write("")
+    st.image("assets/logo_large.png", width=60)
+
+with col_title:
+    st.title("Industry Sprint Workshop 2023")
+    st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
+    # st.subheader("Workshop Facilitator")
+    # st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
 
 with st.expander("Info", expanded=True):
@@ -195,11 +235,11 @@ with st.expander("Info", expanded=True):
 # Market shares
 @st.cache_data
 def market_shares_inputs():
-    markets = [10000, 20000, 40000]
-    return markets
+    market_sizes = [10000, 20000, 40000]
+    return market_sizes
 
 
-markets = market_shares_inputs()
+market_sizes = market_shares_inputs()
 
 
 # Original designs
@@ -210,40 +250,70 @@ if "df_designs" not in st.session_state:
                 "name": "System 1",
                 "description": "Only front steering",
                 "min_R": 10.7,
-                "FC": 0.3,
-                "EC": 0.5,
                 "reliability": 0.92,
                 "price": 100,
                 "cost": 90,
                 "market_share_1": 0,
                 "market_share_2": 0,
                 "market_share_3": 0,
+                "market_units_1": 0,
+                "market_units_2": 0,
+                "market_units_3": 0,
+                "market_revenue_1": 0,
+                "market_revenue_2": 0,
+                "market_revenue_3": 0,
+                "market_profit_1": 0,
+                "market_profit_2": 0,
+                "market_profit_3": 0,
+                "total_units": 0,
+                "total_revenue": 0,
+                "total_profit": 0,
             },
             {
                 "name": "System 2",
                 "description": "Front + Back steering (hydraulic)",
-                "min_R": 7.6,
-                "FC": 0.35,
-                "EC": 0.5,
+                "min_R": 8.0,
                 "reliability": 0.8,
                 "price": 110,
                 "cost": 100,
                 "market_share_1": 0,
                 "market_share_2": 0,
                 "market_share_3": 0,
+                "market_units_1": 0,
+                "market_units_2": 0,
+                "market_units_3": 0,
+                "market_revenue_1": 0,
+                "market_revenue_2": 0,
+                "market_revenue_3": 0,
+                "market_profit_1": 0,
+                "market_profit_2": 0,
+                "market_profit_3": 0,
+                "total_units": 0,
+                "total_revenue": 0,
+                "total_profit": 0,
             },
             {
                 "name": "System 3",
                 "description": "Front + Back steering (electric)",
                 "min_R": 7.6,
-                "FC": 0.25,
-                "EC": 1.5,
                 "reliability": 0.9,
                 "price": 110,
                 "cost": 100,
                 "market_share_1": 0,
                 "market_share_2": 0,
                 "market_share_3": 0,
+                "market_units_1": 0,
+                "market_units_2": 0,
+                "market_units_3": 0,
+                "market_revenue_1": 0,
+                "market_revenue_2": 0,
+                "market_revenue_3": 0,
+                "market_profit_1": 0,
+                "market_profit_2": 0,
+                "market_profit_3": 0,
+                "total_units": 0,
+                "total_revenue": 0,
+                "total_profit": 0,
             },
         ]
     )
@@ -272,9 +342,9 @@ if role and experience and (group != "Select") and consent:
             st.markdown(
                 """**Potential yearly market for each application (# of trucks)**"""
             )
-            markets[0] = st.slider("Artic", 0, 200000, markets[0])
-            markets[1] = st.slider("Desert", 0, 200000, markets[1])
-            markets[2] = st.slider("Special", 0, 200000, markets[2])
+            market_sizes[0] = st.slider("Artic", 0, 200000, market_sizes[0])
+            market_sizes[1] = st.slider("Desert", 0, 200000, market_sizes[1])
+            market_sizes[2] = st.slider("Special", 0, 200000, market_sizes[2])
 
         with st.expander("Systems", expanded=True):
             st.markdown("""**Systems under consideration**""")
@@ -305,24 +375,6 @@ if role and experience and (group != "Select") and consent:
                         format="%.1f m",
                         disabled=True,
                     ),
-                    "FC": st.column_config.NumberColumn(
-                        "Fuel Cons.",
-                        help="Fuel consumption in L/km",
-                        min_value=0,
-                        max_value=50,
-                        step=0.01,
-                        format="%.2f L/km",
-                        disabled=True,
-                    ),
-                    "EC": st.column_config.NumberColumn(
-                        "Electricity Cons.",
-                        help="Electricity consumption in kWh",
-                        min_value=0,
-                        max_value=50,
-                        step=0.1,
-                        format="%.1f kWh",
-                        disabled=True,
-                    ),
                     "reliability": st.column_config.NumberColumn(
                         "Reliability",
                         help="Reliability of the system",
@@ -350,7 +402,7 @@ if role and experience and (group != "Select") and consent:
                         disabled=True,
                     ),
                     "market_share_1": st.column_config.NumberColumn(
-                        "Market share 1",
+                        "MS1",
                         help="Market share in %",
                         min_value=0,
                         max_value=100,
@@ -358,8 +410,33 @@ if role and experience and (group != "Select") and consent:
                         format="%.2f",
                         disabled=True,
                     ),
-                    "market_share_2": None,
-                    "market_share_3": None,
+                    "market_share_2": st.column_config.NumberColumn(
+                        "MS2",
+                        help="Market share in %",
+                        min_value=0,
+                        max_value=100,
+                        step=0.01,
+                        format="%.2f",
+                        disabled=True,
+                    ),
+                    "market_share_3": st.column_config.NumberColumn(
+                        "MS3",
+                        help="Market share in %",
+                        min_value=0,
+                        max_value=100,
+                        step=0.01,
+                        format="%.2f",
+                        disabled=True,
+                    ),
+                    "market_units_1": None,
+                    "market_units_2": None,
+                    "market_units_3": None,
+                    "market_revenue_1": None,
+                    "market_revenue_2": None,
+                    "market_revenue_3": None,
+                    "market_profit_1": None,
+                    "market_profit_2": None,
+                    "market_profit_3": None,
                 },
             )
 
@@ -371,97 +448,133 @@ if role and experience and (group != "Select") and consent:
 
             for i in range(len(editable_df)):
                 a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
-                b = 1 - (0.5) ** (0.1 / editable_df["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (1 / editable_df["EC"][i]) - 0.3
                 d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a + b + c + d + e)
+                market_share = 0.2 * (a +  d + e)
                 market_shares_artic.append(market_share)
-                print(i, a, b, c, d, e, market_shares_artic)
+                print(i, a, d, e, market_shares_artic)
 
             for i in range(len(editable_df)):
                 a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
-                b = 1 - (0.5) ** (0.5 / editable_df["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (0.5 / editable_df["EC"][i]) - 0.3
                 d = 1 - (0.5) ** (50 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a + b + c + d + e)
+                market_share = 0.2 * (a +  d + e)
                 market_shares_desert.append(market_share)
-                print(i, a, b, c, d, e, market_shares_desert)
+                print(i, a, d, e, market_shares_desert)
 
             for i in range(len(editable_df)):
                 a = 1 - (0.5) ** (50 / editable_df["min_R"][i]) - 0.3
-                b = 1 - (0.5) ** (2 / editable_df["FC"][i]) - 0.3
-                c = 1 - (0.5) ** (2 / editable_df["EC"][i]) - 0.3
                 d = 1 - (0.5) ** (500 / editable_df["price"][i]) - 0.3
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
-                market_share = 0.2 * (a + b + c + d + e)
+                market_share = 0.2 * (a +  d + e)
                 market_shares_special.append(market_share)
-                print(i, a, b, c, d, e, market_shares_special)
+                print(i, a, d, e, market_shares_special)
 
             categories = ["Artic", "Desert", "Special", "Artic"]
 
             units_artic = [
-                markets[0] * market_shares_artic[0],
-                markets[0] * market_shares_artic[1],
-                markets[0] * market_shares_artic[2],
+                editable_df["market_units_1"][0],
+                editable_df["market_units_1"][1],
+                editable_df["market_units_1"][2],
             ]
             units_desert = [
-                markets[1] * market_shares_desert[0],
-                markets[1] * market_shares_desert[1],
-                markets[1] * market_shares_desert[2],
+                editable_df["market_units_2"][0],
+                editable_df["market_units_2"][1],
+                editable_df["market_units_2"][2],
             ]
             units_special = [
-                markets[2] * market_shares_special[0],
-                markets[2] * market_shares_special[1],
-                markets[2] * market_shares_special[2],
+                editable_df["market_units_3"][0],
+                editable_df["market_units_3"][1],
+                editable_df["market_units_3"][2],
             ]
-
             revenue_artic = [
-                editable_df["price"][0] * units_artic[0],
-                editable_df["price"][1] * units_artic[1],
-                editable_df["price"][2] * units_artic[2],
+                editable_df["market_revenue_1"][0],
+                editable_df["market_revenue_1"][1],
+                editable_df["market_revenue_1"][2],
             ]
             revenue_desert = [
-                editable_df["price"][0] * units_desert[0],
-                editable_df["price"][1] * units_desert[1],
-                editable_df["price"][2] * units_desert[2],
+                editable_df["market_revenue_2"][0],
+                editable_df["market_revenue_2"][1],
+                editable_df["market_revenue_2"][2],
             ]
             revenue_special = [
-                editable_df["price"][0] * units_special[0],
-                editable_df["price"][1] * units_special[1],
-                editable_df["price"][2] * units_special[2],
+                editable_df["market_revenue_3"][0],
+                editable_df["market_revenue_3"][1],
+                editable_df["market_revenue_3"][2],
             ]
-
-            unit_profit_system_1 = editable_df["price"][0] - editable_df["cost"][0]
-            unit_profit_system_2 = editable_df["price"][1] - editable_df["cost"][1]
-            unit_profit_system_3 = editable_df["price"][2] - editable_df["cost"][2]
-
             profit_artic = [
-                unit_profit_system_1 * units_artic[0],
-                unit_profit_system_2 * units_artic[1],
-                unit_profit_system_3 * units_artic[2],
+                editable_df["market_profit_1"][0],
+                editable_df["market_profit_1"][1],
+                editable_df["market_profit_1"][2],
             ]
-
             profit_desert = [
-                unit_profit_system_1 * units_desert[0],
-                unit_profit_system_2 * units_desert[1],
-                unit_profit_system_3 * units_desert[2],
+                editable_df["market_profit_2"][0],
+                editable_df["market_profit_2"][1],
+                editable_df["market_profit_2"][2],
             ]
-
             profit_special = [
-                unit_profit_system_1 * units_special[0],
-                unit_profit_system_2 * units_special[1],
-                unit_profit_system_3 * units_special[2],
+                editable_df["market_profit_3"][0],
+                editable_df["market_profit_3"][1],
+                editable_df["market_profit_3"][2],
             ]
 
-            revenue_system_1 = revenue_artic[0] + revenue_desert[0] + revenue_special[0]
-            revenue_system_2 = revenue_artic[1] + revenue_desert[1] + revenue_special[1]
-            revenue_system_3 = revenue_artic[2] + revenue_desert[2] + revenue_special[2]
+            markets_df = pd.DataFrame(
+                [
+                    {
+                        "market": "Artic",
+                        "share_system_1": market_shares_artic[0],
+                        "share_system_2": market_shares_artic[1],
+                        "share_system_3": market_shares_artic[2],
+                        "units_system_1": editable_df["market_units_1"][0],
+                        "units_system_2": editable_df["market_units_1"][1],
+                        "units_system_3": editable_df["market_units_1"][2],
+                        "revenue_system_1": editable_df["market_revenue_1"][0],
+                        "revenue_system_2": editable_df["market_revenue_1"][1],
+                        "revenue_system_3": editable_df["market_revenue_1"][2],
+                        "profit_system_1": editable_df["market_profit_1"][0],
+                        "profit_system_2": editable_df["market_profit_1"][1],
+                        "profit_system_3": editable_df["market_profit_1"][2],
+                    },
+                    {
+                        "market": "Desert",
+                        "share_system_1": market_shares_desert[0],
+                        "share_system_2": market_shares_desert[1],
+                        "share_system_3": market_shares_desert[2],
+                        "units_system_1": editable_df["market_units_2"][0],
+                        "units_system_2": editable_df["market_units_2"][1],
+                        "units_system_3": editable_df["market_units_2"][2],
+                        "revenue_system_1": editable_df["market_revenue_2"][0],
+                        "revenue_system_2": editable_df["market_revenue_2"][1],
+                        "revenue_system_3": editable_df["market_revenue_2"][2],
+                        "profit_system_1": editable_df["market_profit_2"][0],
+                        "profit_system_2": editable_df["market_profit_2"][1],
+                        "profit_system_3": editable_df["market_profit_2"][2],
+                    },
+                    {
+                        "market": "Special",
+                        "share_system_1": market_shares_special[0],
+                        "share_system_2": market_shares_special[1],
+                        "share_system_3": market_shares_special[2],
+                        "units_system_1": editable_df["market_units_3"][0],
+                        "units_system_2": editable_df["market_units_3"][1],
+                        "units_system_3": editable_df["market_units_3"][2],
+                        "revenue_system_1": editable_df["market_revenue_3"][0],
+                        "revenue_system_2": editable_df["market_revenue_3"][1],
+                        "revenue_system_3": editable_df["market_revenue_3"][2],
+                        "profit_system_1": editable_df["market_profit_3"][0],
+                        "profit_system_2": editable_df["market_profit_3"][1],
+                        "profit_system_3": editable_df["market_profit_3"][2],
+                    },
+                ]
+            )
 
-            profit_system_1 = profit_artic[0] + profit_desert[0] + profit_special[0]
-            profit_system_2 = profit_artic[1] + profit_desert[1] + profit_special[1]
-            profit_system_3 = profit_artic[2] + profit_desert[2] + profit_special[2]
+            revenue_system_1 = editable_df["total_revenue"][0]
+            revenue_system_2 = editable_df["total_revenue"][1]
+            revenue_system_3 = editable_df["total_revenue"][2]
+
+            profit_system_1 = editable_df["total_profit"][0]
+            profit_system_2 = editable_df["total_profit"][1]
+            profit_system_3 = editable_df["total_profit"][2]
 
         questions_tab1 = st.expander("Questions", expanded=False)
 
@@ -566,14 +679,14 @@ if role and experience and (group != "Select") and consent:
                 ],
             }
         )
-        chart_markets = (
+        chart_market_sizes = (
             alt.Chart(source, width=500)
             .transform_window(index="count()")
             .transform_fold(["Artic", "Desert", "Special"])
             .mark_line()
             .encode(x="market:N", y="share:Q", color="system:N", opacity=alt.value(0.5))
         )
-        # st.altair_chart(chart_markets, theme="streamlit")
+        # st.altair_chart(chart_market_sizes, theme="streamlit")
 
         col_market_1, col_market_2 = st.columns(2)
         with col_market_1:
