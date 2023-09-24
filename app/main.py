@@ -59,6 +59,12 @@ hide_streamlit_style = """
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+# fix echarts
+st.markdown(
+    """ <style>iframe[title="streamlit_echarts.st_echarts"]{ height: 600px !important } """,
+    unsafe_allow_html=True,
+)
+
 ####################
 # Setup            #
 ####################
@@ -179,27 +185,28 @@ with st.expander("Info", expanded=True):
         label="Workshop group",
         help="Select your assigned group here.",
         options=(
-            "Make sure to select your group",
-            "Group 1",
-            "Group 2",
-            "Group 3",
-            "Group 4",
-            "Group 5",
-            "Group 6",
-            "Group 7",
-            "Group 8",
-            "Group 9",
-            "Group 10",
+            "Select",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
         ),
+        horizontal=True,
     )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of your data for research purposes.",
     )
 
-    if not ((group != "Make sure to select your group") and consent):
+    if not ((group != "Select") and consent):
         warning = st.warning(
-            body="Please make sure to enter your role, experience, and group correctly.",
+            body="Please make sure to enter your group correctly.",
             icon="⚠️",
         )
     else:
@@ -342,7 +349,7 @@ risks = [
 ]
 
 # If the user has filled in the intro form correctly
-if (group != "Make sure to select your group") and consent:
+if (group != "Select") and consent:
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
             "1. Analyze Value",
@@ -689,7 +696,11 @@ if (group != "Make sure to select your group") and consent:
             system = st.selectbox(
                 label="System",
                 help="Select the system you would like to plot.",
-                options=("System 1 - Only front steering", "System 2 - Front + Back steering (hydraulic)", "System 3 - Front + Back steering (electric)"),
+                options=(
+                    "System 1 - Only front steering",
+                    "System 2 - Front + Back steering (hydraulic)",
+                    "System 3 - Front + Back steering (electric)",
+                ),
                 index=0,
             )
 
@@ -705,7 +716,7 @@ if (group != "Make sure to select your group") and consent:
             col_riskid_1, col_riskid_2 = st.columns([2, 1])
 
             with col_riskid_1:
-                product_elements = [f"Element {i}" for i in range(1, n+1)]
+                product_elements = [f"Element {i}" for i in range(1, n + 1)]
 
                 # df_dsm = pd.DataFrame(
                 #     np.random.rand(n, n), columns=("col %d" % i for i in range(n))
@@ -755,8 +766,8 @@ if (group != "Make sure to select your group") and consent:
                 # )
 
                 #
-                x = [f"Element {i}" for i in range(1, n+1)]
-                y = [f"Element {i}" for i in range(1, n+1)]
+                x = [f"Element {i}" for i in range(1, n + 1)]
+                y = [f"Element {i}" for i in range(1, n + 1)]
 
                 data = [
                     [0, 0, 5],
@@ -931,10 +942,22 @@ if (group != "Make sure to select your group") and consent:
                 data = [[d[1], d[0], d[2] if d[2] != 0 else "-"] for d in data]
 
                 option = {
-                    "tooltip": {"position": "top"},
+                    "tooltip": {
+                        "position": "top",
+                        "formatter": "Origin:<br />{b}<br />Destination:<br />{c}",
+                        "valueFormatter": "(value) => '$'",
+                        },
                     "grid": {"height": "50%", "top": "10%"},
-                    "xAxis": {"type": "category", "data": x, "splitArea": {"show": True}},
-                    "yAxis": {"type": "category", "data": y, "splitArea": {"show": True}},
+                    "xAxis": {
+                        "type": "category",
+                        "data": x,
+                        "splitArea": {"show": True},
+                    },
+                    "yAxis": {
+                        "type": "category",
+                        "data": y,
+                        "splitArea": {"show": True},
+                    },
                     "visualMap": {
                         "min": 0,
                         "max": 10,
@@ -950,26 +973,29 @@ if (group != "Make sure to select your group") and consent:
                             "data": data,
                             "label": {"show": True},
                             "emphasis": {
-                                "itemStyle": {"shadowBlur": 10, "shadowColor": "rgba(0, 0, 0, 0.5)"}
+                                "itemStyle": {
+                                    "shadowBlur": 10,
+                                    "shadowColor": "rgba(0, 0, 0, 0.5)",
+                                }
                             },
                         }
                     ],
                 }
                 value = st_echarts(
-                    option, 
-                    height="500px",
+                    option,
+                    height="600px",
                     key="echarts",
-                    events={"click": "function(params) { console.log(params.name); return params.name }"},
-                    )
+                    events={
+                        "click": "function(params) { console.log(params.name); return params.name }"
+                    },
+                )
 
-            
             with col_riskid_2:
                 st.write("The selected system is: ", system)
                 selected_points = []
                 st.write("The selected points are: ", value)
 
         questions_tab2 = st.expander("Questions", expanded=False)
-
 
     ####################
     # Tab 3            #
@@ -1035,7 +1061,7 @@ if (group != "Make sure to select your group") and consent:
         if datetime.datetime.now().hour <= 15:
             st.error(
                 "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
-                icon="🕒"
+                icon="🕒",
             )
         else:
             st.subheader("Questionnaire")
@@ -1230,10 +1256,10 @@ if (group != "Make sure to select your group") and consent:
 
     questions_tab1.write("What is the minimum turning radius of a truck?")
     questions_tab2.selectbox(
-                "Risk",
-                risks,
-                help="Select the risk you would like to add to the risk mitigation registry.",
-            )
+        "Risk",
+        risks,
+        help="Select the risk you would like to add to the risk mitigation registry.",
+    )
 
 print("Here's the session state:")
 print([key for key in st.session_state.keys()])
