@@ -226,6 +226,12 @@ with st.expander("Info", expanded=True):
 systems_colors = ["#264653", "#E9C46A", "#E76F51"]
 markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
 
+# import data from data/TechRisks.csv into dataframe
+df_risks = pd.read_csv("data/TechRisks.csv")
+
+# idem for the mitigations
+df_mitigations = pd.read_csv("data/Mitigations.csv")
+
 
 # Market shares
 @st.cache_data
@@ -245,7 +251,7 @@ if "df_designs" not in st.session_state:
                 "name": "System 1",
                 "description": "Only front steering",
                 "min_R": 10.7,
-                "reliability": 0.92,
+                "reliability": 0.82,
                 "price": 100,
                 "cost": 90,
                 "market_share_1": 0,
@@ -268,7 +274,7 @@ if "df_designs" not in st.session_state:
                 "name": "System 2",
                 "description": "Front + Back steering (hydraulic)",
                 "min_R": 8.0,
-                "reliability": 0.8,
+                "reliability": 0.75,
                 "price": 110,
                 "cost": 100,
                 "market_share_1": 0,
@@ -291,7 +297,7 @@ if "df_designs" not in st.session_state:
                 "name": "System 3",
                 "description": "Front + Back steering (electric)",
                 "min_R": 7.6,
-                "reliability": 0.9,
+                "reliability": 0.8,
                 "price": 110,
                 "cost": 100,
                 "market_share_1": 0,
@@ -673,7 +679,7 @@ if (group != "Select") and consent:
                     delta="",
                 )
 
-        questions_tab1 = st.expander("Questions", expanded=False)
+        questions_tab1 = st.expander("Questions", expanded=True)
 
     ####################
     # Tab 2            #
@@ -683,13 +689,49 @@ if (group != "Select") and consent:
         st.subheader("2. Identify Risks")
 
         with st.expander("Technical risk registry", expanded=True):
-            df_risks = pd.DataFrame(
-                [
-                    {"name": "Risk 1", "description": "Risk 1 description"},
-                    {"name": "Risk 2", "description": "Risk 2 description"},
-                ]
+            st.dataframe(
+                df_risks,
+                height=400,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "ID": st.column_config.TextColumn("Risk ID", help="Risk ID"),
+                    "Name": st.column_config.TextColumn(
+                        "Risk name", help="Risk description"
+                    ),
+                    "Mechanical": st.column_config.NumberColumn(
+                        "Mechanical",
+                        help="Mechanical risk",
+                        format="%.2f",
+                    ),
+                    "Electromagnetic": st.column_config.NumberColumn(
+                        "Electromagnetic",
+                        help="Electromagnetic risk",
+                        format="%.2f",
+                    ),
+                    "Thermal": st.column_config.NumberColumn(
+                        "Thermal",
+                        help="Thermal risk",
+                        format="%.2f",
+                    ),
+                    "Comments": st.column_config.TextColumn(
+                        "Comments", help="Comments"
+                    ),
+                    "id2": None,
+                    "x": None,
+                    "y": None,
+                    "z": None,
+                    "force_e2": None,
+                    "force_t": None,
+                    "force_r": None,
+                    "electro_e2": None,
+                    "electro_t": None,
+                    "electro_r": None,
+                    "thermo_e2": None,
+                    "thermo_t": None,
+                    "thermo_r": None,
+                },
             )
-            st.write(df_risks)
 
         with st.expander("Risk location", expanded=True):
             # Select system to plot
@@ -946,7 +988,7 @@ if (group != "Select") and consent:
                         "position": "top",
                         "formatter": "Origin:<br />{b}<br />Destination:<br />{c}",
                         "valueFormatter": "(value) => '$'",
-                        },
+                    },
                     "grid": {"height": "50%", "top": "10%"},
                     "xAxis": {
                         "type": "category",
@@ -995,7 +1037,7 @@ if (group != "Select") and consent:
                 selected_points = []
                 st.write("The selected points are: ", value)
 
-        questions_tab2 = st.expander("Questions", expanded=False)
+        questions_tab2 = st.expander("Questions", expanded=True)
 
     ####################
     # Tab 3            #
@@ -1004,6 +1046,57 @@ if (group != "Select") and consent:
     with tab3:
         st.subheader("3. Mitigate Risks")
 
+        with st.expander("List of Mitigation Elements", expanded=True):
+            st.dataframe(
+                df_mitigations,
+                height=400,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "ID": st.column_config.TextColumn(
+                        "Mitigation ID", help="Mitigation ID"
+                    ),
+                    "Risk Mitigation element": st.column_config.TextColumn(
+                        "Risk Mitigation element", help="Risk Mitigation element"
+                    ),
+                    "Placed at the interface between ": st.column_config.TextColumn(
+                        "Placed at the interface between ",
+                        help="Placed at the interface between ",
+                    ),
+                    "Cost (k€)": st.column_config.NumberColumn(
+                        "Cost (k€)",
+                        help="Cost (k€)",
+                        format="%.2f",
+                    ),
+                    "Reliability gain": st.column_config.NumberColumn(
+                        "Reliability gain",
+                        help="Reliability gain",
+                        format="%.3f",
+                    ),
+                    "Mechanical": st.column_config.CheckboxColumn(
+                        "Mechanical", help="Mechanical"
+                    ),
+                    "Electromagnetic": st.column_config.CheckboxColumn(
+                        "Electromagnetic", help="Electromagnetic"
+                    ),
+                    "Thermal": st.column_config.CheckboxColumn(
+                        "Thermal", help="Thermal"
+                    ),
+                    "id2": None,
+                    "x": None,
+                    "y": None,
+                    "z": None,
+                    "force_e2": None,
+                    "force_t": None,
+                    "force_r": None,
+                    "electro_e2": None,
+                    "electro_t": None,
+                    "electro_r": None,
+                    "thermo_e2": None,
+                    "thermo_t": None,
+                    "thermo_r": None,
+                },
+            )
         mitigations = [
             "M01 - EMI Filter",
             "M02 - Cable shielding ",
@@ -1050,7 +1143,7 @@ if (group != "Select") and consent:
                 label="Submit", help="Click here to submit your answers."
             )
 
-        questions_tab3 = st.expander("Questions", expanded=False)
+        questions_tab3 = st.expander("Questions", expanded=True)
 
     ####################
     # Tab 4            #
@@ -1194,7 +1287,7 @@ if (group != "Select") and consent:
                         icon="👍",
                     )
 
-        questions_tab4 = st.expander("Questions", expanded=False)
+        questions_tab4 = st.expander("Questions", expanded=True)
 
     ####################
     # Tab 5            #
@@ -1254,11 +1347,35 @@ if (group != "Select") and consent:
             """
             )
 
-    questions_tab1.write("What is the minimum turning radius of a truck?")
-    questions_tab2.selectbox(
-        "Risk",
+    questions_tab1.write("I think that the most valuable systems for each of the markets are...")
+    questions_tab1.caption("Please rate form 1 to 10, where 1 means low potential and 10 high potential.")
+    questions_tab1.table(
+        [
+            ["Market", "System 1", "System 2", "System 3"],
+            ["City", "X", "", ""],
+            ["Desert", "", "X", ""],
+            ["Special", "", "", "X"],
+        ]
+    )
+    questions_tab2.multiselect(
+        "Which of the risks would you select for mitigation?",
         risks,
-        help="Select the risk you would like to add to the risk mitigation registry.",
+        help="Select the risk you would like to mitigate.",
+    )
+    questions_tab2.multiselect(
+        "In which between comoponents do you think that this risk needs to be mitigated? TODO",
+        risks,
+        help="Select the component pairs where you would like to have mitigations.",
+    )
+    questions_tab3.write("Please reasses the potential of the new design with mitigations compared with the baseline designs:")
+    questions_tab3.caption("Please rate form 1 to 10, where 1 means low potential and 10 high potential.")
+    questions_tab3.table(
+        [
+            ["Market", "System 1", "System 2", "System 3", "My design"],
+            ["City", "5", "5", "5", "5"],
+            ["Desert", "5", "5", "5", "5"],
+            ["Special", "5", "5", "5", "5"],
+        ]
     )
 
 print("Here's the session state:")
