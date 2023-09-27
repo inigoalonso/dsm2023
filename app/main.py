@@ -195,7 +195,6 @@ with st.expander("Info", expanded=True):
             "7",
             "8",
             "9",
-            "10",
         ),
         horizontal=True,
     )
@@ -320,47 +319,14 @@ if "df_designs" not in st.session_state:
     )
     calculate_ms()
 
-risks = [
-    "R01 - Wheel front axle failure",
-    "R02 - Hub front axle failure",
-    "R03 - Steering knuckle front axle failure",
-    "R04 - Knuckle arm front axle failure",
-    "R05 - Frame front axle failure",
-    "R06 - Tie rod front axle failure",
-    "R07 - Angle sensor front axle failure",
-    "R08 - Speedometer failure",
-    "R09 - ECU failure",
-    "R10 - Engine failure",
-    "R11 - Hydraulic oil reservoir failure",
-    "R12 - Steering actuation cylinder front axle failure",
-    "R13 - Servo valve front axle failure",
-    "R14 - Pump front axle failure",
-    "R15 - Filter front axle failure",
-    "R16 - Cooler front axle failure",
-    "R17 - Steering actuation cylinder second axle failure",
-    "R18 - Servo valve second axle failure",
-    "R19 - Pump second axle failure",
-    "R20 - Filter second axle failure",
-    "R21 - Cooler second axle failure",
-    "R22 - Wheel second axle failure",
-    "R23 - Hub second axle failure",
-    "R24 - Steering knuckle second axle failure",
-    "R25 - Knuckle arm second axle failure",
-    "R26 - Frame second axle failure",
-    "R27 - Tie rod second axle failure",
-    "R28 - Angle sensor second axle failure",
-    "R29 - Electric steering motor front axle failure",
-    "R30 - Electric steering motor second axle failure",
-    "R31 - Battery Box failure",
-]
 
 # If the user has filled in the intro form correctly
 if (group != "Select") and consent:
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
-            "1. Analyze Value",
-            "2. Identify Risks",
-            "3. Mitigate Risks",
+            "(1) Analyze Value",
+            "(2) Identify Risks",
+            "(3) Mitigate Risks",
             "Questionnaire",
             "Help",
         ]
@@ -603,6 +569,31 @@ if (group != "Select") and consent:
             )
 
         st.subheader("1. Analyze Value")
+
+        with st.expander("Profits", expanded=True):
+            col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
+
+            with col_profits_1:
+                st.metric(
+                    label="System 1",
+                    value=f"{editable_df['total_profit'][0]/1000000:.3f} M€",
+                    delta="",
+                )
+
+            with col_profits_2:
+                st.metric(
+                    label="System 2",
+                    value=f"{editable_df['total_profit'][1]/1000000:.3f} M€",
+                    delta="",
+                )
+
+            with col_profits_3:
+                st.metric(
+                    label="System 3",
+                    value=f"{editable_df['total_profit'][2]/1000000:.3f} M€",
+                    delta="",
+                )
+
         with st.expander("Market share", expanded=True):
             markets_col1, markets_col2 = st.columns(2)
 
@@ -654,30 +645,6 @@ if (group != "Select") and consent:
             #             ),
             #         },
             #     )
-
-        with st.expander("Profits", expanded=True):
-            col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
-
-            with col_profits_1:
-                st.metric(
-                    label="System 1",
-                    value=f"{editable_df['total_profit'][0]/1000000:.3f} M€",
-                    delta="",
-                )
-
-            with col_profits_2:
-                st.metric(
-                    label="System 2",
-                    value=f"{editable_df['total_profit'][1]/1000000:.3f} M€",
-                    delta="",
-                )
-
-            with col_profits_3:
-                st.metric(
-                    label="System 3",
-                    value=f"{editable_df['total_profit'][2]/1000000:.3f} M€",
-                    delta="",
-                )
 
         questions_tab1 = st.expander("Questions", expanded=True)
 
@@ -1039,6 +1006,8 @@ if (group != "Select") and consent:
 
         questions_tab2 = st.expander("Questions", expanded=True)
 
+        questions_tab2_col1, questions_tab2_col2 = st.columns(2)
+
     ####################
     # Tab 3            #
     ####################
@@ -1151,7 +1120,7 @@ if (group != "Select") and consent:
 
     with tab4:
         # show text if time is over 3pm
-        if datetime.datetime.now().hour <= 15:
+        if datetime.datetime.now().hour <= 12:
             st.error(
                 "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
                 icon="🕒",
@@ -1347,8 +1316,12 @@ if (group != "Select") and consent:
             """
             )
 
-    questions_tab1.write("I think that the most valuable systems for each of the markets are...")
-    questions_tab1.caption("Please rate form 1 to 10, where 1 means low potential and 10 high potential.")
+    questions_tab1.write(
+        "I think that the most valuable systems for each of the markets are..."
+    )
+    questions_tab1.caption(
+        "Please rate form 1 to 10, where 1 means low potential and 10 high potential."
+    )
     questions_tab1.table(
         [
             ["Market", "System 1", "System 2", "System 3"],
@@ -1357,18 +1330,22 @@ if (group != "Select") and consent:
             ["Special", "", "", "X"],
         ]
     )
-    questions_tab2.multiselect(
+    questions_tab2_col1.radio(
         "Which of the risks would you select for mitigation?",
-        risks,
+        df_risks["Name"].tolist(),
         help="Select the risk you would like to mitigate.",
     )
-    questions_tab2.multiselect(
-        "In which between comoponents do you think that this risk needs to be mitigated? TODO",
-        risks,
+    questions_tab2_col2.radio(
+        "In which between components do you think that this risk needs to be mitigated? TODO",
+        df_risks["Name"].tolist(),
         help="Select the component pairs where you would like to have mitigations.",
     )
-    questions_tab3.write("Please reasses the potential of the new design with mitigations compared with the baseline designs:")
-    questions_tab3.caption("Please rate form 1 to 10, where 1 means low potential and 10 high potential.")
+    questions_tab3.write(
+        "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
+    )
+    questions_tab3.caption(
+        "Please rate form 1 to 10, where 1 means low potential and 10 high potential."
+    )
     questions_tab3.table(
         [
             ["Market", "System 1", "System 2", "System 3", "My design"],
@@ -1388,3 +1365,43 @@ try:
     sessions_ref.set({"role": role, "group": group})
 except:
     pass
+
+
+# footer = st.expander(
+#     "Links",
+#     expanded=True
+# )
+
+# col_footer1, col_footer2, col_footer3, col_footer4, col_footer5 = footer.columns(5)
+
+# col_footer2.link_button(
+#     "Conference Homepage",
+#     url="https://dsm-conference.org/",
+#     help="Go to DSM Conference 2023 website",
+# )
+# col_footer3.link_button(
+#     "Conference Programme",
+#     url="https://dsm-conference.org/conference-programme/",
+#     help="Go to DSM Conference 2023 programme",
+# )
+# col_footer4.link_button(
+#     "Conference Proceedings",
+#     url="https://dsm-conference.org/conference-proceedings-dsm-2023/",
+#     help="Go to DSM Conference 2023 proceedings",
+# )
+# col_footer5.link_button(
+#     "Design Society",
+#     url="https://www.designsociety.org/",
+#     help="Go to Design Society website",
+# )
+# col_footer1.link_button(
+#     "dsmweb.org",
+#     url="https://DSMweb.org/",
+#     help="Go to DSMweb.org website",
+# )
+
+# footer.markdown(
+#     """
+#         Made with ❤️ by the DSM Conference 2021 team.
+#     """
+# )
