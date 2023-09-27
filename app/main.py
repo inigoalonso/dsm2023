@@ -21,6 +21,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from google.cloud import firestore
 from google.oauth2 import service_account
+import seaborn as sns   
 from streamlit_echarts import st_echarts
 
 
@@ -95,7 +96,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def on_data_update(data):
-    print("Data updated:", data)
+    print("Data updated (not uploaded):", data)
 
 
 def get_session_id() -> str:
@@ -224,6 +225,11 @@ with st.expander("Info", expanded=True):
 # Colors
 systems_colors = ["#264653", "#E9C46A", "#E76F51"]
 markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
+
+# dataframe colors
+
+cm_g2r = sns.diverging_palette(130, 12, as_cmap=True)
+cm_r2g = sns.diverging_palette(130, 12, as_cmap=True)
 
 # import data from data/TechRisks.csv into dataframe
 df_risks = pd.read_csv("data/TechRisks.csv")
@@ -452,7 +458,7 @@ if (group != "Select") and consent:
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + d + e)
                 market_shares_artic.append(market_share)
-                print(i, a, d, e, market_shares_artic)
+                #print(i, a, d, e, market_shares_artic)
 
             for i in range(len(editable_df)):
                 a = 1 / (1 + ((editable_df["min_R"][i] - 10) * 0.5) ** 2) - 0.5
@@ -460,7 +466,7 @@ if (group != "Select") and consent:
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + d + e)
                 market_shares_desert.append(market_share)
-                print(i, a, d, e, market_shares_desert)
+                #print(i, a, d, e, market_shares_desert)
 
             for i in range(len(editable_df)):
                 a = 1 - (0.5) ** (50 / editable_df["min_R"][i]) - 0.3
@@ -468,7 +474,7 @@ if (group != "Select") and consent:
                 e = 1 - (0.5) ** (1 / editable_df["reliability"][i])
                 market_share = 0.2 * (a + d + e)
                 market_shares_special.append(market_share)
-                print(i, a, d, e, market_shares_special)
+                #print(i, a, d, e, market_shares_special)
 
             categories = ["Artic", "Desert", "Special", "Artic"]
 
@@ -656,8 +662,18 @@ if (group != "Select") and consent:
         st.subheader("2. Identify Risks")
 
         with st.expander("Technical risk registry", expanded=True):
-            st.dataframe(
-                df_risks,
+
+            df_test = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
+            styler = df_test.style.background_gradient(cmap=cm_g2r)
+            styler.set_table_styles([
+                {"selector": "tr", "props": "line-height: 10px;"},
+                {"selector": "td,th", "props": "line-height: inherit; padding: 0;"}
+            ])
+            html = styler.to_html()
+            st.write(html, unsafe_allow_html=True)
+
+            df_risks_table = st.dataframe(
+                df_risks.style.background_gradient(cmap=cm_g2r).format({2: '{:.2f}'}, na_rep='MISS', precision=2),
                 height=400,
                 use_container_width=True,
                 hide_index=True,
@@ -681,9 +697,7 @@ if (group != "Select") and consent:
                         help="Thermal risk",
                         format="%.2f",
                     ),
-                    "Comments": st.column_config.TextColumn(
-                        "Comments", help="Comments"
-                    ),
+                    "Comments": None,
                     "id2": None,
                     "x": None,
                     "y": None,
@@ -1017,7 +1031,7 @@ if (group != "Select") and consent:
 
         with st.expander("List of Mitigation Elements", expanded=True):
             st.dataframe(
-                df_mitigations,
+                df_mitigations.style.background_gradient(cmap=cm_g2r, subset=['Cost (k€)']).format({3: '{:.2f}', 4: '{:.2f}'}, na_rep='MISS', precision=2),
                 height=400,
                 use_container_width=True,
                 hide_index=True,
@@ -1119,8 +1133,9 @@ if (group != "Select") and consent:
     ####################
 
     with tab4:
-        # show text if time is over 3pm
-        if datetime.datetime.now().hour <= 12:
+        # show text if time is over 3pm onn October 4
+        start = datetime.datetime(2023, 10, 4, 15, 0, 0)
+        if datetime.datetime.now() > start:
             st.error(
                 "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
                 icon="🕒",
@@ -1210,15 +1225,86 @@ if (group != "Select") and consent:
                 st.caption(
                     "Please fill in the following information. It will be used for research purposes only."
                 )
-                person_col1, person_col2 = st.columns(2)
+                person_col1, person_col2, person_col3 = st.columns(3)
 
-                role = person_col1.text_input(
+                roles = [
+                    "Student",
+                    "Engineering Manager",
+                    "Systems Architect",
+                    "Platform Architect",
+                    "Product Manager",
+                    "Project Manager",
+                    "Program Manager",
+                    "Design Engineer",
+                    "Manufacturing Engineer",
+                    "Quality Engineer",
+                    "Reliability Engineer",
+                    "Software Engineer",
+                    "Data Scientist",
+                    "Research Scientist",
+                    "Systems Analyst",
+                    "Business Analyst",
+                    "Executive (CEO, COO, CFO, etc.)",
+                    "Consultant",
+                    "Professor",
+                    "Vendor",
+                    "Other",
+                ]
+
+                sectors = [
+                    "Aerospace",
+                    "Automotive",
+                    "Biomedical",
+                    "Chemical",
+                    "Civil",
+                    "Construction",
+                    "Consumer Products",
+                    "Defense",
+                    "Education",
+                    "Electrical",
+                    "Electronics",
+                    "Energy",
+                    "Entertainment",
+                    "Food",
+                    "Healthcare",
+                    "Information Technology",
+                    "Manufacturing",
+                    "Marine",
+                    "Materials",
+                    "Mechanical",
+                    "Packaging",
+                    "Pharmaceutical",
+                    "Robotics",
+                    "Software",
+                    "Telecommunications",
+                    "Transportation",
+                    "Other",
+                ]
+
+                role = person_col1.selectbox(
                     label="Professional role",
-                    help="Enter your professional role here.",
+                    options=roles,
+                    index=None,
+                    help="Select your professional role here.",
                 )
-                experience = person_col2.number_input(
+                # role_other = person_col1.text_input(
+                #     label="Other professional role",
+                #     help="Enter your professional role here if not on the list above.",
+                # )
+                sector = person_col2.selectbox(
+                    label="Professional sector",
+                    options=sectors,
+                    index=None,
+                    help="Select your professional sector here.",
+                )
+                # sector_other = person_col2.text_input(
+                #     label="Other professional sector",
+                #     help="Enter your professional sector here if not on the list above.",
+                # )
+                experience = person_col3.number_input(
                     label="Professional experience (years)",
                     help="Enter your years of professional experience here.",
+                    value=None,
                     min_value=0,
                     max_value=100,
                 )
