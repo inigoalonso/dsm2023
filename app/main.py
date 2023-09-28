@@ -60,6 +60,15 @@ hide_streamlit_style = """
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+# increase the size of the expander titles (class streamlit-expanderHeader)
+expander_titles_style = """
+                <style>
+                .streamlit-expanderHeader {font-size: 3rem;}
+                </style>
+                """
+st.markdown(expander_titles_style, unsafe_allow_html=True)
+
+
 # fix echarts
 st.markdown(
     """ <style>iframe[title="streamlit_echarts.st_echarts"]{ height: 600px !important } """,
@@ -229,7 +238,7 @@ markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
 # dataframe colors
 
 cm_g2r = sns.diverging_palette(130, 12, as_cmap=True)
-cm_r2g = sns.diverging_palette(130, 12, as_cmap=True)
+cm_r2g = sns.diverging_palette(12, 130, as_cmap=True)
 
 # import data from data/TechRisks.csv into dataframe
 df_risks = pd.read_csv("data/TechRisks.csv")
@@ -325,6 +334,11 @@ if "df_designs" not in st.session_state:
     )
     calculate_ms()
 
+df_components = pd.read_csv("data/components.csv", sep=";", decimal=",")
+
+df_components_s1 = df_components[df_components["s1"] == True]
+df_components_s2 = df_components[df_components["s2"] == True]
+df_components_s3 = df_components[df_components["s3"] == True]
 
 # If the user has filled in the intro form correctly
 if (group != "Select") and consent:
@@ -661,16 +675,62 @@ if (group != "Select") and consent:
     with tab2:
         st.subheader("2. Identify Risks")
 
-        with st.expander("Technical risk registry", expanded=True):
+        with st.expander("Select system", expanded=True):
+            # Select system to display
+            system = st.selectbox(
+                label="System",
+                help="Select the system you would like to display.",
+                options=(
+                    "System 1 - Only front steering",
+                    "System 2 - Front + Back steering (hydraulic)",
+                    "System 3 - Front + Back steering (electric)",
+                ),
+                index=0,
+            )
 
-            df_test = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
-            styler = df_test.style.background_gradient(cmap=cm_g2r)
+        with st.expander("Matrices", expanded=True):
+            
+            # df_test = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
+            # styler = df_test.style.background_gradient(cmap=cm_g2r)
+            # styler.set_table_styles([
+            #     {"selector": "tr", "props": "line-height: 10px;"},
+            #     {"selector": "td,th", "props": "line-height: inherit; padding: 0;"}
+            # ])
+            # html = styler.to_html()
+            # st.write(html, unsafe_allow_html=True)
+
+            df_s1_dsm = pd.read_csv("data/s1_dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_s2_dsm = pd.read_csv("data/s2_dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_s3_dsm = pd.read_csv("data/s3_dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_s1_distances = pd.read_csv("data/s1_distances.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_s2_distances = pd.read_csv("data/s2_distances.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_s3_distances = pd.read_csv("data/s3_distances.csv", sep=";", header=None, decimal=",").fillna(0)
+
+
+            styler = df_s1_distances.style.background_gradient(cmap=cm_g2r)
             styler.set_table_styles([
-                {"selector": "tr", "props": "line-height: 10px;"},
+                {"selector": "tr", "props": "line-height: 12px;"},
                 {"selector": "td,th", "props": "line-height: inherit; padding: 0;"}
             ])
             html = styler.to_html()
-            st.write(html, unsafe_allow_html=True)
+
+            if system == "System 1 - Only front steering":
+                st.write("System 1 - Only front steering")
+                st.dataframe(df_s1_dsm)
+                st.write(html, unsafe_allow_html=True)
+                #st.dataframe(df_s1_distances.style.background_gradient(cmap=cm_r2g).format({2: '{:.2f}'}, na_rep='MISS', precision=2))
+            elif system == "System 2 - Front + Back steering (hydraulic)":
+                st.write("System 2 - Front + Back steering (hydraulic)")
+                st.dataframe(df_s2_dsm)
+                st.dataframe(df_s2_distances.style.background_gradient(cmap=cm_r2g).format({2: '{:.2f}'}, na_rep='MISS', precision=2))
+            elif system == "System 3 - Front + Back steering (electric)":
+                st.write("System 3 - Front + Back steering (electric)")
+                st.dataframe(df_s3_dsm)
+                st.dataframe(df_s3_distances.style.background_gradient(cmap=cm_r2g).format({2: '{:.2f}'}, na_rep='MISS', precision=2))
+            else:
+                n = 10
+
+        with st.expander("Technical risk registry", expanded=True):
 
             df_risks_table = st.dataframe(
                 df_risks.style.background_gradient(cmap=cm_g2r).format({2: '{:.2f}'}, na_rep='MISS', precision=2),
@@ -715,17 +775,6 @@ if (group != "Select") and consent:
             )
 
         with st.expander("Risk location", expanded=True):
-            # Select system to plot
-            system = st.selectbox(
-                label="System",
-                help="Select the system you would like to plot.",
-                options=(
-                    "System 1 - Only front steering",
-                    "System 2 - Front + Back steering (hydraulic)",
-                    "System 3 - Front + Back steering (electric)",
-                ),
-                index=0,
-            )
 
             if system == "System 1 - Only front steering":
                 n = 16
@@ -1406,16 +1455,41 @@ if (group != "Select") and consent:
         "I think that the most valuable systems for each of the markets are..."
     )
     questions_tab1.caption(
-        "Please rate form 1 to 10, where 1 means low potential and 10 high potential."
+        "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
     )
-    questions_tab1.table(
-        [
-            ["Market", "System 1", "System 2", "System 3"],
-            ["City", "X", "", ""],
-            ["Desert", "", "X", ""],
-            ["Special", "", "", "X"],
-        ]
-    )
+    cont_market_artic = questions_tab1.container()
+    with cont_market_artic:
+        st.write("Artic Market")
+        col_cont_artic_1, col_cont_artic_2, col_cont_artic_3 = st.columns(3)
+        with col_cont_artic_1:
+            artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+        with col_cont_artic_2:
+            artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+        with col_cont_artic_3:
+            artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+    
+    cont_market_desert = questions_tab1.container()
+    with cont_market_desert:
+        st.write("Desert Market")
+        col_cont_desert_1, col_cont_desert_2, col_cont_desert_3 = st.columns(3)
+        with col_cont_desert_1:
+            desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+        with col_cont_desert_2:
+            desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+        with col_cont_desert_3:
+            desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+    
+    cont_market_special = questions_tab1.container()
+    with cont_market_special:
+        st.write("Special Market")
+        col_cont_special_1, col_cont_special_2, col_cont_special_3 = st.columns(3)
+        with col_cont_special_1:
+            special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+        with col_cont_special_2:
+            special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+        with col_cont_special_3:
+            special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+    
     questions_tab2_col1.radio(
         "Which of the risks would you select for mitigation?",
         df_risks["Name"].tolist(),
