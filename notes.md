@@ -35,6 +35,10 @@
 
 [option docs](https://echarts.apache.org/en/option.html#title)
 
+### RaGraph
+
+[Plotting](https://ragraph.ratio-case.nl/how-to-guides/plotting/)
+
 ## Firestore
 
 [Firestoe console for dsm2023isw project](https://console.firebase.google.com/project/dsm2023isw/firestore/data)

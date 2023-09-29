@@ -736,6 +736,43 @@ if (group != "Select") and consent:
         with st.expander("Matrices", expanded=True):
             st.subheader("PLACEHOLDERS")
 
+            from ragraph import datasets, plot
+
+            g = datasets.get("climate_control")
+            g2 = datasets.get("aircraft_engine")
+
+            # save json string to file
+            with open("data/g.json", "w") as f:
+                json.dump(g.json_dict, f)
+
+            fig = plot.mdm(
+                leafs=g.leafs,
+                edges=g.edges,
+                style=plot.Style(
+                    piemap=dict(
+                        display="weight labels",
+                        fields=[
+                            "spatial",
+                            "energy flow",
+                            "information flow",
+                            "material flow",
+                        ],
+                    ),
+                    palettes=dict(
+                        fields={
+                            "spatial": {"categorical": "#de9c38"},
+                            "energy flow": {"categorical": "#a64747"},
+                            "information flow": {"categorical": "#545a8e"},
+                            "material flow": {"categorical": "#389dfc"},
+                        }
+                    ),
+                ),
+            )
+            fig.write_image("./mdm_edge_categorical_field_colors.svg")
+
+            st.image("./mdm_edge_categorical_field_colors.svg", width=900)
+            st.image("./test.svg", width=900)
+
             tab_matrices_1, tab_matrices_2, tab_matrices_3 = st.tabs(
                 [
                     "DSM",
