@@ -750,7 +750,7 @@ if (group != "Select") and consent:
         with st.expander("Matrices", expanded=True):
             matrix = st.radio(
                 "Select the matrix to display",
-                ["Binary DSM", "Distance DSM", "Risk DSM"],
+                ["Binary DSM", "Distance DSM", "Risk DSM [TODO]"],
                 captions=[
                     "Interfaces between components",
                     "Distances between components",
@@ -773,6 +773,7 @@ if (group != "Select") and consent:
             g = Graph()
 
             for component in df_components.iterrows():
+                # print(f'id: {component[1]["id"]} name:{component[1]["name"]}')
                 labels = [s for s in ["s2", "s2", "s3"] if component[1][s] == True]
                 fancy_node = Node(
                     name=component[1]["name"],
@@ -800,6 +801,8 @@ if (group != "Select") and consent:
 
             for i, row in df_dsm.iterrows():
                 for j, value in enumerate(row):
+                    #print(i, j, value)
+                    #print()
                     if i == j:
                         continue
                     if value in kinds.keys():
@@ -860,7 +863,7 @@ if (group != "Select") and consent:
                         ),
                     ),
                 )
-            elif matrix == "Risk DSM":
+            elif matrix == "Risk DSM [TODO]":
                 fig = plot.mdm(
                     leafs=g.leafs,
                     edges=g.edges,
