@@ -23,7 +23,15 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
 from streamlit_echarts import st_echarts
-from ragraph import datasets, plot
+from ragraph.graph import Graph
+from ragraph.node import Node
+from ragraph.edge import Edge
+from ragraph import plot
+from ragraph.colors import (
+    get_diverging_redblue,
+    get_diverging_orangecyan,
+    get_diverging_purplegreen,
+)
 
 ####################
 # Formatting       #
@@ -59,6 +67,9 @@ hide_streamlit_style = """
                 height: 0%;
                 }
                 #root > div:nth-child(1) > div > div > div > div > section > div {padding-top: 0rem;}
+                .modebar-group {
+                background-color: rgba(0, 0, 0, 0.1) !important;
+                }
                 </style>
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -166,7 +177,7 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
         + df_designs["market_profit_3"]
     )
     st.session_state["df_designs"] = df_designs
-    #st.rerun()
+    # st.rerun()
 
 
 ####################
@@ -737,57 +748,194 @@ if (group != "Select") and consent:
             )
 
         with st.expander("Matrices", expanded=True):
-
-            g = datasets.get("climate_control")
-            g2 = datasets.get("aircraft_engine")
-
-            # save json string to file
-            with open("data/g.json", "w") as f:
-                json.dump(g.json_dict, f)
-
-            fig = plot.mdm(
-                leafs=g.leafs,
-                edges=g.edges,
-                style=plot.Style(
-                    piemap=dict(
-                        display="weight labels",
-                        fields=[
-                            "spatial",
-                            "energy flow",
-                            "information flow",
-                            "material flow",
-                        ],
-                    ),
-                    palettes=dict(
-                        fields={
-                            "spatial": {"categorical": "#de9c38"},
-                            "energy flow": {"categorical": "#a64747"},
-                            "information flow": {"categorical": "#545a8e"},
-                            "material flow": {"categorical": "#389dfc"},
-                        }
-                    ),
-                ),
-            )
-            #fig.write_image("./mdm_edge_categorical_field_colors.svg")
-            st.plotly_chart(fig, use_container_width=True)
-
-            tab_matrices_1, tab_matrices_2, tab_matrices_3 = st.tabs(
-                [
-                    "DSM",
-                    "Distance matrix",
-                    "Risk matrix",
-                ]
+            matrix = st.radio(
+                "Select the matrix to display",
+                ["Binary DSM", "Distance DSM", "Risk DSM"],
+                captions=[
+                    "Interfaces between components",
+                    "Distances between components",
+                    "Propagation of risks between components",
+                ],
+                horizontal=True,
             )
 
-            with tab_matrices_1:
-                st.write("DSM")
-                st.image("assets/dsm.png", width=600)
-            with tab_matrices_2:
-                st.write("Distance matrix")
-                st.image("assets/distance.png", width=600)
-            with tab_matrices_3:
-                st.write("Risk matrix")
-                st.image("assets/risk.png", width=600)
+            df_components = pd.read_csv("data/components.csv", sep=";", decimal=",")
+            df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_distances = pd.read_csv("data/distances.csv", sep=";", header=None, decimal=",").fillna(0)
+
+            kinds = {
+                "M": "mechanical",
+                "E": "electrical",
+                "I": "information",
+                "H": "hydraulic",
+            }
+
+            g = Graph()
+
+            for component in df_components.iterrows():
+                labels = [s for s in ["s2", "s2", "s3"] if component[1][s] == True]
+                fancy_node = Node(
+                    name=component[1]["name"],
+                    kind="component",
+                    labels=labels,
+                    weights={
+                        "x": component[1]["x"],
+                        "y": component[1]["y"],
+                        "z": component[1]["z"],
+                        "force_e": component[1]["force_e"],
+                        "force_t": component[1]["force_t"],
+                        "force_r": component[1]["force_r"],
+                        "electro_e": component[1]["electro_e"],
+                        "electro_t": component[1]["electro_t"],
+                        "electro_r": component[1]["electro_r"],
+                        "thermo_e": component[1]["thermo_e"],
+                        "thermo_t": component[1]["thermo_t"],
+                        "thermo_r": component[1]["thermo_r"],
+                    },
+                    annotations={
+                        "id": component[1]["id"],
+                        },
+                )
+                g.add_node(fancy_node)
+
+            for i, row in df_dsm.iterrows():
+                for j, value in enumerate(row):
+                    if i == j:
+                        continue
+                    if value in kinds.keys():
+                        kind = kinds[value]
+                    else:
+                        kind = None
+                    g.add_edge(Edge(
+                        source=g.nodes[i], 
+                        target=g.nodes[j], 
+                        name=f'{g.nodes[i].annotations["id"]}_{g.nodes[j].annotations["id"]}',
+                        kind=kind,
+                        labels=[],
+                        weights={
+                            "distance": df_distances.iloc[i, j],
+                        },
+                        annotations={},
+                    ))
+
+            if matrix == "Binary DSM":
+                fig = plot.mdm(
+                    leafs=g.leafs,
+                    edges=g.edges,
+                    style=plot.Style(
+                        piemap=dict(
+                            fields=[
+                                "mechanical",
+                                "electrical",
+                                "information",
+                                "hydraulic",
+                            ],
+                        ),
+                        palettes=dict(
+                            fields={
+                                "mechanical": {"categorical": "#de9c38"},
+                                "electrical": {"categorical": "#a64747"},
+                                "information": {"categorical": "#545a8e"},
+                                "hydraulic": {"categorical": "#389dfc"},
+                            }
+                        ),
+                    ),
+                )
+            elif matrix == "Distance DSM":
+                fig = plot.mdm(
+                    leafs=g.leafs,
+                    edges=g.edges,
+                    style=plot.Style(
+                        piemap=dict(
+                            display="weights",
+                            fields=[
+                                "distance",
+                            ],
+                            mode="relative",
+                        ),
+                        palettes=dict(
+                            fields={
+                                "distance": {"continuous": get_diverging_redblue()},
+                            }
+                        ),
+                    ),
+                )
+            elif matrix == "Risk DSM":
+                fig = plot.mdm(
+                    leafs=g.leafs,
+                    edges=g.edges,
+                    style=plot.Style(
+                        piemap=dict(
+                            fields=[
+                                "force_e",
+                                "force_t",
+                                "force_r",
+                                "electro_e",
+                                "electro_t",
+                                "electro_r",
+                                "thermo_e",
+                                "thermo_t",
+                                "thermo_r",
+                            ],
+                        ),
+                        palettes=dict(
+                            fields={
+                                "force_e": {"categorical": "#de9c38"},
+                                "force_t": {"categorical": "#de9c38"},
+                                "force_r": {"categorical": "#de9c38"},
+                                "electro_e": {"categorical": "#a64747"},
+                                "electro_t": {"categorical": "#a64747"},
+                                "electro_r": {"categorical": "#a64747"},
+                                "thermo_e": {"categorical": "#545a8e"},
+                                "thermo_t": {"categorical": "#545a8e"},
+                                "thermo_r": {"categorical": "#545a8e"},
+                            }
+                        ),
+                    ),
+                )
+            
+            fig.update_layout(
+                {
+                    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+                    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+                }
+            )
+
+            st.plotly_chart(
+                fig, 
+                use_container_width=True,
+                config={"displayModeBar": True,
+                "displaylogo": False,
+                'modeBarButtonsToRemove': [
+                    'zoom2d',
+                    'zoomIn2d',
+                    'zoomOut2d',
+                    'resetScale2d',
+                    'toggleSpikelines',
+                    'pan2d',
+                    'autoScale2d',
+                    'hoverClosestCartesian',
+                    'hoverCompareCartesian'],
+                'plot_bgcolor':'red'}
+            )
+
+            # tab_matrices_1, tab_matrices_2, tab_matrices_3 = st.tabs(
+            #     [
+            #         "DSM",
+            #         "Distance matrix",
+            #         "Risk matrix",
+            #     ]
+            # )
+
+            # with tab_matrices_1:
+            #     st.write("DSM")
+            #     st.image("assets/dsm.png", width=600)
+            # with tab_matrices_2:
+            #     st.write("Distance matrix")
+            #     st.image("assets/distance.png", width=600)
+            # with tab_matrices_3:
+            #     st.write("Risk matrix")
+            #     st.image("assets/risk.png", width=600)
 
             # df_test = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
             # styler = df_test.style.background_gradient(cmap=cm_g2r)
