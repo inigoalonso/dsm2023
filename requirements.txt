@@ -12,3 +12,4 @@ streamlit-aggrid
 google-cloud-firestore
 google-auth-oauthlib
 streamlit-echarts
+ragraph
