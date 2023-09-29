@@ -23,7 +23,7 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
 from streamlit_echarts import st_echarts
-
+from ragraph import datasets, plot
 
 ####################
 # Formatting       #
@@ -50,6 +50,9 @@ hide_streamlit_style = """
                 #MainMenu {
                 visibility: hidden;
                 height: 0%;
+                }
+                header {
+                background: rgba(250,250,250, 0) !important;
                 }
                 footer {
                 visibility: hidden;
@@ -163,7 +166,7 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
         + df_designs["market_profit_3"]
     )
     st.session_state["df_designs"] = df_designs
-    st.experimental_rerun()
+    #st.rerun()
 
 
 ####################
@@ -734,9 +737,6 @@ if (group != "Select") and consent:
             )
 
         with st.expander("Matrices", expanded=True):
-            st.subheader("PLACEHOLDERS")
-
-            from ragraph import datasets, plot
 
             g = datasets.get("climate_control")
             g2 = datasets.get("aircraft_engine")
@@ -768,10 +768,8 @@ if (group != "Select") and consent:
                     ),
                 ),
             )
-            fig.write_image("./mdm_edge_categorical_field_colors.svg")
-
-            st.image("./mdm_edge_categorical_field_colors.svg", width=900)
-            st.image("./test.svg", width=900)
+            #fig.write_image("./mdm_edge_categorical_field_colors.svg")
+            st.plotly_chart(fig, use_container_width=True)
 
             tab_matrices_1, tab_matrices_2, tab_matrices_3 = st.tabs(
                 [
