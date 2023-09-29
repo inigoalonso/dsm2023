@@ -603,7 +603,7 @@ if (group != "Select") and consent:
                 ]
             )
 
-        st.subheader("1. Analyze Value")
+        st.subheader("🔍 1. Analyze Value")
 
         with st.expander("Profits", expanded=True):
             col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
@@ -688,7 +688,7 @@ if (group != "Select") and consent:
     ####################
 
     with tab2:
-        st.subheader("2. Identify Risks")
+        st.subheader("🗹 2. Identify Risks")
 
         with st.expander("Select system", expanded=True):
             # Select system to display
@@ -938,7 +938,7 @@ if (group != "Select") and consent:
     ####################
 
     with tab3:
-        st.subheader("3. Mitigate Risks")
+        st.subheader("🛡️ 3. Mitigate Risks")
 
         with st.expander("Where to place mitigations? TODO", expanded=True):
             if system == "System 1 - Only front steering":
@@ -1346,7 +1346,7 @@ if (group != "Select") and consent:
                 icon="🕒",
             )
         else:
-            st.subheader("Questionnaire")
+            st.subheader("❔ Questionnaire")
             with st.form(key="questionnaire_form"):
                 st.markdown(
                     """**To develop my solution to the challenge, I based my reasoning on...**"""
@@ -1554,7 +1554,7 @@ if (group != "Select") and consent:
     ####################
 
     with tab5:
-        st.subheader("Help")
+        st.subheader("ℹ️ Help")
         with st.expander("How to use this webapp?", expanded=True):
             st.markdown(
                 """
