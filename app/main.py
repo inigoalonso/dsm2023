@@ -3,22 +3,22 @@
 This app helps the participants of the DSM Industry Sprint Workshop.
 """
 
-####################
-# Imports          #
-####################
+###############################################################################
+# Imports
+###############################################################################
 
 from __future__ import annotations
 
 import datetime
 import json
-import numpy as np
+#import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 import plotly.express as px
 from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
@@ -29,13 +29,11 @@ from ragraph.edge import Edge
 from ragraph import plot
 from ragraph.colors import (
     get_diverging_redblue,
-    get_diverging_orangecyan,
-    get_diverging_purplegreen,
 )
 
-####################
-# Formatting       #
-####################
+###############################################################################
+# Formatting
+###############################################################################
 
 # Set wide display, if not done before
 try:
@@ -89,9 +87,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-####################
-# Setup            #
-####################
+###############################################################################
+# Setup
+###############################################################################
 
 
 # Authenticate to Firestore
@@ -113,9 +111,9 @@ timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
 # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
 pd.options.mode.chained_assignment = None  # default='warn'
 
-####################
-# Functions        #
-####################
+###############################################################################
+# Functions
+###############################################################################
 
 
 def on_data_update(data):
@@ -181,9 +179,9 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
     # st.rerun()
 
 
-####################
-# Head             #
-####################
+###############################################################################
+# Head
+###############################################################################
 
 # Logo and title
 col_logo, col_title = st.columns([0.2, 1])
@@ -367,12 +365,12 @@ if (group != "Select") and consent:
         ]
     )
 
-    ####################
-    # Tab 1            #
-    ####################
+    ###############################################################################
+    # Tab 1
+    ###############################################################################
 
     with tab1:
-        st.subheader("Inputs")
+        st.subheader("📋 Inputs")
         with st.expander("Markets", expanded=False):
             st.markdown(
                 """**Potential yearly market for each application (# of trucks)**"""
@@ -683,9 +681,9 @@ if (group != "Select") and consent:
 
         questions_tab1 = st.expander("Questions", expanded=True)
 
-    ####################
-    # Tab 2            #
-    ####################
+    ###############################################################################
+    # Tab 2
+    ###############################################################################
 
     with tab2:
         st.subheader("🗹 2. Identify Risks")
@@ -933,9 +931,9 @@ if (group != "Select") and consent:
         with questions_tab2:
             questions_tab2_col1, questions_tab2_col2 = st.columns(2)
 
-    ####################
-    # Tab 3            #
-    ####################
+    ###############################################################################
+    # Tab 3
+    ###############################################################################
 
     with tab3:
         st.subheader("🛡️ 3. Mitigate Risks")
@@ -1333,9 +1331,9 @@ if (group != "Select") and consent:
 
         questions_tab3 = st.expander("Questions", expanded=True)
 
-    ####################
-    # Tab 4            #
-    ####################
+    ###############################################################################
+    # Tab 4
+    ###############################################################################
 
     with tab4:
         # show text if time is over 3pm onn October 4
@@ -1549,9 +1547,9 @@ if (group != "Select") and consent:
 
         questions_tab4 = st.expander("Questions", expanded=True)
 
-    ####################
-    # Tab 5            #
-    ####################
+    ###############################################################################
+    # Tab 5
+    ###############################################################################
 
     with tab5:
         st.subheader("ℹ️ Help")
@@ -1677,6 +1675,9 @@ try:
 except:
     pass
 
+###############################################################################
+# Footer
+###############################################################################
 
 # footer = st.expander(
 #     "Links",
