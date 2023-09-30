@@ -97,6 +97,7 @@ st.markdown(
 # Authenticate to Firestore
 @st.cache_resource
 def authenticate_to_firestore():
+    """Authenticates to Firestore and returns a client."""
     key_dict = json.loads(st.secrets["textkey"])
     creds = service_account.Credentials.from_service_account_info(key_dict)
     db = firestore.Client(credentials=creds, project="dsm2023isw")
@@ -117,13 +118,15 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 # Timestamp string
 def get_timestamp():
+    '''Returns a timestamp string'''
     now = datetime.datetime.now()
     timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
     return timestamp
 
 
 def on_data_update(data):
-    # print("Data updated (not uploaded):", data)
+    """Callback function when data is updated."""
+    print("Data updated (not uploaded):", data)
     pass
 
 
@@ -142,6 +145,7 @@ def get_session_id() -> str:
 
 
 def calculate_ms(new_df: pd.DataFrame | None = None):
+    """Calculate market shares and update the dataframe."""
     if new_df is not None:
         if new_df.equals(st.session_state["df_designs"]):
             return
@@ -267,6 +271,7 @@ df_mitigations = pd.read_csv("data/Mitigations.csv")
 # Market shares
 @st.cache_data
 def market_shares_inputs():
+    """Returns the market shares inputs."""
     market_sizes = [10000, 20000, 40000]
     return market_sizes
 
