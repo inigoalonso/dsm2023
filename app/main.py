@@ -11,16 +11,13 @@ from __future__ import annotations
 
 import datetime
 import json
-
-# import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+from streamlit import session_state as ss
 import plotly.express as px
 from plotly.subplots import make_subplots
-
-# import plotly.graph_objects as go
 from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
@@ -111,6 +108,17 @@ db = authenticate_to_firestore()
 # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
 pd.options.mode.chained_assignment = None  # default='warn'
 
+
+
+# Colors
+systems_colors = ["#264653", "#E9C46A", "#E76F51"]
+markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
+
+# dataframe colors
+cm_g2r = sns.diverging_palette(130, 12, as_cmap=True)
+cm_r2g = sns.diverging_palette(12, 130, as_cmap=True)
+
+
 ###############################################################################
 # Functions
 ###############################################################################
@@ -118,7 +126,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 # Timestamp string
 def get_timestamp():
-    '''Returns a timestamp string'''
+    """Returns a timestamp string"""
     now = datetime.datetime.now()
     timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
     return timestamp
@@ -126,7 +134,7 @@ def get_timestamp():
 
 def on_data_update(data):
     """Callback function when data is updated."""
-    print("Data updated (not uploaded):", data)
+    # print("Data updated (not uploaded):", data)
     pass
 
 
@@ -147,45 +155,45 @@ def get_session_id() -> str:
 def calculate_ms(new_df: pd.DataFrame | None = None):
     """Calculate market shares and update the dataframe."""
     if new_df is not None:
-        if new_df.equals(st.session_state["df_designs"]):
+        if new_df.equals(ss["df_systems"]):
             return
-        st.session_state["df_designs"] = new_df
+        ss["df_systems"] = new_df
 
-    df_designs = st.session_state["df_designs"]
-    df_designs["market_share_1"] = df_designs["price"] * 2
-    df_designs["market_share_2"] = df_designs["price"] * 3
-    df_designs["market_share_3"] = df_designs["price"] * 4
-    df_designs["market_units_1"] = df_designs["market_share_1"] * market_sizes[0]
-    df_designs["market_units_2"] = df_designs["market_share_2"] * market_sizes[1]
-    df_designs["market_units_3"] = df_designs["market_share_3"] * market_sizes[2]
-    df_designs["market_revenue_1"] = df_designs["price"] * df_designs["market_units_1"]
-    df_designs["market_revenue_2"] = df_designs["price"] * df_designs["market_units_2"]
-    df_designs["market_revenue_3"] = df_designs["price"] * df_designs["market_units_3"]
-    df_designs["market_profit_1"] = (
-        df_designs["price"] - df_designs["cost"]
-    ) * df_designs["market_units_1"]
-    df_designs["market_profit_2"] = (
-        df_designs["price"] - df_designs["cost"]
-    ) * df_designs["market_units_2"]
-    df_designs["market_profit_3"] = (
-        df_designs["price"] - df_designs["cost"]
-    ) * df_designs["market_units_3"]
-    df_designs["total_units"] = (
-        df_designs["market_units_1"]
-        + df_designs["market_units_2"]
-        + df_designs["market_units_3"]
+    df_systems = ss["df_systems"]
+    df_systems["market_share_1"] = df_systems["price"] * 2
+    df_systems["market_share_2"] = df_systems["price"] * 3
+    df_systems["market_share_3"] = df_systems["price"] * 4
+    df_systems["market_units_1"] = df_systems["market_share_1"] * ss.market_sizes[0]
+    df_systems["market_units_2"] = df_systems["market_share_2"] * ss.market_sizes[1]
+    df_systems["market_units_3"] = df_systems["market_share_3"] * ss.market_sizes[2]
+    df_systems["market_revenue_1"] = df_systems["price"] * df_systems["market_units_1"]
+    df_systems["market_revenue_2"] = df_systems["price"] * df_systems["market_units_2"]
+    df_systems["market_revenue_3"] = df_systems["price"] * df_systems["market_units_3"]
+    df_systems["market_profit_1"] = (
+        df_systems["price"] - df_systems["cost"]
+    ) * df_systems["market_units_1"]
+    df_systems["market_profit_2"] = (
+        df_systems["price"] - df_systems["cost"]
+    ) * df_systems["market_units_2"]
+    df_systems["market_profit_3"] = (
+        df_systems["price"] - df_systems["cost"]
+    ) * df_systems["market_units_3"]
+    df_systems["total_units"] = (
+        df_systems["market_units_1"]
+        + df_systems["market_units_2"]
+        + df_systems["market_units_3"]
     )
-    df_designs["total_revenue"] = (
-        df_designs["market_revenue_1"]
-        + df_designs["market_revenue_2"]
-        + df_designs["market_revenue_3"]
+    df_systems["total_revenue"] = (
+        df_systems["market_revenue_1"]
+        + df_systems["market_revenue_2"]
+        + df_systems["market_revenue_3"]
     )
-    df_designs["total_profit"] = (
-        df_designs["market_profit_1"]
-        + df_designs["market_profit_2"]
-        + df_designs["market_profit_3"]
+    df_systems["total_profit"] = (
+        df_systems["market_profit_1"]
+        + df_systems["market_profit_2"]
+        + df_systems["market_profit_3"]
     )
-    st.session_state["df_designs"] = df_designs
+    ss["df_systems"] = df_systems
     # st.rerun()
 
 
@@ -252,36 +260,27 @@ with st.expander("Info", expanded=True):
             icon="👍",
         )
 
-# Colors
-systems_colors = ["#264653", "#E9C46A", "#E76F51"]
-markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
+# Market shares
+if "market_sizes" not in ss:
+    ss.market_sizes = [10000, 20000, 40000]
 
-# dataframe colors
-
-cm_g2r = sns.diverging_palette(130, 12, as_cmap=True)
-cm_r2g = sns.diverging_palette(12, 130, as_cmap=True)
-
-# import data from data/TechRisks.csv into dataframe
+# Import data from data/TechRisks.csv into dataframe
 df_risks = pd.read_csv("data/TechRisks.csv")
 
-# idem for the mitigations
+# Import data from data/Mitigations.csv into dataframe
 df_mitigations = pd.read_csv("data/Mitigations.csv")
 
-
-# Market shares
-@st.cache_data
-def market_shares_inputs():
-    """Returns the market shares inputs."""
-    market_sizes = [10000, 20000, 40000]
-    return market_sizes
-
-
-market_sizes = market_shares_inputs()
+# Import data from data/Components.csv into dataframe
+df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
+# Compomnets per system
+df_components_s1 = df_components[df_components["s1"] == True]
+df_components_s2 = df_components[df_components["s2"] == True]
+df_components_s3 = df_components[df_components["s3"] == True]
 
 
 # Original designs
-if "df_designs" not in st.session_state:
-    st.session_state.df_designs = pd.DataFrame(
+if "df_systems" not in ss:
+    ss.df_systems = pd.DataFrame(
         [
             {
                 "name": "System 1",
@@ -356,11 +355,7 @@ if "df_designs" not in st.session_state:
     )
     calculate_ms()
 
-df_components = pd.read_csv("data/components.csv", sep=";", decimal=",")
 
-df_components_s1 = df_components[df_components["s1"] == True]
-df_components_s2 = df_components[df_components["s2"] == True]
-df_components_s3 = df_components[df_components["s3"] == True]
 
 # If the user has filled in the intro form correctly
 if (group != "Select") and consent:
@@ -380,19 +375,18 @@ if (group != "Select") and consent:
 
     with tab1:
         st.subheader("📋 Inputs")
-        with st.expander("Markets", expanded=False):
+        with st.expander("**Markets**", expanded=False):
             st.markdown(
                 """**Potential yearly market for each application (# of trucks)**"""
             )
-            market_sizes[0] = st.slider("Artic", 0, 200000, market_sizes[0])
-            market_sizes[1] = st.slider("Desert", 0, 200000, market_sizes[1])
-            market_sizes[2] = st.slider("Special", 0, 200000, market_sizes[2])
+            ss.market_sizes[0] = st.slider("Artic", 0, 200000, ss.market_sizes[0])
+            ss.market_sizes[1] = st.slider("Desert", 0, 200000, ss.market_sizes[1])
+            ss.market_sizes[2] = st.slider("Special", 0, 200000, ss.market_sizes[2])
 
-        with st.expander("Systems", expanded=True):
-            st.markdown("""**Systems under consideration**""")
+        with st.expander("**Systems under consideration**", expanded=True):
             editable_df = st.data_editor(
-                st.session_state["df_designs"],
-                key="data",
+                ss["df_systems"],
+                key="systems_data_editor",
                 num_rows="dynamic",
                 use_container_width=False,
                 hide_index=True,
@@ -612,7 +606,7 @@ if (group != "Select") and consent:
 
         st.subheader("🔍 1. Analyze Value")
 
-        with st.expander("Profits", expanded=True):
+        with st.expander("**Profits**", expanded=True):
             col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
 
             with col_profits_1:
@@ -636,7 +630,7 @@ if (group != "Select") and consent:
                     delta="",
                 )
 
-        with st.expander("Market share", expanded=True):
+        with st.expander("**Market share**", expanded=True):
             markets_col1, markets_col2 = st.columns(2)
 
             with markets_col1:
@@ -658,37 +652,7 @@ if (group != "Select") and consent:
                     use_container_width=True,
                 )
 
-            # with markets_col2:
-            #     market_table = st.dataframe(
-            #         markets_df[
-            #             [
-            #                 "market",
-            #                 "share_system_1",
-            #                 "share_system_2",
-            #                 "share_system_3",
-            #             ]
-            #         ],
-            #         hide_index=True,
-            #         column_config={
-            #             "market": st.column_config.TextColumn(
-            #                 "Market", help="Name of the market"
-            #             ),
-            #             "share_system_1": st.column_config.NumberColumn(
-            #                 "System 1",
-            #                 format="%.2f",
-            #             ),
-            #             "share_system_2": st.column_config.NumberColumn(
-            #                 "System 2",
-            #                 format="%.2f",
-            #             ),
-            #             "share_system_3": st.column_config.NumberColumn(
-            #                 "System 3",
-            #                 format="%.2f",
-            #             ),
-            #         },
-            #     )
-
-        questions_tab1 = st.expander("Questions", expanded=True)
+        questions_tab1 = st.expander("**Questions**", expanded=True)
 
     ###############################################################################
     # Tab 2
@@ -697,7 +661,7 @@ if (group != "Select") and consent:
     with tab2:
         st.subheader("🗹 2. Identify Risks")
 
-        with st.expander("Select system", expanded=True):
+        with st.expander("**Select system**", expanded=True):
             # Select system to display
             system = st.selectbox(
                 label="System",
@@ -710,7 +674,7 @@ if (group != "Select") and consent:
                 index=0,
             )
 
-        with st.expander("Technical risk registry", expanded=True):
+        with st.expander("**Technical risk registry**", expanded=True):
             df_risks_table = st.dataframe(
                 df_risks.style.background_gradient(cmap=cm_g2r).format(
                     {2: "{:.2f}"}, na_rep="MISS", precision=2
@@ -755,7 +719,7 @@ if (group != "Select") and consent:
                 },
             )
 
-        with st.expander("Matrices", expanded=True):
+        with st.expander("**Matrices**", expanded=True):
             matrix = st.radio(
                 "Select the matrix to display",
                 ["Binary DSM", "Distance DSM", "Risk DSM [TODO]"],
@@ -942,7 +906,7 @@ if (group != "Select") and consent:
                 },
             )
 
-        questions_tab2 = st.expander("Questions", expanded=True)
+        questions_tab2 = st.expander("**Questions**", expanded=True)
 
         with questions_tab2:
             questions_tab2_col1, questions_tab2_col2 = st.columns(2)
@@ -954,7 +918,7 @@ if (group != "Select") and consent:
     with tab3:
         st.subheader("🛡️ 3. Mitigate Risks")
 
-        with st.expander("Where to place mitigations? TODO", expanded=True):
+        with st.expander("**Where to place mitigations? TODO**", expanded=True):
             if system == "System 1 - Only front steering":
                 n = 16
             elif system == "System 2 - Front + Back steering (hydraulic)":
@@ -1246,7 +1210,7 @@ if (group != "Select") and consent:
                 selected_points = []
                 st.write("The selected points are: ", value)
 
-        with st.expander("List of Mitigation Elements", expanded=True):
+        with st.expander("**List of Mitigation Elements**", expanded=True):
             st.dataframe(
                 df_mitigations.style.background_gradient(
                     cmap=cm_g2r, subset=["Cost (k€)"]
@@ -1345,7 +1309,7 @@ if (group != "Select") and consent:
                 label="Submit", help="Click here to submit your answers."
             )
 
-        questions_tab3 = st.expander("Questions", expanded=True)
+        questions_tab3 = st.expander("**Questions**", expanded=True)
 
     ###############################################################################
     # Tab 4
@@ -1542,6 +1506,7 @@ if (group != "Select") and consent:
                             "session_id": session_id,
                             "timestamp": get_timestamp(),
                             "group": group,
+                            "consent": consent,
                             "role": role,
                             "experience": experience,
                             "q1": q1,
@@ -1552,8 +1517,7 @@ if (group != "Select") and consent:
                             "q6": q6,
                             "q7": q7,
                             "q8": q8,
-                            "consent": consent,
-                            "session_state": st.session_state["data"],
+                            "session_state": ss["data"],
                         }
                     )
                     st.success(
@@ -1561,7 +1525,7 @@ if (group != "Select") and consent:
                         icon="👍",
                     )
 
-        questions_tab4 = st.expander("Questions", expanded=True)
+        questions_tab4 = st.expander("**Questions**", expanded=True)
 
     ###############################################################################
     # Tab 5
@@ -1569,7 +1533,7 @@ if (group != "Select") and consent:
 
     with tab5:
         st.subheader("ℹ️ Help")
-        with st.expander("How to use this webapp?", expanded=True):
+        with st.expander("**How to use this webapp?**", expanded=True):
             st.markdown(
                 """
             **Inputs**: In this tab, you can change the market sizes and the characteristics of the systems under consideration.
@@ -1587,7 +1551,7 @@ if (group != "Select") and consent:
             For additional information, please contact the workshop in-person facilitators.
             """
             )
-        with st.expander("Contact", expanded=False):
+        with st.expander("**Contact**", expanded=False):
             st.markdown(
                 """
             **Facilitators**: 
@@ -1596,7 +1560,7 @@ if (group != "Select") and consent:
             - ...
             """
             )
-        with st.expander("References", expanded=False):
+        with st.expander("**References**", expanded=False):
             st.markdown(
                 """
             **Value Analysis**:
@@ -1609,7 +1573,7 @@ if (group != "Select") and consent:
             - ...
             """
             )
-        with st.expander("Acknowledgements", expanded=False):
+        with st.expander("**Acknowledgements**", expanded=False):
             st.markdown(
                 """
             **Acknowledgements**:
@@ -1621,6 +1585,11 @@ if (group != "Select") and consent:
             """
             )
 
+    ###############################################################################
+    # Questions
+    ###############################################################################
+
+    # Questions Tab 1
     questions_tab1.write(
         "I think that the most valuable systems for each of the markets are..."
     )
@@ -1660,11 +1629,14 @@ if (group != "Select") and consent:
         with col_cont_special_3:
             special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
 
+    # Questions Tab 2
     questions_tab2_col1.radio(
         "Which of the risks would you select for mitigation?",
         df_risks["Name"].tolist(),
         help="Select the risk you would like to mitigate.",
     )
+
+    # Questions Tab 3
     questions_tab3.write(
         "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
     )
@@ -1674,20 +1646,36 @@ if (group != "Select") and consent:
     questions_tab3.table(
         [
             ["Market", "System 1", "System 2", "System 3", "My design"],
-            ["City", "5", "5", "5", "5"],
+            ["Artic", "5", "5", "5", "5"],
             ["Desert", "5", "5", "5", "5"],
             ["Special", "5", "5", "5", "5"],
         ]
     )
 
-# print("Here's the session state:")
-# print([key for key in st.session_state.keys()])
-# ic(st.session_state["data_editor"])
+    # Questions Tab 4
+
+    # Questions Tab 5
+
+
+###############################################################################
+# Session state
+###############################################################################
+
+print("Here's the session state:")
+print([key for key in ss.keys()])
+print(ss["systems_data_editor"])
 
 try:
-    sessions_ref = db.collection("session_states").document(participants_id)
+    session_state_ref = db.collection("session_states").document(get_session_id())
     # And then uploading the data to that reference
-    sessions_ref.set({"role": role, "group": group})
+    session_state_ref.set(
+        {
+            "session_id": get_session_id(), 
+            "role": role, 
+            "group": group,
+            "session_state": ss["systems_data_editor"],
+        }
+    )
 except:
     pass
 
