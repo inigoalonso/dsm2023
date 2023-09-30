@@ -1517,7 +1517,7 @@ if (group != "Select") and consent:
                             "q6": q6,
                             "q7": q7,
                             "q8": q8,
-                            "session_state": ss["data"],
+                            "session_state": ss,
                         }
                     )
                     st.success(
@@ -1652,18 +1652,14 @@ if (group != "Select") and consent:
         ]
     )
 
-    # Questions Tab 4
-
-    # Questions Tab 5
-
 
 ###############################################################################
 # Session state
 ###############################################################################
 
-print("Here's the session state:")
-print([key for key in ss.keys()])
-print(ss["systems_data_editor"])
+# print("Here's the session state:")
+# print([key for key in ss.keys()])
+# print(ss)
 
 try:
     session_state_ref = db.collection("session_states").document(get_session_id())
@@ -1673,7 +1669,7 @@ try:
             "session_id": get_session_id(), 
             "role": role, 
             "group": group,
-            "session_state": ss["systems_data_editor"],
+            "session_state": ss,
         }
     )
 except:
