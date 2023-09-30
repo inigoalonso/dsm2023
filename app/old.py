@@ -1,4 +1,36 @@
 
+            # with markets_col2:
+            #     market_table = st.dataframe(
+            #         markets_df[
+            #             [
+            #                 "market",
+            #                 "share_system_1",
+            #                 "share_system_2",
+            #                 "share_system_3",
+            #             ]
+            #         ],
+            #         hide_index=True,
+            #         column_config={
+            #             "market": st.column_config.TextColumn(
+            #                 "Market", help="Name of the market"
+            #             ),
+            #             "share_system_1": st.column_config.NumberColumn(
+            #                 "System 1",
+            #                 format="%.2f",
+            #             ),
+            #             "share_system_2": st.column_config.NumberColumn(
+            #                 "System 2",
+            #                 format="%.2f",
+            #             ),
+            #             "share_system_3": st.column_config.NumberColumn(
+            #                 "System 3",
+            #                 format="%.2f",
+            #             ),
+            #         },
+            #     )
+
+###############################################################################
+
 # Add a logo
 # def add_logo():
 #     # https://discuss.streamlit.io/t/put-logo-and-title-above-on-top-of-page-navigation-in-sidebar-of-multipage-app/28213/4
