@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import datetime
 import json
+
 # import numpy as np
 import pandas as pd
 import streamlit as st
@@ -18,6 +19,7 @@ from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 import plotly.express as px
 from plotly.subplots import make_subplots
+
 # import plotly.graph_objects as go
 from google.cloud import firestore
 from google.oauth2 import service_account
@@ -103,9 +105,13 @@ def authenticate_to_firestore():
 
 db = authenticate_to_firestore()
 
+
 # Timestamp string
-now = datetime.datetime.now()
-timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+def get_timestamp():
+    now = datetime.datetime.now()
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp
+
 
 # Disable SettingWithCopyWarning from pandas
 # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
@@ -193,10 +199,8 @@ with col_logo:
 with col_title:
     st.title("Industry Sprint Workshop 2023")
     st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
-    # st.subheader("Workshop Facilitator")
-    # st.markdown('The DSM 2023 Industry Sprint Workshop is brought to you in collaboration with Volvo Group.')
 
-
+# Group and consent
 with st.expander("Info", expanded=True):
     st.markdown(
         """
@@ -237,7 +241,7 @@ with st.expander("Info", expanded=True):
         session_ref = db.collection("sessions").document(session_id)
         # And then uploading the data to that reference
         session_ref.set(
-            {"session_id": session_id, "timestamp": timestamp, "group": group}
+            {"session_id": session_id, "timestamp": get_timestamp(), "group": group}
         )
         st.success(
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
@@ -1531,7 +1535,7 @@ if (group != "Select") and consent:
                     response_ref.set(
                         {
                             "session_id": session_id,
-                            "timestamp": timestamp,
+                            "timestamp": get_timestamp(),
                             "group": group,
                             "role": role,
                             "experience": experience,
