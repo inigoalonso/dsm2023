@@ -106,13 +106,6 @@ def authenticate_to_firestore():
 db = authenticate_to_firestore()
 
 
-# Timestamp string
-def get_timestamp():
-    now = datetime.datetime.now()
-    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-    return timestamp
-
-
 # Disable SettingWithCopyWarning from pandas
 # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -120,6 +113,13 @@ pd.options.mode.chained_assignment = None  # default='warn'
 ###############################################################################
 # Functions
 ###############################################################################
+
+
+# Timestamp string
+def get_timestamp():
+    now = datetime.datetime.now()
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp
 
 
 def on_data_update(data):
