@@ -11,14 +11,14 @@ from __future__ import annotations
 
 import datetime
 import json
-#import numpy as np
+# import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 import plotly.express as px
 from plotly.subplots import make_subplots
-#import plotly.graph_objects as go
+# import plotly.graph_objects as go
 from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
@@ -117,7 +117,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 def on_data_update(data):
-    #print("Data updated (not uploaded):", data)
+    # print("Data updated (not uploaded):", data)
     pass
 
 
@@ -759,8 +759,12 @@ if (group != "Select") and consent:
             )
 
             df_components = pd.read_csv("data/components.csv", sep=";", decimal=",")
-            df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
-            df_distances = pd.read_csv("data/distances.csv", sep=";", header=None, decimal=",").fillna(0)
+            df_dsm = pd.read_csv(
+                "data/dsm.csv", sep=";", header=None, decimal=","
+            ).fillna(0)
+            df_distances = pd.read_csv(
+                "data/distances.csv", sep=";", header=None, decimal=","
+            ).fillna(0)
 
             kinds = {
                 "M": "mechanical",
@@ -794,31 +798,33 @@ if (group != "Select") and consent:
                     },
                     annotations={
                         "id": component[1]["id"],
-                        },
+                    },
                 )
                 g.add_node(fancy_node)
 
             for i, row in df_dsm.iterrows():
                 for j, value in enumerate(row):
-                    #print(i, j, value)
-                    #print()
+                    # print(i, j, value)
+                    # print()
                     if i == j:
                         continue
                     if value in kinds.keys():
                         kind = kinds[value]
                     else:
                         kind = None
-                    g.add_edge(Edge(
-                        source=g.nodes[i], 
-                        target=g.nodes[j], 
-                        name=f'{g.nodes[i].annotations["id"]}_{g.nodes[j].annotations["id"]}',
-                        kind=kind,
-                        labels=[],
-                        weights={
-                            "distance": df_distances.iloc[i, j],
-                        },
-                        annotations={},
-                    ))
+                    g.add_edge(
+                        Edge(
+                            source=g.nodes[i],
+                            target=g.nodes[j],
+                            name=f'{g.nodes[i].annotations["id"]}_{g.nodes[j].annotations["id"]}',
+                            kind=kind,
+                            labels=[],
+                            weights={
+                                "distance": df_distances.iloc[i, j],
+                            },
+                            annotations={},
+                        )
+                    )
 
             if matrix == "Binary DSM":
                 fig = plot.mdm(
@@ -895,36 +901,37 @@ if (group != "Select") and consent:
                         ),
                     ),
                 )
-            
+
             fig.update_layout(
                 {
-                    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-                    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-                    'xaxis':{'fixedrange':True},
-                    'yaxis':{'fixedrange':True}
+                    "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                    "paper_bgcolor": "rgba(0, 0, 0, 0)",
+                    "xaxis": {"fixedrange": True},
+                    "yaxis": {"fixedrange": True},
                 }
             )
 
             st.plotly_chart(
-                fig, 
+                fig,
                 use_container_width=True,
-                config={"displayModeBar": False,
-                "displaylogo": False,
-                'modeBarButtonsToRemove': [
-                    'zoom2d',
-                    'zoomIn2d',
-                    'zoomOut2d',
-                    'resetScale2d',
-                    'toggleSpikelines',
-                    'pan2d',
-                    'lasso2d',
-                    'select2d',
-                    'autoScale2d',
-                    'hoverClosestCartesian',
-                    'hoverCompareCartesian'],
-                }
+                config={
+                    "displayModeBar": False,
+                    "displaylogo": False,
+                    "modeBarButtonsToRemove": [
+                        "zoom2d",
+                        "zoomIn2d",
+                        "zoomOut2d",
+                        "resetScale2d",
+                        "toggleSpikelines",
+                        "pan2d",
+                        "lasso2d",
+                        "select2d",
+                        "autoScale2d",
+                        "hoverClosestCartesian",
+                        "hoverCompareCartesian",
+                    ],
+                },
             )
-
 
         questions_tab2 = st.expander("Questions", expanded=True)
 
@@ -1664,8 +1671,8 @@ if (group != "Select") and consent:
         ]
     )
 
-#print("Here's the session state:")
-#print([key for key in st.session_state.keys()])
+# print("Here's the session state:")
+# print([key for key in st.session_state.keys()])
 # ic(st.session_state["data_editor"])
 
 try:
