@@ -307,6 +307,7 @@ if is_early:
             - [Design Society](https://www.designsociety.org/)
             - [dsmweb.org](https://DSMweb.org/)
 
+            
             If you still want a sneak peak and pinky swear not to cheat during the workshop, you can click on the "Info" section bellow to access the website.
             """,
         )
