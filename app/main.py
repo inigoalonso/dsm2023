@@ -224,6 +224,21 @@ if "df_systems" not in ss:
     ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
     calculate_ms()
 
+# DSMs
+df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+
+# Distances
+df_distances = pd.read_csv(
+    "data/distances.csv", sep=";", header=None, decimal=","
+).fillna(0)
+
+# Kinds of interfaces
+kinds = {
+    "M": "mechanical",
+    "E": "electrical",
+    "I": "information",
+    "H": "hydraulic",
+}
 
 ###############################################################################
 # Head
@@ -716,21 +731,6 @@ if (group != "Select") and consent:
                 ],
                 horizontal=True,
             )
-
-            df_components = pd.read_csv("data/components.csv", sep=";", decimal=",")
-            df_dsm = pd.read_csv(
-                "data/dsm.csv", sep=";", header=None, decimal=","
-            ).fillna(0)
-            df_distances = pd.read_csv(
-                "data/distances.csv", sep=";", header=None, decimal=","
-            ).fillna(0)
-
-            kinds = {
-                "M": "mechanical",
-                "E": "electrical",
-                "I": "information",
-                "H": "hydraulic",
-            }
 
             g = Graph()
 
@@ -1591,9 +1591,12 @@ if (group != "Select") and consent:
 
         cont_systems = form_tab1.container()
         with cont_systems:
-            col_cont_systems_0, col_cont_systems_1, col_cont_systems_2, col_cont_systems_3 = st.columns(
-                4
-            )
+            (
+                col_cont_systems_0,
+                col_cont_systems_1,
+                col_cont_systems_2,
+                col_cont_systems_3,
+            ) = st.columns(4)
             with col_cont_systems_1:
                 st.write("System 1")
                 st.image("assets/system1.jpg")
@@ -1606,7 +1609,12 @@ if (group != "Select") and consent:
         cont_market_artic = form_tab1.container()
         with cont_market_artic:
             st.write("Artic Market")
-            col_cont_artic_0, col_cont_artic_1, col_cont_artic_2, col_cont_artic_3 = st.columns(4)
+            (
+                col_cont_artic_0,
+                col_cont_artic_1,
+                col_cont_artic_2,
+                col_cont_artic_3,
+            ) = st.columns(4)
             with col_cont_artic_0:
                 st.image("assets/Artic.jpg")
             with col_cont_artic_1:
@@ -1619,7 +1627,12 @@ if (group != "Select") and consent:
         cont_market_desert = form_tab1.container()
         with cont_market_desert:
             st.write("Desert Market")
-            col_cont_desert_0, col_cont_desert_1, col_cont_desert_2, col_cont_desert_3 = st.columns(4)
+            (
+                col_cont_desert_0,
+                col_cont_desert_1,
+                col_cont_desert_2,
+                col_cont_desert_3,
+            ) = st.columns(4)
             with col_cont_desert_0:
                 st.image("assets/Desert.jpg")
             with col_cont_desert_1:
@@ -1632,7 +1645,12 @@ if (group != "Select") and consent:
         cont_market_special = form_tab1.container()
         with cont_market_special:
             st.write("Special Market")
-            col_cont_special_0, col_cont_special_1, col_cont_special_2, col_cont_special_3 = st.columns(4)
+            (
+                col_cont_special_0,
+                col_cont_special_1,
+                col_cont_special_2,
+                col_cont_special_3,
+            ) = st.columns(4)
             with col_cont_special_0:
                 st.image("assets/Special.jpg")
             with col_cont_special_1:
@@ -1641,7 +1659,7 @@ if (group != "Select") and consent:
                 special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
             with col_cont_special_3:
                 special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
-    
+
         form_tab1_submitted = st.form_submit_button(
             label="Submit",
             help="Click here to submit your answers.",
