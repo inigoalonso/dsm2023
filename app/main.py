@@ -255,8 +255,62 @@ with col_title:
     st.title("Industry Sprint Workshop 2023")
     st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
 
+# Timer and warning
+
+import asyncio
+start_conf = datetime.datetime(2023, 10, 4, 9, 45, 0)
+is_early = datetime.datetime.now() < start_conf
+
+holder = st.empty()
+countdown = holder.expander("Coundown", expanded=True)
+if is_early:
+    with countdown:
+        st.markdown(
+            """
+            <style>
+            .time {
+                font-size: 60px !important;
+                font-weight: 100 !important;
+                color: rgb(125, 53, 59) !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        async def watch(test):
+            while True:
+                time_left = start_conf - datetime.datetime.now()
+                test.markdown(
+                    f"""
+                    <p class="time">
+                        {str(time_left.days)} days, {str(time_left.seconds//3600)} hours, {str((time_left.seconds//60)%60)} minutes, {str(time_left.seconds%60)} seconds
+                    </p>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                r = await asyncio.sleep(1)
+
+        test = st.empty()
+
+        st.markdown(
+            """
+            This website is meant to guide the participants of the Industry Sprint Workshop. It will be available on the day of the workshop, Wednesday October 4th. 
+            
+            Come back then for the full experience! Thank you :)
+            
+            Meanwhile, you can check out some of these links for more information about the conference and DSMs:
+
+            - [The 25th International DSM Conference](https://www.dsm-conference.org/)
+            - [Conference Programme](https://dsm-conference.org/conference-programme/)
+            - [Conference Proceedings](https://dsm-conference.org/conference-proceedings-dsm-2023/)
+            - [Design Society](https://www.designsociety.org/)
+            - [dsmweb.org](https://DSMweb.org/)
+            """,
+        )
+
 # Group and consent
-with st.expander("Info", expanded=True):
+with st.expander("Info", expanded=not(is_early)):
     st.markdown(
         """
             Please fill in the following information to start the workshop.
@@ -304,9 +358,10 @@ with st.expander("Info", expanded=True):
             icon="👍",
         )
 
-
 # If the user has filled in the intro form correctly
-if (group != "Select") and consent:
+is_ready = (group != "Select") and consent
+if is_ready:
+    holder.empty()
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
             "(1) Analyze Value",
@@ -1753,3 +1808,8 @@ except Exception as e:
 #         Made with ❤️ by the DSM Conference 2021 team.
 #     """
 # )
+
+if not(is_ready):
+    asyncio.run(watch(test))
+else:
+    holder.empty()
