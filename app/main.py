@@ -29,6 +29,7 @@ from ragraph import plot
 from ragraph.colors import (
     get_diverging_redblue,
 )
+from streamlit_image_select import image_select
 
 ###############################################################################
 # Formatting
@@ -643,16 +644,21 @@ if (group != "Select") and consent:
 
         with st.expander("**Select system**", expanded=True):
             # Select system to display
-            system = st.selectbox(
-                label="System",
-                help="Select the system you would like to display.",
-                options=(
-                    "System 1 - Only front steering",
-                    "System 2 - Front + Back steering (hydraulic)",
-                    "System 3 - Front + Back steering (electric)",
-                ),
-                index=0,
+            img = image_select(
+                label="Select a system to explore below",
+                images=[
+                    "assets/system1.jpg",
+                    "assets/system2.jpg",
+                    "assets/system3.jpg",
+                ],
+                captions=["System 1", "System 2", "System 3"],
             )
+            if img == "assets/system1.jpg":
+                system = "System 1 - Only front steering"
+            elif img == "assets/system2.jpg":
+                system = "System 2 - Front + Back steering (hydraulic)"
+            elif img == "assets/system3.jpg":
+                system = "System 3 - Front + Back steering (electric)"
 
         with st.expander("**Technical risk registry**", expanded=True):
             df_risks_table = st.dataframe(
@@ -1572,44 +1578,76 @@ if (group != "Select") and consent:
     ###############################################################################
 
     # Questions Tab 1
-    questions_tab1.write(
-        "I think that the most valuable systems for each of the markets are..."
-    )
-    questions_tab1.caption(
-        "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
-    )
-    cont_market_artic = questions_tab1.container()
-    with cont_market_artic:
-        st.write("Artic Market")
-        col_cont_artic_1, col_cont_artic_2, col_cont_artic_3 = st.columns(3)
-        with col_cont_artic_1:
-            artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
-        with col_cont_artic_2:
-            artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
-        with col_cont_artic_3:
-            artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
 
-    cont_market_desert = questions_tab1.container()
-    with cont_market_desert:
-        st.write("Desert Market")
-        col_cont_desert_1, col_cont_desert_2, col_cont_desert_3 = st.columns(3)
-        with col_cont_desert_1:
-            desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
-        with col_cont_desert_2:
-            desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
-        with col_cont_desert_3:
-            desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+    form_tab1 = questions_tab1.form(key="form_tab1")
 
-    cont_market_special = questions_tab1.container()
-    with cont_market_special:
-        st.write("Special Market")
-        col_cont_special_1, col_cont_special_2, col_cont_special_3 = st.columns(3)
-        with col_cont_special_1:
-            special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
-        with col_cont_special_2:
-            special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
-        with col_cont_special_3:
-            special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+    with form_tab1:
+        form_tab1.write(
+            "I think that the most valuable systems for each of the markets are..."
+        )
+        form_tab1.caption(
+            "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
+        )
+
+        cont_systems = form_tab1.container()
+        with cont_systems:
+            col_cont_systems_0, col_cont_systems_1, col_cont_systems_2, col_cont_systems_3 = st.columns(
+                4
+            )
+            with col_cont_systems_1:
+                st.write("System 1")
+                st.image("assets/system1.jpg")
+            with col_cont_systems_2:
+                st.write("System 2")
+                st.image("assets/system2.jpg")
+            with col_cont_systems_3:
+                st.write("System 3")
+                st.image("assets/system3.jpg")
+        cont_market_artic = form_tab1.container()
+        with cont_market_artic:
+            st.write("Artic Market")
+            col_cont_artic_0, col_cont_artic_1, col_cont_artic_2, col_cont_artic_3 = st.columns(4)
+            with col_cont_artic_0:
+                st.image("assets/Artic.jpg")
+            with col_cont_artic_1:
+                artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+            with col_cont_artic_2:
+                artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+            with col_cont_artic_3:
+                artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+
+        cont_market_desert = form_tab1.container()
+        with cont_market_desert:
+            st.write("Desert Market")
+            col_cont_desert_0, col_cont_desert_1, col_cont_desert_2, col_cont_desert_3 = st.columns(4)
+            with col_cont_desert_0:
+                st.image("assets/Desert.jpg")
+            with col_cont_desert_1:
+                desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+            with col_cont_desert_2:
+                desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+            with col_cont_desert_3:
+                desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+
+        cont_market_special = form_tab1.container()
+        with cont_market_special:
+            st.write("Special Market")
+            col_cont_special_0, col_cont_special_1, col_cont_special_2, col_cont_special_3 = st.columns(4)
+            with col_cont_special_0:
+                st.image("assets/Special.jpg")
+            with col_cont_special_1:
+                special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+            with col_cont_special_2:
+                special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+            with col_cont_special_3:
+                special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+    
+        form_tab1_submitted = st.form_submit_button(
+            label="Submit",
+            help="Click here to submit your answers.",
+            type="primary",
+            use_container_width=True,
+        )
 
     # Questions Tab 2
     questions_tab2_col1.radio(
