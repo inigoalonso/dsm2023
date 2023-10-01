@@ -109,7 +109,6 @@ db = authenticate_to_firestore()
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-
 # Colors
 systems_colors = ["#264653", "#E9C46A", "#E76F51"]
 markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
@@ -198,6 +197,34 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
 
 
 ###############################################################################
+# Import data
+###############################################################################
+
+
+# Market shares
+if "market_sizes" not in ss:
+    ss.market_sizes = [10000, 20000, 40000]
+
+# Import data from data/TechRisks.csv into dataframe
+df_risks = pd.read_csv("data/TechRisks.csv")
+
+# Import data from data/Mitigations.csv into dataframe
+df_mitigations = pd.read_csv("data/Mitigations.csv")
+
+# Import data from data/Components.csv into dataframe
+df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
+# Compomnets per system
+df_components_s1 = df_components[df_components["s1"] == True]
+df_components_s2 = df_components[df_components["s2"] == True]
+df_components_s3 = df_components[df_components["s3"] == True]
+
+# Original systems designs
+if "df_systems" not in ss:
+    ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
+    calculate_ms()
+
+
+###############################################################################
 # Head
 ###############################################################################
 
@@ -239,7 +266,7 @@ with st.expander("Info", expanded=True):
     )
     consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
-        help="Please check this box to consent to the use of your data for research purposes.",
+        help="Please check this box to consent to the use of data collected from your interaction with this website for research purposes.",
     )
 
     if not ((group != "Select") and consent):
@@ -255,106 +282,11 @@ with st.expander("Info", expanded=True):
         session_ref.set(
             {"session_id": session_id, "timestamp": get_timestamp(), "group": group}
         )
+        st.toast("Session data uploaded to database", icon="📡")
         st.success(
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
             icon="👍",
         )
-
-# Market shares
-if "market_sizes" not in ss:
-    ss.market_sizes = [10000, 20000, 40000]
-
-# Import data from data/TechRisks.csv into dataframe
-df_risks = pd.read_csv("data/TechRisks.csv")
-
-# Import data from data/Mitigations.csv into dataframe
-df_mitigations = pd.read_csv("data/Mitigations.csv")
-
-# Import data from data/Components.csv into dataframe
-df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
-# Compomnets per system
-df_components_s1 = df_components[df_components["s1"] == True]
-df_components_s2 = df_components[df_components["s2"] == True]
-df_components_s3 = df_components[df_components["s3"] == True]
-
-
-# Original designs
-if "df_systems" not in ss:
-    ss.df_systems = pd.DataFrame(
-        [
-            {
-                "name": "System 1",
-                "description": "Only front steering",
-                "min_R": 10.7,
-                "reliability": 0.82,
-                "price": 100,
-                "cost": 90,
-                "market_share_1": 0,
-                "market_share_2": 0,
-                "market_share_3": 0,
-                "market_units_1": 0,
-                "market_units_2": 0,
-                "market_units_3": 0,
-                "market_revenue_1": 0,
-                "market_revenue_2": 0,
-                "market_revenue_3": 0,
-                "market_profit_1": 0,
-                "market_profit_2": 0,
-                "market_profit_3": 0,
-                "total_units": 0,
-                "total_revenue": 0,
-                "total_profit": 0,
-            },
-            {
-                "name": "System 2",
-                "description": "Front + Back steering (hydraulic)",
-                "min_R": 8.0,
-                "reliability": 0.75,
-                "price": 110,
-                "cost": 100,
-                "market_share_1": 0,
-                "market_share_2": 0,
-                "market_share_3": 0,
-                "market_units_1": 0,
-                "market_units_2": 0,
-                "market_units_3": 0,
-                "market_revenue_1": 0,
-                "market_revenue_2": 0,
-                "market_revenue_3": 0,
-                "market_profit_1": 0,
-                "market_profit_2": 0,
-                "market_profit_3": 0,
-                "total_units": 0,
-                "total_revenue": 0,
-                "total_profit": 0,
-            },
-            {
-                "name": "System 3",
-                "description": "Front + Back steering (electric)",
-                "min_R": 7.6,
-                "reliability": 0.8,
-                "price": 110,
-                "cost": 100,
-                "market_share_1": 0,
-                "market_share_2": 0,
-                "market_share_3": 0,
-                "market_units_1": 0,
-                "market_units_2": 0,
-                "market_units_3": 0,
-                "market_revenue_1": 0,
-                "market_revenue_2": 0,
-                "market_revenue_3": 0,
-                "market_profit_1": 0,
-                "market_profit_2": 0,
-                "market_profit_3": 0,
-                "total_units": 0,
-                "total_revenue": 0,
-                "total_profit": 0,
-            },
-        ]
-    )
-    calculate_ms()
-
 
 
 # If the user has filled in the intro form correctly
@@ -374,109 +306,157 @@ if (group != "Select") and consent:
     ###############################################################################
 
     with tab1:
-        st.subheader("📋 Inputs")
-        with st.expander("**Markets**", expanded=False):
+        st.subheader("📋 Markets and systems")
+        with st.expander("**Markets**", expanded=True):
             st.markdown(
-                """**Potential yearly market for each application (# of trucks)**"""
+                """Potential number of trucks sold each year per application)"""
             )
-            ss.market_sizes[0] = st.slider("Artic", 0, 200000, ss.market_sizes[0])
-            ss.market_sizes[1] = st.slider("Desert", 0, 200000, ss.market_sizes[1])
-            ss.market_sizes[2] = st.slider("Special", 0, 200000, ss.market_sizes[2])
+            tab_markets_1, tab_markets_2, tab_markets_3 = st.columns(3)
+
+            with tab_markets_1:
+                st.image("assets/artic.jpg")
+                ss.market_sizes[0] = st.slider(
+                    "Artic", 0, 200000, ss.market_sizes[0], disabled=True
+                )
+            with tab_markets_2:
+                st.image("assets/desert.jpg")
+                ss.market_sizes[1] = st.slider(
+                    "Desert", 0, 200000, ss.market_sizes[1], disabled=True
+                )
+            with tab_markets_3:
+                st.image("assets/special.jpg")
+                ss.market_sizes[2] = st.slider(
+                    "Special", 0, 200000, ss.market_sizes[2], disabled=True
+                )
 
         with st.expander("**Systems under consideration**", expanded=True):
-            editable_df = st.data_editor(
-                ss["df_systems"],
-                key="systems_data_editor",
-                num_rows="dynamic",
-                use_container_width=False,
-                hide_index=True,
-                on_change=on_data_update(data="df test"),
-                column_config={
-                    "name": st.column_config.TextColumn(
-                        "Name",
-                        help="Name of the alternative system",
-                        max_chars=50,
-                    ),
-                    "description": st.column_config.TextColumn(
-                        "Description",
-                        help="Description of the alternative system",
-                        max_chars=50,
-                    ),
-                    "min_R": st.column_config.NumberColumn(
-                        "Minimum Turning Radius",
-                        help="Turning radius distance in meters",
-                        min_value=0,
-                        max_value=50,
-                        step=0.1,
-                        format="%.1f m",
-                        disabled=True,
-                    ),
-                    "reliability": st.column_config.NumberColumn(
-                        "Reliability",
-                        help="Reliability of the system",
-                        min_value=0,
-                        max_value=1,
-                        step=0.01,
-                        format="%.2f",
-                        disabled=True,
-                    ),
-                    "price": st.column_config.NumberColumn(
-                        "Price",
-                        help="Price in kilo Euros",
-                        min_value=0,
-                        max_value=500,
-                        step=0.1,
-                        format="%.1f k€",
-                    ),
-                    "cost": st.column_config.NumberColumn(
-                        "Cost",
-                        help="Cost in kilo Euros",
-                        min_value=0,
-                        max_value=500,
-                        step=0.1,
-                        format="%.1f k€",
-                        disabled=True,
-                    ),
-                    "market_share_1": st.column_config.NumberColumn(
-                        "MS1",
-                        help="Market share in %",
-                        min_value=0,
-                        max_value=100,
-                        step=0.01,
-                        format="%.2f",
-                        disabled=True,
-                    ),
-                    "market_share_2": st.column_config.NumberColumn(
-                        "MS2",
-                        help="Market share in %",
-                        min_value=0,
-                        max_value=100,
-                        step=0.01,
-                        format="%.2f",
-                        disabled=True,
-                    ),
-                    "market_share_3": st.column_config.NumberColumn(
-                        "MS3",
-                        help="Market share in %",
-                        min_value=0,
-                        max_value=100,
-                        step=0.01,
-                        format="%.2f",
-                        disabled=True,
-                    ),
-                    "market_units_1": None,
-                    "market_units_2": None,
-                    "market_units_3": None,
-                    "market_revenue_1": None,
-                    "market_revenue_2": None,
-                    "market_revenue_3": None,
-                    "market_profit_1": None,
-                    "market_profit_2": None,
-                    "market_profit_3": None,
-                },
+            st.markdown(
+                """The following systems are under consideration for introduction into the market."""
             )
 
-            calculate_ms(editable_df)
+            tab_systems_1, tab_systems_2, tab_systems_3 = st.columns(3)
+
+            with tab_systems_1:
+                st.image("assets/system1.jpg")
+                st.markdown(
+                    f"""
+                    **{ss["df_systems"]["name"][0]}**: {ss["df_systems"]["description"][0]}
+
+                    **Minimum turning radius**: {ss["df_systems"]["min_R"][0]} m
+
+                    **Reliability**: {ss["df_systems"]["reliability"][0]}
+
+                    **Price**: {ss["df_systems"]["price"][0]} k€
+
+                    **Cost**: {ss["df_systems"]["cost"][0]} k€
+                    """
+                )
+            with tab_systems_2:
+                st.image("assets/system2.jpg")
+                st.markdown(
+                    f"""
+                    **{ss["df_systems"]["name"][1]}**: {ss["df_systems"]["description"][1]}
+
+                    **Minimum turning radius**: {ss["df_systems"]["min_R"][1]}
+
+                    **Reliability**: {ss["df_systems"]["reliability"][1]}
+
+                    **Price**: {ss["df_systems"]["price"][1]} k€
+
+                    **Cost**: {ss["df_systems"]["cost"][1]} k€
+                    """
+                )
+            with tab_systems_3:
+                st.image("assets/system3.jpg")
+                st.markdown(
+                    f"""
+                    **{ss["df_systems"]["name"][2]}**: {ss["df_systems"]["description"][2]}
+
+                    **Minimum turning radius**: {ss["df_systems"]["min_R"][2]}
+
+                    **Reliability**: {ss["df_systems"]["reliability"][2]}
+
+                    **Price**: {ss["df_systems"]["price"][2]} k€
+
+                    **Cost**: {ss["df_systems"]["cost"][2]} k€
+                    """
+                )
+
+            # # editable_df = st.data_editor(
+            # st.dataframe(
+            #     ss["df_systems"],
+            #     #key="systems_data_editor",
+            #     #num_rows="dynamic",
+            #     use_container_width=False,
+            #     hide_index=True,
+            #     #on_change=on_data_update(data="df test"),
+            #     column_config={
+            #         "name": st.column_config.TextColumn(
+            #             "Name",
+            #             help="Name of the alternative system",
+            #             max_chars=50,
+            #         ),
+            #         "description": st.column_config.TextColumn(
+            #             "Description",
+            #             help="Description of the alternative system",
+            #             max_chars=50,
+            #         ),
+            #         "min_R": st.column_config.NumberColumn(
+            #             "Minimum Turning Radius",
+            #             help="Turning radius distance in meters",
+            #             min_value=0,
+            #             max_value=50,
+            #             step=0.1,
+            #             format="%.1f m",
+            #             disabled=True,
+            #         ),
+            #         "reliability": st.column_config.NumberColumn(
+            #             "Reliability",
+            #             help="Reliability of the system",
+            #             min_value=0,
+            #             max_value=1,
+            #             step=0.01,
+            #             format="%.2f",
+            #             disabled=True,
+            #         ),
+            #         "price": st.column_config.NumberColumn(
+            #             "Price",
+            #             help="Price in kilo Euros",
+            #             min_value=0,
+            #             max_value=500,
+            #             step=0.1,
+            #             format="%.1f k€",
+            #         ),
+            #         "cost": st.column_config.NumberColumn(
+            #             "Cost",
+            #             help="Cost in kilo Euros",
+            #             min_value=0,
+            #             max_value=500,
+            #             step=0.1,
+            #             format="%.1f k€",
+            #             disabled=True,
+            #         ),
+            #         "market_share_1": None,
+            #         "market_share_2": None,
+            #         "market_share_3": None,
+            #         "market_units_1": None,
+            #         "market_units_2": None,
+            #         "market_units_3": None,
+            #         "market_revenue_1": None,
+            #         "market_revenue_2": None,
+            #         "market_revenue_3": None,
+            #         "market_profit_1": None,
+            #         "market_profit_2": None,
+            #         "market_profit_3": None,
+            #         "total_units": None,
+            #         "total_revenue": None,
+            #         "total_profit": None,
+            #     },
+            # )
+
+            # calculate_ms(editable_df)
+            calculate_ms(ss["df_systems"])
+            editable_df = ss["df_systems"]
 
             market_shares_artic = []
             market_shares_desert = []
@@ -1517,13 +1497,15 @@ if (group != "Select") and consent:
                             "q6": q6,
                             "q7": q7,
                             "q8": q8,
-                            "session_state": ss,
+                            "session_state": "TODO",
                         }
                     )
+                    st.toast("Response data uploaded to database", icon="📡")
                     st.success(
                         body="Your answers have been submitted. Thank you for participating!",
                         icon="👍",
                     )
+                    st.balloons()
 
         questions_tab4 = st.expander("**Questions**", expanded=True)
 
@@ -1536,7 +1518,7 @@ if (group != "Select") and consent:
         with st.expander("**How to use this webapp?**", expanded=True):
             st.markdown(
                 """
-            **Inputs**: In this tab, you can change the market sizes and the characteristics of the systems under consideration.
+            **Markets and systems**: In this tab, you can change the market sizes and the characteristics of the systems under consideration.
 
             **Value Analysis**: In this tab, you can see the market shares, revenues, and profits of the systems under consideration.
 
@@ -1666,13 +1648,16 @@ try:
     # And then uploading the data to that reference
     session_state_ref.set(
         {
-            "session_id": get_session_id(), 
-            "role": role, 
+            "session_id": get_session_id(),
+            "role": role,
             "group": group,
-            "session_state": ss,
+            "session_state": "TODO",
         }
     )
-except:
+    st.toast("Session state data uploaded to database", icon="📡")
+except Exception as e:
+    print("Session state data not uploaded to database")
+    print(e)
     pass
 
 ###############################################################################
