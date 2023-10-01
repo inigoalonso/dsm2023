@@ -13,3 +13,4 @@ google-cloud-firestore
 google-auth-oauthlib
 streamlit-echarts
 ragraph
+streamlit-image-select
