@@ -1616,7 +1616,7 @@ if (group != "Select") and consent:
                 col_cont_artic_3,
             ) = st.columns(4)
             with col_cont_artic_0:
-                st.image("assets/Artic.jpg")
+                st.image("assets/artic.jpg")
             with col_cont_artic_1:
                 artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
             with col_cont_artic_2:
@@ -1634,7 +1634,7 @@ if (group != "Select") and consent:
                 col_cont_desert_3,
             ) = st.columns(4)
             with col_cont_desert_0:
-                st.image("assets/Desert.jpg")
+                st.image("assets/desert.jpg")
             with col_cont_desert_1:
                 desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
             with col_cont_desert_2:
@@ -1652,7 +1652,7 @@ if (group != "Select") and consent:
                 col_cont_special_3,
             ) = st.columns(4)
             with col_cont_special_0:
-                st.image("assets/Special.jpg")
+                st.image("assets/special.jpg")
             with col_cont_special_1:
                 special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
             with col_cont_special_2:
