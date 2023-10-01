@@ -411,7 +411,7 @@ if is_ready:
             tab_systems_1, tab_systems_2, tab_systems_3 = st.columns(3)
 
             with tab_systems_1:
-                st.image("assets/system1.jpg")
+                st.image("assets/system1.png")
                 st.markdown(
                     f"""
                     **{ss["df_systems"]["name"][0]}**: {ss["df_systems"]["description"][0]}
@@ -426,7 +426,7 @@ if is_ready:
                     """
                 )
             with tab_systems_2:
-                st.image("assets/system2.jpg")
+                st.image("assets/system2.png")
                 st.markdown(
                     f"""
                     **{ss["df_systems"]["name"][1]}**: {ss["df_systems"]["description"][1]}
@@ -441,7 +441,7 @@ if is_ready:
                     """
                 )
             with tab_systems_3:
-                st.image("assets/system3.jpg")
+                st.image("assets/system3.png")
                 st.markdown(
                     f"""
                     **{ss["df_systems"]["name"][2]}**: {ss["df_systems"]["description"][2]}
@@ -715,17 +715,17 @@ if is_ready:
             img = image_select(
                 label="Select a system to explore below",
                 images=[
-                    "assets/system1.jpg",
-                    "assets/system2.jpg",
-                    "assets/system3.jpg",
+                    "assets/system1.png",
+                    "assets/system2.png",
+                    "assets/system3.png",
                 ],
                 captions=["System 1", "System 2", "System 3"],
             )
-            if img == "assets/system1.jpg":
+            if img == "assets/system1.png":
                 system = "System 1 - Only front steering"
-            elif img == "assets/system2.jpg":
+            elif img == "assets/system2.png":
                 system = "System 2 - Front + Back steering (hydraulic)"
-            elif img == "assets/system3.jpg":
+            elif img == "assets/system3.png":
                 system = "System 3 - Front + Back steering (electric)"
 
         with st.expander("**Technical risk registry**", expanded=True):
@@ -1652,13 +1652,13 @@ if is_ready:
             ) = st.columns(4)
             with col_cont_systems_1:
                 st.write("System 1")
-                st.image("assets/system1.jpg")
+                st.image("assets/system1.png")
             with col_cont_systems_2:
                 st.write("System 2")
-                st.image("assets/system2.jpg")
+                st.image("assets/system2.png")
             with col_cont_systems_3:
                 st.write("System 3")
-                st.image("assets/system3.jpg")
+                st.image("assets/system3.png")
         cont_market_artic = form_tab1.container()
         with cont_market_artic:
             st.write("Artic Market")
