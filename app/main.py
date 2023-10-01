@@ -502,8 +502,6 @@ if (group != "Select") and consent:
                 market_shares_special.append(market_share)
                 # print(i, a, d, e, market_shares_special)
 
-            categories = ["Artic", "Desert", "Special", "Artic"]
-
             units_artic = [
                 editable_df["market_units_1"][0],
                 editable_df["market_units_1"][1],
@@ -627,26 +625,23 @@ if (group != "Select") and consent:
                 )
 
         with st.expander("**Market share**", expanded=True):
-            markets_col1, markets_col2 = st.columns(2)
-
-            with markets_col1:
-                # Plotly group bars plot of market share per system
-                st.plotly_chart(
-                    px.bar(
-                        markets_df,
-                        x="market",
-                        y=["share_system_1", "share_system_2", "share_system_3"],
-                        barmode="group",
-                        color_discrete_sequence=systems_colors,
-                        labels={
-                            "value": "Market share",
-                            "variable": "System",
-                            "market": "Market",
-                        },
-                        height=400,
-                    ),
-                    use_container_width=True,
-                )
+            # Plotly group bars plot of market share per system
+            st.plotly_chart(
+                px.bar(
+                    markets_df,
+                    x="market",
+                    y=["share_system_1", "share_system_2", "share_system_3"],
+                    barmode="group",
+                    color_discrete_sequence=systems_colors,
+                    labels={
+                        "value": "Market share",
+                        "variable": "System",
+                        "market": "Market",
+                    },
+                    height=400,
+                ),
+                use_container_width=True,
+            )
 
         questions_tab1 = st.expander("**Questions**", expanded=True)
 
