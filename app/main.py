@@ -306,6 +306,8 @@ if is_early:
             - [Conference Proceedings](https://dsm-conference.org/conference-proceedings-dsm-2023/)
             - [Design Society](https://www.designsociety.org/)
             - [dsmweb.org](https://DSMweb.org/)
+
+            If you still want a sneak peak and pinky swear not to cheat during the workshop, you can click on the "Info" section bellow to access the website.
             """,
         )
 
