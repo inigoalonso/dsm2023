@@ -111,7 +111,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 # Colors
-systems_colors = ["#264653", "#E9C46A", "#E76F51"]#, "#2A9D8F", "#F4A261", "#E63946"]
+systems_colors = ["#264653", "#E9C46A", "#E76F51"]  # , "#2A9D8F", "#F4A261", "#E63946"]
 markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
 
 # dataframe colors
@@ -208,6 +208,10 @@ if "market_sizes" not in ss:
 
 # Import data from data/TechRisks.csv into dataframe
 df_risks = pd.read_csv("data/TechRisks.csv")
+df_risks_selected = df_risks[["ID", "Name"]].copy()
+new_col_risks = ["False" for i in range(len(df_risks_selected))]
+df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
+print(df_risks_selected)
 
 # Import data from data/Mitigations.csv into dataframe
 df_mitigations = pd.read_csv("data/Mitigations.csv")
@@ -258,6 +262,7 @@ with col_title:
 # Timer and warning
 
 import asyncio
+
 start_conf = datetime.datetime(2023, 10, 4, 9, 45, 0)
 is_early = datetime.datetime.now() < start_conf
 
@@ -313,7 +318,7 @@ if is_early:
         )
 
 # Group and consent
-with st.expander("Info", expanded=not(is_early)):
+with st.expander("Info", expanded=not (is_early)):
     st.markdown(
         """
             Please fill in the following information to start the workshop.
@@ -699,7 +704,7 @@ if is_ready:
                     height=400,
                 ),
                 use_container_width=True,
-                config={'displayModeBar': False},
+                config={"displayModeBar": False},
             )
 
         questions_tab1 = st.expander("**Questions**", expanded=True)
@@ -1721,10 +1726,30 @@ if is_ready:
         )
 
     # Questions Tab 2
-    questions_tab2_col1.radio(
-        "Which of the risks would you select for mitigation?",
-        df_risks["Name"].tolist(),
-        help="Select the risk you would like to mitigate.",
+    questions_tab2_col1.markdown(
+        """
+        Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
+        """
+    )
+    questions_tab2_col1.data_editor(
+        df_risks_selected,
+        height=400,
+        use_container_width=True,
+        hide_index=True,
+        num_rows="fixed",
+        column_config={
+            "Selected": st.column_config.CheckboxColumn(
+                "Selected",
+                help="Select the risks you would like to mitigate.",
+                width="small",
+            ),
+            "ID": st.column_config.TextColumn(
+                "ID", help="Risk identification ID", width="small", disabled=True
+            ),
+            "Name": st.column_config.TextColumn(
+                "Name", help="Name", width="large", disabled=True
+            ),
+        },
     )
 
     # Questions Tab 3
@@ -1899,7 +1924,7 @@ except Exception as e:
 #     """
 # )
 
-if not(is_ready):
+if not (is_ready):
     asyncio.run(watch(test))
 else:
     holder.empty()
