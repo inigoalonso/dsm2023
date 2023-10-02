@@ -699,6 +699,7 @@ if is_ready:
                     height=400,
                 ),
                 use_container_width=True,
+                config={'displayModeBar': False},
             )
 
         questions_tab1 = st.expander("**Questions**", expanded=True)
@@ -1357,7 +1358,7 @@ if is_ready:
     with tab4:
         # show text if time is over 3pm onn October 4
         start = datetime.datetime(2023, 10, 4, 15, 0, 0)
-        if datetime.datetime.now() > start:
+        if datetime.datetime.now() < start:
             st.error(
                 "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
                 icon="🕒",
