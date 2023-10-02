@@ -1578,9 +1578,9 @@ if is_ready:
         with st.expander("**How to use this webapp?**", expanded=True):
             st.markdown(
                 """
-            **Markets and systems**: In this tab, you can change the market sizes and the characteristics of the systems under consideration.
+            **Markets and systems**: In this section, you can see the market sizes and the characteristics of the systems under consideration.
 
-            **Value Analysis**: In this tab, you can see the market shares, revenues, and profits of the systems under consideration.
+            **Value Analysis**: In this section, you can see the market shares, revenues, and profits of the systems under consideration.
 
             **Risk Identification**: In this tab, you can see the risk matrix of the systems under consideration.
 
@@ -1599,22 +1599,21 @@ if is_ready:
             **Facilitators**: 
             - Massimo Panarotto
             - Iñigo Alonso Fernandez
-            - ...
             """
             )
-        with st.expander("**References**", expanded=False):
-            st.markdown(
-                """
-            **Value Analysis**:
-            - ...
+        # with st.expander("**References**", expanded=False):
+        #     st.markdown(
+        #         """
+        #     **Value Analysis**:
+        #     - ...
 
-            **Risk Identification**:
-            - ...
+        #     **Risk Identification**:
+        #     - ...
 
-            **Risk Mitigation**:
-            - ...
-            """
-            )
+        #     **Risk Mitigation**:
+        #     - ...
+        #     """
+        #     )
         with st.expander("**Acknowledgements**", expanded=False):
             st.markdown(
                 """
