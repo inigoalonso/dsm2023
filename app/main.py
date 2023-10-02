@@ -111,7 +111,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 # Colors
-systems_colors = ["#264653", "#E9C46A", "#E76F51"]
+systems_colors = ["#264653", "#E9C46A", "#E76F51"]#, "#2A9D8F", "#F4A261", "#E63946"]
 markets_colors = ["#3A86FF", "#FF006E", "#8338EC"]
 
 # dataframe colors
@@ -1728,20 +1728,107 @@ if is_ready:
     )
 
     # Questions Tab 3
-    questions_tab3.write(
-        "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
-    )
-    questions_tab3.caption(
-        "Please rate form 1 to 10, where 1 means low potential and 10 high potential."
-    )
-    questions_tab3.table(
-        [
-            ["Market", "System 1", "System 2", "System 3", "My design"],
-            ["Artic", "5", "5", "5", "5"],
-            ["Desert", "5", "5", "5", "5"],
-            ["Special", "5", "5", "5", "5"],
-        ]
-    )
+
+    form_tab3 = questions_tab3.form(key="form_tab3")
+
+    with form_tab3:
+        form_tab3.write(
+            "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
+        )
+        form_tab3.caption(
+            "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
+        )
+
+        cont_systems = form_tab3.container()
+        with cont_systems:
+            (
+                col_cont_systems_0,
+                col_cont_systems_1,
+                col_cont_systems_2,
+                col_cont_systems_3,
+                col_cont_systems_4,
+            ) = st.columns(5)
+            with col_cont_systems_1:
+                st.write("System 1")
+                st.image("assets/system1.png")
+            with col_cont_systems_2:
+                st.write("System 2")
+                st.image("assets/system2.png")
+            with col_cont_systems_3:
+                st.write("System 3")
+                st.image("assets/system3.png")
+            with col_cont_systems_4:
+                st.write("Your System")
+                st.image("assets/system4.png")
+        cont_market_artic = form_tab3.container()
+        with cont_market_artic:
+            st.write("Artic Market")
+            (
+                col_cont_artic_0,
+                col_cont_artic_1,
+                col_cont_artic_2,
+                col_cont_artic_3,
+                col_cont_artic_4,
+            ) = st.columns(5)
+            with col_cont_artic_0:
+                st.image("assets/artic.jpg")
+            with col_cont_artic_1:
+                artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+            with col_cont_artic_2:
+                artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+            with col_cont_artic_3:
+                artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+            with col_cont_artic_4:
+                artic_s4 = st.slider("Your System in Artic Market", 1, 10, 5)
+
+        cont_market_desert = form_tab3.container()
+        with cont_market_desert:
+            st.write("Desert Market")
+            (
+                col_cont_desert_0,
+                col_cont_desert_1,
+                col_cont_desert_2,
+                col_cont_desert_3,
+                col_cont_desert_4,
+            ) = st.columns(5)
+            with col_cont_desert_0:
+                st.image("assets/desert.jpg")
+            with col_cont_desert_1:
+                desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+            with col_cont_desert_2:
+                desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+            with col_cont_desert_3:
+                desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+            with col_cont_desert_4:
+                desert_s4 = st.slider("Your System in Desert Market", 1, 10, 5)
+
+        cont_market_special = form_tab3.container()
+        with cont_market_special:
+            st.write("Special Market")
+            (
+                col_cont_special_0,
+                col_cont_special_1,
+                col_cont_special_2,
+                col_cont_special_3,
+                col_cont_special_4,
+            ) = st.columns(5)
+            with col_cont_special_0:
+                st.image("assets/special.jpg")
+            with col_cont_special_1:
+                special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+            with col_cont_special_2:
+                special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+            with col_cont_special_3:
+                special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+            with col_cont_special_4:
+                special_s4 = st.slider("Your System in Special Market", 1, 10, 5)
+
+        form_tab3_submitted = st.form_submit_button(
+            label="Submit",
+            help="Click here to submit your answers.",
+            type="primary",
+            use_container_width=True,
+        )
 
 
 ###############################################################################
