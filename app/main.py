@@ -206,12 +206,25 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
 if "market_sizes" not in ss:
     ss.market_sizes = [10000, 20000, 40000]
 
+# Seelcted system
+if "system" not in ss:
+    ss.system = ""
+
 # Import data from data/TechRisks.csv into dataframe
-df_risks = pd.read_csv("data/TechRisks.csv")
-df_risks_selected = df_risks[["ID", "Name"]].copy()
+df_risks = pd.read_csv("data/TechRisks.csv", sep=";", decimal=".")
+df_risks_selected = df_risks[["ID", "Name","s1","s2","s3"]].copy()
 new_col_risks = ["False" for i in range(len(df_risks_selected))]
 df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
-print(df_risks_selected)
+
+df_risks_s1 = df_risks[df_risks["s1"] == True]
+df_risks_s2 = df_risks[df_risks["s2"] == True]
+df_risks_s3 = df_risks[df_risks["s3"] == True]
+
+if ("df_risks_selected_s1" not in ss and "df_risks_selected_s2" not in ss and "df_risks_selected_s3" not in ss):
+    df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
+    df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
+    df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
+
 
 # Import data from data/Mitigations.csv into dataframe
 df_mitigations = pd.read_csv("data/Mitigations.csv")
@@ -249,7 +262,7 @@ kinds = {
 ###############################################################################
 
 # Logo and title
-col_logo, col_title = st.columns([0.2, 1])
+col_logo, col_title, col_system = st.columns([0.2, 1, 0.2])
 with col_logo:
     st.write("")
     st.write("")
@@ -258,6 +271,11 @@ with col_logo:
 with col_title:
     st.title("Industry Sprint Workshop 2023")
     st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
+
+with col_system:
+    st.write("")
+    st.write("")
+    selected_system_logo = st.empty()
 
 # Timer and warning
 
@@ -714,29 +732,53 @@ if is_ready:
     ###############################################################################
 
     with tab2:
-        st.subheader("🗹 2. Identify Risks")
+        st.subheader(f"🚚 Select system to analyze")
 
         with st.expander("**Select system**", expanded=True):
             # Select system to display
             img = image_select(
-                label="Select a system to explore below",
+                label="The following steps will be performed for the selected system. You can flip between the systems at any time.",
                 images=[
                     "assets/system1.png",
                     "assets/system2.png",
                     "assets/system3.png",
                 ],
-                captions=["System 1", "System 2", "System 3"],
+                captions=[
+                    "System 1 - Only front steering",
+                    "System 2 - Front + Back steering (hydraulic)",
+                    "System 3 - Front + Back steering (electric)",
+                ],
+                key="system_selection",
             )
-            if img == "assets/system1.png":
-                system = "System 1 - Only front steering"
-            elif img == "assets/system2.png":
-                system = "System 2 - Front + Back steering (hydraulic)"
-            elif img == "assets/system3.png":
-                system = "System 3 - Front + Back steering (electric)"
+            image_to_system = {
+                "assets/system1.png": "System 1",
+                "assets/system2.png": "System 2",
+                "assets/system3.png": "System 3",
+            }
+            ss.system = image_to_system.get(img, "")
+
+        st.subheader("🗹 2. Identify Risks")
 
         with st.expander("**Technical risk registry**", expanded=True):
+            st.markdown(
+                """
+                The following table lists the technical risks that have been identified for the system under consideration.
+
+                Each failure has three potential originating mechanisms (mechanical, electromagnetic, and thermal) and an risk index.
+                """
+            )
+
+            if ss.system == "System 1":
+                df_risks_to_display = df_risks_s1
+            elif ss.system == "System 2":
+                df_risks_to_display = df_risks_s2
+            elif ss.system == "System 3":
+                df_risks_to_display = df_risks_s3
+            else:
+                df_risks_to_display = df_risks
+
             df_risks_table = st.dataframe(
-                df_risks.style.background_gradient(cmap=cm_g2r).format(
+                df_risks_to_display.style.background_gradient(cmap=cm_g2r).format(
                     {2: "{:.2f}"}, na_rep="MISS", precision=2
                 ),
                 height=400,
@@ -763,19 +805,9 @@ if is_ready:
                         format="%.2f",
                     ),
                     "Comments": None,
-                    "id2": None,
-                    "x": None,
-                    "y": None,
-                    "z": None,
-                    "force_e2": None,
-                    "force_t": None,
-                    "force_r": None,
-                    "electro_e2": None,
-                    "electro_t": None,
-                    "electro_r": None,
-                    "thermo_e2": None,
-                    "thermo_t": None,
-                    "thermo_r": None,
+                    "s1": None,
+                    "s2": None,
+                    "s3": None,
                 },
             )
 
@@ -964,11 +996,11 @@ if is_ready:
         st.subheader("🛡️ 3. Mitigate Risks")
 
         with st.expander("**Where to place mitigations? TODO**", expanded=True):
-            if system == "System 1 - Only front steering":
+            if ss.system == "System 1":
                 n = 16
-            elif system == "System 2 - Front + Back steering (hydraulic)":
+            elif ss.system == "System 2":
                 n = 18
-            elif system == "System 3 - Front + Back steering (electric)":
+            elif ss.system == "System 3":
                 n = 25
             else:
                 n = 10
@@ -1251,7 +1283,7 @@ if is_ready:
                 )
 
             with col_riskid_2:
-                st.write("The selected system is: ", system)
+                st.write("The selected system is: ", ss.system)
                 selected_points = []
                 st.write("The selected points are: ", value)
 
@@ -1731,8 +1763,16 @@ if is_ready:
         Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
         """
     )
+    if ss.system == "System 1":
+        df_risks_selected_to_display = df_risks_selected_s1
+    elif ss.system == "System 2":
+        df_risks_selected_to_display = df_risks_selected_s2
+    elif ss.system == "System 3":
+        df_risks_selected_to_display = df_risks_selected_s3
+    else:
+        df_risks_selected_to_display = df_risks_selected
     questions_tab2_col1.data_editor(
-        df_risks_selected,
+        df_risks_selected_to_display,
         height=400,
         use_container_width=True,
         hide_index=True,
@@ -1923,6 +1963,16 @@ except Exception as e:
 #         Made with ❤️ by the DSM Conference 2021 team.
 #     """
 # )
+
+
+if ss.system == "System 1":
+    selected_system_logo.image("assets/system1.png", width=115)
+elif ss.system == "System 2":
+    selected_system_logo.image("assets/system2.png", width=115)
+elif ss.system == "System 3":
+    selected_system_logo.image("assets/system3.png", width=115)
+else:
+    selected_system_logo.image("assets/system0.png", width=115)
 
 if not (is_ready):
     asyncio.run(watch(test))
