@@ -210,27 +210,38 @@ if "market_sizes" not in ss:
 if "system" not in ss:
     ss.system = ""
 
-# Import data from data/TechRisks.csv into dataframe
-df_risks = pd.read_csv("data/TechRisks.csv", sep=";", decimal=".")
-df_risks_selected = df_risks[["ID", "Name","s1","s2","s3"]].copy()
+@st.cache_data
+def get_data(csv_file):
+    return pd.read_csv(csv_file, sep=";", decimal=",")
+
+if "df_risks" not in ss:
+    ss.df_risks = get_data("data/TechRisks.csv")
+
+
+df_risks_selected = ss.df_risks[["ID", "Name","s1","s2","s3"]].copy()
 new_col_risks = ["False" for i in range(len(df_risks_selected))]
 df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
 
-df_risks_s1 = df_risks[df_risks["s1"] == True]
-df_risks_s2 = df_risks[df_risks["s2"] == True]
-df_risks_s3 = df_risks[df_risks["s3"] == True]
+df_risks_s1 = ss.df_risks[ss.df_risks["s1"] == True]
+df_risks_s2 = ss.df_risks[ss.df_risks["s2"] == True]
+df_risks_s3 = ss.df_risks[ss.df_risks["s3"] == True]
 
 if ("df_risks_selected_s1" not in ss and "df_risks_selected_s2" not in ss and "df_risks_selected_s3" not in ss):
     df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
     df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
     df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
 
+# if "risks_selected_s1" not in ss and "risks_selected_s2" not in ss and "risks_selected_s3" not in ss:
+#     ss.risks_selected_s1 = None
+#     ss.risks_selected_s2 = None
+#     ss.risks_selected_s3 = None
 
 # Import data from data/Mitigations.csv into dataframe
-df_mitigations = pd.read_csv("data/Mitigations.csv")
+df_mitigations = get_data("data/Mitigations.csv")
 
 # Import data from data/Components.csv into dataframe
-df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
+# df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
+df_components = get_data("data/Components.csv")
 # Compomnets per system
 df_components_s1 = df_components[df_components["s1"] == True]
 df_components_s2 = df_components[df_components["s2"] == True]
@@ -238,16 +249,17 @@ df_components_s3 = df_components[df_components["s3"] == True]
 
 # Original systems designs
 if "df_systems" not in ss:
-    ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
+    # ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
+    ss.df_systems = get_data("data/Systems.csv")
     calculate_ms()
 
 # DSMs
-df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+# df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
+df_dsm = get_data("data/dsm.csv").fillna(0)
 
 # Distances
-df_distances = pd.read_csv(
-    "data/distances.csv", sep=";", header=None, decimal=","
-).fillna(0)
+# df_distances = pd.read_csv("data/distances.csv", sep=";", header=None, decimal=",").fillna(0)
+df_distances = get_data("data/distances.csv").fillna(0)
 
 # Kinds of interfaces
 kinds = {
@@ -775,7 +787,7 @@ if is_ready:
             elif ss.system == "System 3":
                 df_risks_to_display = df_risks_s3
             else:
-                df_risks_to_display = df_risks
+                df_risks_to_display = ss.df_risks
 
             df_risks_table = st.dataframe(
                 df_risks_to_display.style.background_gradient(cmap=cm_g2r).format(
@@ -1763,34 +1775,51 @@ if is_ready:
         Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
         """
     )
+    config_risks_selectiopn = {
+        "Selected": st.column_config.CheckboxColumn(
+            "Selected",
+            help="Select the risks you would like to mitigate.",
+            width="small",
+        ),
+        "ID": st.column_config.TextColumn(
+            "ID", help="Risk identification ID", width="small", disabled=True
+        ),
+        "Name": st.column_config.TextColumn(
+            "Name", help="Name", width="large", disabled=True
+        ),
+    }
     if ss.system == "System 1":
-        df_risks_selected_to_display = df_risks_selected_s1
+        questions_tab2_col1.data_editor(
+            df_risks_selected_s1,
+            key="risks_selected_s1",
+            height=400,
+            use_container_width=True,
+            hide_index=True,
+            num_rows="fixed",
+            column_config=config_risks_selectiopn,
+        )
     elif ss.system == "System 2":
-        df_risks_selected_to_display = df_risks_selected_s2
+        questions_tab2_col1.data_editor(
+            df_risks_selected_s2,
+            key="risks_selected_s2",
+            height=400,
+            use_container_width=True,
+            hide_index=True,
+            num_rows="fixed",
+            column_config=config_risks_selectiopn,
+        )
     elif ss.system == "System 3":
-        df_risks_selected_to_display = df_risks_selected_s3
+        questions_tab2_col1.data_editor(
+            df_risks_selected_s3,
+            key="risks_selected_s3",
+            height=400,
+            use_container_width=True,
+            hide_index=True,
+            num_rows="fixed",
+            column_config=config_risks_selectiopn,
+        )
     else:
-        df_risks_selected_to_display = df_risks_selected
-    questions_tab2_col1.data_editor(
-        df_risks_selected_to_display,
-        height=400,
-        use_container_width=True,
-        hide_index=True,
-        num_rows="fixed",
-        column_config={
-            "Selected": st.column_config.CheckboxColumn(
-                "Selected",
-                help="Select the risks you would like to mitigate.",
-                width="small",
-            ),
-            "ID": st.column_config.TextColumn(
-                "ID", help="Risk identification ID", width="small", disabled=True
-            ),
-            "Name": st.column_config.TextColumn(
-                "Name", help="Name", width="large", disabled=True
-            ),
-        },
-    )
+        st.warning("Please select a system to explore.")
 
     # Questions Tab 3
 
