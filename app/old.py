@@ -270,3 +270,79 @@ import altair as alt
 
 ###############################################################################
 
+
+            # # editable_df = st.data_editor(
+            # st.dataframe(
+            #     ss["df_systems"],
+            #     #key="systems_data_editor",
+            #     #num_rows="dynamic",
+            #     use_container_width=False,
+            #     hide_index=True,
+            #     #on_change=on_data_update(data="df test"),
+            #     column_config={
+            #         "name": st.column_config.TextColumn(
+            #             "Name",
+            #             help="Name of the alternative system",
+            #             max_chars=50,
+            #         ),
+            #         "description": st.column_config.TextColumn(
+            #             "Description",
+            #             help="Description of the alternative system",
+            #             max_chars=50,
+            #         ),
+            #         "min_R": st.column_config.NumberColumn(
+            #             "Minimum Turning Radius",
+            #             help="Turning radius distance in meters",
+            #             min_value=0,
+            #             max_value=50,
+            #             step=0.1,
+            #             format="%.1f m",
+            #             disabled=True,
+            #         ),
+            #         "reliability": st.column_config.NumberColumn(
+            #             "Reliability",
+            #             help="Reliability of the system",
+            #             min_value=0,
+            #             max_value=1,
+            #             step=0.01,
+            #             format="%.2f",
+            #             disabled=True,
+            #         ),
+            #         "price": st.column_config.NumberColumn(
+            #             "Price",
+            #             help="Price in kilo Euros",
+            #             min_value=0,
+            #             max_value=500,
+            #             step=0.1,
+            #             format="%.1f k€",
+            #         ),
+            #         "cost": st.column_config.NumberColumn(
+            #             "Cost",
+            #             help="Cost in kilo Euros",
+            #             min_value=0,
+            #             max_value=500,
+            #             step=0.1,
+            #             format="%.1f k€",
+            #             disabled=True,
+            #         ),
+            #         "market_share_1": None,
+            #         "market_share_2": None,
+            #         "market_share_3": None,
+            #         "market_units_1": None,
+            #         "market_units_2": None,
+            #         "market_units_3": None,
+            #         "market_revenue_1": None,
+            #         "market_revenue_2": None,
+            #         "market_revenue_3": None,
+            #         "market_profit_1": None,
+            #         "market_profit_2": None,
+            #         "market_profit_3": None,
+            #         "total_units": None,
+            #         "total_revenue": None,
+            #         "total_profit": None,
+            #     },
+            # )
+
+
+###############################################################################
+
