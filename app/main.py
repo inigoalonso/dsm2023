@@ -17,7 +17,6 @@ from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 from streamlit import session_state as ss
 import plotly.express as px
-from plotly.subplots import make_subplots
 from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
@@ -70,15 +69,6 @@ hide_streamlit_style = """
                 </style>
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# increase the size of the expander titles (class streamlit-expanderHeader)
-expander_titles_style = """
-                <style>
-                .streamlit-expanderHeader {font-size: 3rem;}
-                </style>
-                """
-st.markdown(expander_titles_style, unsafe_allow_html=True)
-
 
 # fix echarts
 st.markdown(
@@ -171,6 +161,8 @@ def on_data_update(data):
 def on_system_selection():
     """Callback function when system is selected."""
     print("System selected:", ss.system)
+    # for item in ["risks_selected_s1","risks_selected_s2","risks_selected_s3"]:
+    #     ss[item] = ss[item]
     pass
 
 
@@ -262,26 +254,24 @@ def get_data(csv_file):
     return pd.read_csv(csv_file, sep=";", decimal=",")
 
 
-if "df_risks" not in ss:
-    ss.df_risks = get_data("data/TechRisks.csv")
+df_risks = get_data("data/TechRisks.csv")
 
-
-df_risks_selected = ss.df_risks[["ID", "Name", "s1", "s2", "s3"]].copy()
+df_risks_selected = df_risks[["ID", "Name", "s1", "s2", "s3"]].copy()
 new_col_risks = ["False" for i in range(len(df_risks_selected))]
 df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
 
-df_risks_s1 = ss.df_risks[ss.df_risks["s1"] == True]
-df_risks_s2 = ss.df_risks[ss.df_risks["s2"] == True]
-df_risks_s3 = ss.df_risks[ss.df_risks["s3"] == True]
+df_risks_s1 = df_risks[df_risks["s1"] == True]
+df_risks_s2 = df_risks[df_risks["s2"] == True]
+df_risks_s3 = df_risks[df_risks["s3"] == True]
 
 if (
     "df_risks_selected_s1" not in ss
     and "df_risks_selected_s2" not in ss
     and "df_risks_selected_s3" not in ss
 ):
-    df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
-    df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
-    df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
+    ss.df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
+    ss.df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
+    ss.df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
 
 # if "risks_selected_s1" not in ss and "risks_selected_s2" not in ss and "risks_selected_s3" not in ss:
 #     ss.risks_selected_s1 = None
@@ -790,7 +780,98 @@ if is_ready:
                 config={"displayModeBar": False},
             )
 
+        # Questions Tab 1
         questions_tab1 = st.expander("**Questions**", expanded=True)
+
+        form_tab1 = questions_tab1.form(key="form_tab1")
+
+        with form_tab1:
+            form_tab1.write(
+                "I think that the most valuable systems for each of the markets are..."
+            )
+            form_tab1.caption(
+                "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
+            )
+
+            cont_systems = form_tab1.container()
+            with cont_systems:
+                (
+                    col_cont_systems_0,
+                    col_cont_systems_1,
+                    col_cont_systems_2,
+                    col_cont_systems_3,
+                ) = st.columns(4)
+                with col_cont_systems_1:
+                    st.write("System 1")
+                    st.image("assets/system1.png")
+                with col_cont_systems_2:
+                    st.write("System 2")
+                    st.image("assets/system2.png")
+                with col_cont_systems_3:
+                    st.write("System 3")
+                    st.image("assets/system3.png")
+            cont_market_artic = form_tab1.container()
+            with cont_market_artic:
+                st.write("Artic Market")
+                (
+                    col_cont_artic_0,
+                    col_cont_artic_1,
+                    col_cont_artic_2,
+                    col_cont_artic_3,
+                ) = st.columns(4)
+                with col_cont_artic_0:
+                    st.image("assets/artic.jpg")
+                with col_cont_artic_1:
+                    artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+                with col_cont_artic_2:
+                    artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+                with col_cont_artic_3:
+                    artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+
+            cont_market_desert = form_tab1.container()
+            with cont_market_desert:
+                st.write("Desert Market")
+                (
+                    col_cont_desert_0,
+                    col_cont_desert_1,
+                    col_cont_desert_2,
+                    col_cont_desert_3,
+                ) = st.columns(4)
+                with col_cont_desert_0:
+                    st.image("assets/desert.jpg")
+                with col_cont_desert_1:
+                    desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                with col_cont_desert_2:
+                    desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                with col_cont_desert_3:
+                    desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+
+            cont_market_special = form_tab1.container()
+            with cont_market_special:
+                st.write("Special Market")
+                (
+                    col_cont_special_0,
+                    col_cont_special_1,
+                    col_cont_special_2,
+                    col_cont_special_3,
+                ) = st.columns(4)
+                with col_cont_special_0:
+                    st.image("assets/special.jpg")
+                with col_cont_special_1:
+                    special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                with col_cont_special_2:
+                    special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                with col_cont_special_3:
+                    special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+
+            form_tab1_submitted = st.form_submit_button(
+                label="Submit",
+                help="Click here to submit your answers.",
+                type="primary",
+                use_container_width=True,
+            )
+
+
 
     ###############################################################################
     # Tab 2
@@ -822,7 +903,7 @@ if is_ready:
                 """
                 The following table lists the technical risks that have been identified for the system under consideration.
 
-                Each failure has three potential originating mechanisms (mechanical, electromagnetic, and thermal) and an risk index.
+                Each failure has three potential originating mechanisms (mechanical, electromagnetic, and thermal) and a risk index.
                 """
             )
 
@@ -833,7 +914,7 @@ if is_ready:
             elif ss.system == "System 3":
                 df_risks_to_display = df_risks_s3
             else:
-                df_risks_to_display = ss.df_risks
+                df_risks_to_display = df_risks
 
             df_risks_table = st.dataframe(
                 df_risks_to_display.style.background_gradient(cmap=cm_g2r).format(
@@ -872,7 +953,7 @@ if is_ready:
         with st.expander("**Matrices**", expanded=True):
             matrix = st.radio(
                 "Select the matrix to display",
-                ["Binary DSM", "Distance DSM", "Risk DSM [TODO]"],
+                ["Interfaces DSM", "Distance DSM", "Risk DSM [TODO]"],
                 captions=[
                     "Interfaces between components",
                     "Distances between components",
@@ -934,7 +1015,7 @@ if is_ready:
                         )
                     )
 
-            if matrix == "Binary DSM":
+            if matrix == "Interfaces DSM":
                 fig = plot.mdm(
                     leafs=g.leafs,
                     edges=g.edges,
@@ -1041,11 +1122,59 @@ if is_ready:
                 },
             )
 
-        questions_tab2 = st.expander("**Questions**", expanded=True)
+        with st.expander("**Select risks for mitigation**", expanded=True):
+            st.markdown(
+                """
+                Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
+                """
+            )
 
-        with questions_tab2:
             questions_tab2_col1, questions_tab2_col2 = st.columns(2)
 
+            if ss.system == "System 1":
+                test_risks_selected_s1 = questions_tab2_col1.multiselect(
+                    label="Select the risks you would like to mitigate.",
+                    options=df_risks_selected.ID,
+                    help="Select the risks you would like to mitigate.",
+                    key="test_risks_selected_s1",
+                )
+                questions_tab2_col2.dataframe(
+                    df_risks_selected[
+                        df_risks_selected.ID.isin(test_risks_selected_s1)
+                    ],
+                    height=400,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "Risk ID", help="Risk ID", width="small"
+                        ),
+                        "Name": st.column_config.TextColumn(
+                            "Risk name", help="Risk description", width="large"
+                        ),
+                        "Comments": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
+                )
+            elif ss.system == "System 2":
+                test_risks_selected_s2 = questions_tab2_col1.multiselect(
+                    label="Select the risks you would like to mitigate.",
+                    options=df_risks_selected.ID,
+                    help="Select the risks you would like to mitigate.",
+                    key="test_risks_selected_s2",
+                )
+            elif ss.system == "System 3":
+                test_risks_selected_s3 = questions_tab2_col1.multiselect(
+                    label="Select the risks you would like to mitigate.",
+                    options=df_risks_selected.ID,
+                    help="Select the risks you would like to mitigate.",
+                    key="test_risks_selected_s3",
+                )
+            else:
+                st.warning("Please select a system to explore.")
     ###############################################################################
     # Tab 3
     ###############################################################################
@@ -1444,10 +1573,112 @@ if is_ready:
                 label="Submit", help="Click here to submit your answers."
             )
 
+        # Questions Tab 3
         questions_tab3 = st.expander("**Questions**", expanded=True)
 
+        form_tab3 = questions_tab3.form(key="form_tab3")
+
+        with form_tab3:
+            form_tab3.write(
+                "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
+            )
+            form_tab3.caption(
+                "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
+            )
+
+            cont_systems = form_tab3.container()
+            with cont_systems:
+                (
+                    col_cont_systems_0,
+                    col_cont_systems_1,
+                    col_cont_systems_2,
+                    col_cont_systems_3,
+                    col_cont_systems_4,
+                ) = st.columns(5)
+                with col_cont_systems_1:
+                    st.write("System 1")
+                    st.image("assets/system1.png")
+                with col_cont_systems_2:
+                    st.write("System 2")
+                    st.image("assets/system2.png")
+                with col_cont_systems_3:
+                    st.write("System 3")
+                    st.image("assets/system3.png")
+                with col_cont_systems_4:
+                    st.write("Your System")
+                    st.image("assets/system4.png")
+            cont_market_artic = form_tab3.container()
+            with cont_market_artic:
+                st.write("Artic Market")
+                (
+                    col_cont_artic_0,
+                    col_cont_artic_1,
+                    col_cont_artic_2,
+                    col_cont_artic_3,
+                    col_cont_artic_4,
+                ) = st.columns(5)
+                with col_cont_artic_0:
+                    st.image("assets/artic.jpg")
+                with col_cont_artic_1:
+                    artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+                with col_cont_artic_2:
+                    artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+                with col_cont_artic_3:
+                    artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+                with col_cont_artic_4:
+                    artic_s4 = st.slider("Your System in Artic Market", 1, 10, 5)
+
+            cont_market_desert = form_tab3.container()
+            with cont_market_desert:
+                st.write("Desert Market")
+                (
+                    col_cont_desert_0,
+                    col_cont_desert_1,
+                    col_cont_desert_2,
+                    col_cont_desert_3,
+                    col_cont_desert_4,
+                ) = st.columns(5)
+                with col_cont_desert_0:
+                    st.image("assets/desert.jpg")
+                with col_cont_desert_1:
+                    desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                with col_cont_desert_2:
+                    desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                with col_cont_desert_3:
+                    desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+                with col_cont_desert_4:
+                    desert_s4 = st.slider("Your System in Desert Market", 1, 10, 5)
+
+            cont_market_special = form_tab3.container()
+            with cont_market_special:
+                st.write("Special Market")
+                (
+                    col_cont_special_0,
+                    col_cont_special_1,
+                    col_cont_special_2,
+                    col_cont_special_3,
+                    col_cont_special_4,
+                ) = st.columns(5)
+                with col_cont_special_0:
+                    st.image("assets/special.jpg")
+                with col_cont_special_1:
+                    special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                with col_cont_special_2:
+                    special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                with col_cont_special_3:
+                    special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+                with col_cont_special_4:
+                    special_s4 = st.slider("Your System in Special Market", 1, 10, 5)
+
+            form_tab3_submitted = st.form_submit_button(
+                label="Submit",
+                help="Click here to submit your answers.",
+                type="primary",
+                use_container_width=True,
+            )
+
     ###############################################################################
-    # Tab 4
+    # Tab 4 Questionnaire
     ###############################################################################
 
     with tab4:
@@ -1504,7 +1735,7 @@ if is_ready:
                 )
                 st.divider()
                 q5 = st.slider(
-                    "Binary DSMs",
+                    "Interfaces DSMs",
                     key="q5",
                     min_value=0.0,
                     max_value=5.0,
@@ -1513,7 +1744,7 @@ if is_ready:
                 )
                 st.divider()
                 q6 = st.slider(
-                    "Numerical (Spatial) DSMs",
+                    "Numerical (Spatial/Distance) DSMs",
                     key="q6",
                     min_value=0.0,
                     max_value=5.0,
@@ -1665,7 +1896,7 @@ if is_ready:
         questions_tab4 = st.expander("**Questions**", expanded=True)
 
     ###############################################################################
-    # Tab 5
+    # Tab 5 Help
     ###############################################################################
 
     with tab5:
@@ -1721,259 +1952,6 @@ if is_ready:
             """
             )
 
-    ###############################################################################
-    # Questions
-    ###############################################################################
-
-    # Questions Tab 1
-
-    form_tab1 = questions_tab1.form(key="form_tab1")
-
-    with form_tab1:
-        form_tab1.write(
-            "I think that the most valuable systems for each of the markets are..."
-        )
-        form_tab1.caption(
-            "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
-        )
-
-        cont_systems = form_tab1.container()
-        with cont_systems:
-            (
-                col_cont_systems_0,
-                col_cont_systems_1,
-                col_cont_systems_2,
-                col_cont_systems_3,
-            ) = st.columns(4)
-            with col_cont_systems_1:
-                st.write("System 1")
-                st.image("assets/system1.png")
-            with col_cont_systems_2:
-                st.write("System 2")
-                st.image("assets/system2.png")
-            with col_cont_systems_3:
-                st.write("System 3")
-                st.image("assets/system3.png")
-        cont_market_artic = form_tab1.container()
-        with cont_market_artic:
-            st.write("Artic Market")
-            (
-                col_cont_artic_0,
-                col_cont_artic_1,
-                col_cont_artic_2,
-                col_cont_artic_3,
-            ) = st.columns(4)
-            with col_cont_artic_0:
-                st.image("assets/artic.jpg")
-            with col_cont_artic_1:
-                artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
-            with col_cont_artic_2:
-                artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
-            with col_cont_artic_3:
-                artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
-
-        cont_market_desert = form_tab1.container()
-        with cont_market_desert:
-            st.write("Desert Market")
-            (
-                col_cont_desert_0,
-                col_cont_desert_1,
-                col_cont_desert_2,
-                col_cont_desert_3,
-            ) = st.columns(4)
-            with col_cont_desert_0:
-                st.image("assets/desert.jpg")
-            with col_cont_desert_1:
-                desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
-            with col_cont_desert_2:
-                desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
-            with col_cont_desert_3:
-                desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
-
-        cont_market_special = form_tab1.container()
-        with cont_market_special:
-            st.write("Special Market")
-            (
-                col_cont_special_0,
-                col_cont_special_1,
-                col_cont_special_2,
-                col_cont_special_3,
-            ) = st.columns(4)
-            with col_cont_special_0:
-                st.image("assets/special.jpg")
-            with col_cont_special_1:
-                special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
-            with col_cont_special_2:
-                special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
-            with col_cont_special_3:
-                special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
-
-        form_tab1_submitted = st.form_submit_button(
-            label="Submit",
-            help="Click here to submit your answers.",
-            type="primary",
-            use_container_width=True,
-        )
-
-    # Questions Tab 2
-    questions_tab2_col1.markdown(
-        """
-        Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
-        """
-    )
-    config_risks_selectiopn = {
-        "Selected": st.column_config.CheckboxColumn(
-            "Selected",
-            help="Select the risks you would like to mitigate.",
-            width="small",
-        ),
-        "ID": st.column_config.TextColumn(
-            "ID", help="Risk identification ID", width="small", disabled=True
-        ),
-        "Name": st.column_config.TextColumn(
-            "Name", help="Name", width="large", disabled=True
-        ),
-        "s1": None,
-        "s2": None,
-        "s3": None,
-    }
-    if ss.system == "System 1":
-        questions_tab2_col1.data_editor(
-            df_risks_selected_s1,
-            key="risks_selected_s1",
-            height=400,
-            use_container_width=True,
-            hide_index=True,
-            num_rows="fixed",
-            column_config=config_risks_selectiopn,
-        )
-    elif ss.system == "System 2":
-        questions_tab2_col1.data_editor(
-            df_risks_selected_s2,
-            key="risks_selected_s2",
-            height=400,
-            use_container_width=True,
-            hide_index=True,
-            num_rows="fixed",
-            column_config=config_risks_selectiopn,
-        )
-    elif ss.system == "System 3":
-        questions_tab2_col1.data_editor(
-            df_risks_selected_s3,
-            key="risks_selected_s3",
-            height=400,
-            use_container_width=True,
-            hide_index=True,
-            num_rows="fixed",
-            column_config=config_risks_selectiopn,
-        )
-    else:
-        st.warning("Please select a system to explore.")
-
-    # Questions Tab 3
-
-    form_tab3 = questions_tab3.form(key="form_tab3")
-
-    with form_tab3:
-        form_tab3.write(
-            "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
-        )
-        form_tab3.caption(
-            "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
-        )
-
-        cont_systems = form_tab3.container()
-        with cont_systems:
-            (
-                col_cont_systems_0,
-                col_cont_systems_1,
-                col_cont_systems_2,
-                col_cont_systems_3,
-                col_cont_systems_4,
-            ) = st.columns(5)
-            with col_cont_systems_1:
-                st.write("System 1")
-                st.image("assets/system1.png")
-            with col_cont_systems_2:
-                st.write("System 2")
-                st.image("assets/system2.png")
-            with col_cont_systems_3:
-                st.write("System 3")
-                st.image("assets/system3.png")
-            with col_cont_systems_4:
-                st.write("Your System")
-                st.image("assets/system4.png")
-        cont_market_artic = form_tab3.container()
-        with cont_market_artic:
-            st.write("Artic Market")
-            (
-                col_cont_artic_0,
-                col_cont_artic_1,
-                col_cont_artic_2,
-                col_cont_artic_3,
-                col_cont_artic_4,
-            ) = st.columns(5)
-            with col_cont_artic_0:
-                st.image("assets/artic.jpg")
-            with col_cont_artic_1:
-                artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
-            with col_cont_artic_2:
-                artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
-            with col_cont_artic_3:
-                artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
-            with col_cont_artic_4:
-                artic_s4 = st.slider("Your System in Artic Market", 1, 10, 5)
-
-        cont_market_desert = form_tab3.container()
-        with cont_market_desert:
-            st.write("Desert Market")
-            (
-                col_cont_desert_0,
-                col_cont_desert_1,
-                col_cont_desert_2,
-                col_cont_desert_3,
-                col_cont_desert_4,
-            ) = st.columns(5)
-            with col_cont_desert_0:
-                st.image("assets/desert.jpg")
-            with col_cont_desert_1:
-                desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
-            with col_cont_desert_2:
-                desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
-            with col_cont_desert_3:
-                desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
-            with col_cont_desert_4:
-                desert_s4 = st.slider("Your System in Desert Market", 1, 10, 5)
-
-        cont_market_special = form_tab3.container()
-        with cont_market_special:
-            st.write("Special Market")
-            (
-                col_cont_special_0,
-                col_cont_special_1,
-                col_cont_special_2,
-                col_cont_special_3,
-                col_cont_special_4,
-            ) = st.columns(5)
-            with col_cont_special_0:
-                st.image("assets/special.jpg")
-            with col_cont_special_1:
-                special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
-            with col_cont_special_2:
-                special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
-            with col_cont_special_3:
-                special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
-            with col_cont_special_4:
-                special_s4 = st.slider("Your System in Special Market", 1, 10, 5)
-
-        form_tab3_submitted = st.form_submit_button(
-            label="Submit",
-            help="Click here to submit your answers.",
-            type="primary",
-            use_container_width=True,
-        )
-
-
 ###############################################################################
 # Session state
 ###############################################################################
@@ -2000,49 +1978,10 @@ except Exception as e:
     pass
 
 ###############################################################################
-# Footer
+# Housekeeping
 ###############################################################################
 
-# footer = st.expander(
-#     "Links",
-#     expanded=True
-# )
-
-# col_footer1, col_footer2, col_footer3, col_footer4, col_footer5 = footer.columns(5)
-
-# col_footer2.link_button(
-#     "Conference Homepage",
-#     url="https://dsm-conference.org/",
-#     help="Go to DSM Conference 2023 website",
-# )
-# col_footer3.link_button(
-#     "Conference Programme",
-#     url="https://dsm-conference.org/conference-programme/",
-#     help="Go to DSM Conference 2023 programme",
-# )
-# col_footer4.link_button(
-#     "Conference Proceedings",
-#     url="https://dsm-conference.org/conference-proceedings-dsm-2023/",
-#     help="Go to DSM Conference 2023 proceedings",
-# )
-# col_footer5.link_button(
-#     "Design Society",
-#     url="https://www.designsociety.org/",
-#     help="Go to Design Society website",
-# )
-# col_footer1.link_button(
-#     "dsmweb.org",
-#     url="https://DSMweb.org/",
-#     help="Go to DSMweb.org website",
-# )
-
-# footer.markdown(
-#     """
-#         Made with ❤️ by the DSM Conference 2021 team.
-#     """
-# )
-
-
+# Show selected system logo in the top right corner
 if ss.system == "System 1":
     selected_system_logo.image("assets/system1.png", width=115)
 elif ss.system == "System 2":

@@ -165,3 +165,108 @@ import altair as alt
 
 ###############################################################################
 
+
+###############################################################################
+# Footer
+###############################################################################
+
+# footer = st.expander(
+#     "Links",
+#     expanded=True
+# )
+
+# col_footer1, col_footer2, col_footer3, col_footer4, col_footer5 = footer.columns(5)
+
+# col_footer2.link_button(
+#     "Conference Homepage",
+#     url="https://dsm-conference.org/",
+#     help="Go to DSM Conference 2023 website",
+# )
+# col_footer3.link_button(
+#     "Conference Programme",
+#     url="https://dsm-conference.org/conference-programme/",
+#     help="Go to DSM Conference 2023 programme",
+# )
+# col_footer4.link_button(
+#     "Conference Proceedings",
+#     url="https://dsm-conference.org/conference-proceedings-dsm-2023/",
+#     help="Go to DSM Conference 2023 proceedings",
+# )
+# col_footer5.link_button(
+#     "Design Society",
+#     url="https://www.designsociety.org/",
+#     help="Go to Design Society website",
+# )
+# col_footer1.link_button(
+#     "dsmweb.org",
+#     url="https://DSMweb.org/",
+#     help="Go to DSMweb.org website",
+# )
+
+# footer.markdown(
+#     """
+#         Made with ❤️ by the DSM Conference 2021 team.
+#     """
+# )
+
+
+###############################################################################
+
+
+            config_risks_selectiopn = {
+                "Selected": st.column_config.CheckboxColumn(
+                    "Selected",
+                    help="Select the risks you would like to mitigate.",
+                    width="small",
+                ),
+                "ID": st.column_config.TextColumn(
+                    "ID", help="Risk identification ID", width="small", disabled=True
+                ),
+                "Name": st.column_config.TextColumn(
+                    "Name", help="Name", width="large", disabled=True
+                ),
+                "s1": None,
+                "s2": None,
+                "s3": None,
+            }
+            if ss.system == "System 1":
+                questions_tab2_col1.multiselect(
+                    label="Select the risks you would like to mitigate.",
+                    options=ss.risks_selected_s1,
+                    help="Select the risks you would like to mitigate.",
+                )
+                questions_tab2_col1.data_editor(
+                    ss.df_risks_selected_s1,
+                    key="risks_selected_s1",
+                    height=400,
+                    use_container_width=True,
+                    hide_index=True,
+                    num_rows="fixed",
+                    column_config=config_risks_selectiopn,
+                )
+            elif ss.system == "System 2":
+                questions_tab2_col1.data_editor(
+                    ss.df_risks_selected_s2,
+                    key="risks_selected_s2",
+                    height=400,
+                    use_container_width=True,
+                    hide_index=True,
+                    num_rows="fixed",
+                    column_config=config_risks_selectiopn,
+                )
+            elif ss.system == "System 3":
+                questions_tab2_col1.data_editor(
+                    ss.df_risks_selected_s3,
+                    key="risks_selected_s3",
+                    height=400,
+                    use_container_width=True,
+                    hide_index=True,
+                    num_rows="fixed",
+                    column_config=config_risks_selectiopn,
+                )
+            else:
+                st.warning("Please select a system to explore.")
+
+
+###############################################################################
+
