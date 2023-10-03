@@ -74,12 +74,6 @@ hide_streamlit_style = """
                 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# fix echarts
-st.markdown(
-    """ <style>iframe[title="streamlit_echarts.st_echarts"]{ height: 600px !important } """,
-    unsafe_allow_html=True,
-)
-
 ###############################################################################
 # Setup
 ###############################################################################
@@ -482,7 +476,7 @@ if "g" not in ss:
 
 if "matrix" not in ss:
     ss.matrix = "Interfaces DSM"
-    #on_matrix_selection(ss.matrix)
+    # on_matrix_selection(ss.matrix)
 
 # Import data from data/Mitigations.csv into dataframe
 df_mitigations = get_data("data/Mitigations.csv").fillna(False)
@@ -628,7 +622,6 @@ with st.expander("Info", expanded=True):
 # If the user has filled in the intro form correctly
 is_ready = (ss.group != "Select") and ss.consent
 if is_ready:
-
     # with st.expander("**Select system**", expanded=False):
     with st.sidebar:
         system_logo = st.empty()
@@ -643,10 +636,10 @@ if is_ready:
         system_logo.image(f"assets/system{ss.system[-1]}.png", width=245)
 
         systems_ids = {
-                    "System 1": 0,
-                    "System 2": 1,
-                    "System 3": 2,
-                }
+            "System 1": 0,
+            "System 2": 1,
+            "System 3": 2,
+        }
 
         st.markdown(
             f"""
@@ -990,11 +983,17 @@ if is_ready:
                 with col_cont_desert_0:
                     st.image("assets/desert.jpg")
                 with col_cont_desert_1:
-                    ss.before_desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s1 = st.slider(
+                        "System 1 in Desert Market", 1, 10, 5
+                    )
                 with col_cont_desert_2:
-                    ss.before_desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s2 = st.slider(
+                        "System 2 in Desert Market", 1, 10, 5
+                    )
                 with col_cont_desert_3:
-                    ss.before_desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s3 = st.slider(
+                        "System 3 in Desert Market", 1, 10, 5
+                    )
 
             cont_market_special = form_tab1.container()
             with cont_market_special:
@@ -1008,11 +1007,17 @@ if is_ready:
                 with col_cont_special_0:
                     st.image("assets/special.jpg")
                 with col_cont_special_1:
-                    ss.before_special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                    ss.before_special_s1 = st.slider(
+                        "System 1 in Special Market", 1, 10, 5
+                    )
                 with col_cont_special_2:
-                    ss.before_special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                    ss.before_special_s2 = st.slider(
+                        "System 2 in Special Market", 1, 10, 5
+                    )
                 with col_cont_special_3:
-                    ss.before_special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+                    ss.before_special_s3 = st.slider(
+                        "System 3 in Special Market", 1, 10, 5
+                    )
 
             form_tab1_submitted = st.form_submit_button(
                 label="Submit",
@@ -1288,7 +1293,6 @@ if is_ready:
                 },
             )
 
-
         with st.expander(f"**Select mitigations for {ss.system}**", expanded=True):
             st.markdown(
                 f"""
@@ -1499,11 +1503,17 @@ if is_ready:
                 with col_cont_desert_0:
                     st.image("assets/desert.jpg")
                 with col_cont_desert_1:
-                    ss.after_desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                    ss.after_desert_s1 = st.slider(
+                        "System 1 in Desert Market", 1, 10, 5
+                    )
                 with col_cont_desert_2:
-                    ss.after_desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                    ss.after_desert_s2 = st.slider(
+                        "System 2 in Desert Market", 1, 10, 5
+                    )
                 with col_cont_desert_3:
-                    ss.after_desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+                    ss.after_desert_s3 = st.slider(
+                        "System 3 in Desert Market", 1, 10, 5
+                    )
 
             cont_market_special = form_tab3.container()
             with cont_market_special:
@@ -1517,11 +1527,17 @@ if is_ready:
                 with col_cont_special_0:
                     st.image("assets/special.jpg")
                 with col_cont_special_1:
-                    ss.after_special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                    ss.after_special_s1 = st.slider(
+                        "System 1 in Special Market", 1, 10, 5
+                    )
                 with col_cont_special_2:
-                    ss.after_special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                    ss.after_special_s2 = st.slider(
+                        "System 2 in Special Market", 1, 10, 5
+                    )
                 with col_cont_special_3:
-                    ss.after_special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+                    ss.after_special_s3 = st.slider(
+                        "System 3 in Special Market", 1, 10, 5
+                    )
 
             form_tab3_submitted = st.form_submit_button(
                 label="Submit",

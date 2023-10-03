@@ -754,3 +754,12 @@ else:
 
 ###############################################################################
 
+
+# fix echarts
+st.markdown(
+    """ <style>iframe[title="streamlit_echarts.st_echarts"]{ height: 600px !important } """,
+    unsafe_allow_html=True,
+)
+
+###############################################################################
+
