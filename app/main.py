@@ -120,6 +120,36 @@ cm_r2g = sns.diverging_palette(12, 130, as_cmap=True)
 
 
 ###############################################################################
+# Classes
+###############################################################################
+
+# System
+class System:
+    """A class to represent a system."""
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        min_R: float,
+        reliability: float,
+        price: float,
+        cost: float,
+    ):
+        """Initialize the system."""
+        self.name = name
+        self.description = description
+        self.min_R = min_R
+        self.reliability = reliability
+        self.price = price
+        self.cost = cost
+
+    def __repr__(self):
+        """Return a string representation of the system."""
+        return f"{self.name} ({self.description})"
+
+
+###############################################################################
 # Functions
 ###############################################################################
 
