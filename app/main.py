@@ -181,6 +181,14 @@ def get_session_id() -> str:
         return None
     return session_info._session_id
 
+def upload():
+    '''Upload the session state to Firestore'''
+    session_id = get_session_id()
+    session_ref = db.collection("sessions").document(session_id)
+    session_ref.set(
+        {"session_id": session_id, "timestamp": get_timestamp(), "session_state": ss}
+    )
+    st.toast("Session state uploaded to database", icon="📡")
 
 def calculate_ms(new_df: pd.DataFrame | None = None):
     """Calculate market shares and update the dataframe."""
