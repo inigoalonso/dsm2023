@@ -12,6 +12,7 @@ from __future__ import annotations
 import datetime
 import json
 import pandas as pd
+import numpy as np
 import streamlit as st
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
@@ -20,7 +21,6 @@ import plotly.express as px
 from google.cloud import firestore
 from google.oauth2 import service_account
 import seaborn as sns
-from streamlit_echarts import st_echarts
 from ragraph.graph import Graph
 from ragraph.node import Node
 from ragraph.edge import Edge
@@ -176,6 +176,120 @@ def on_risks_selection(selection):
     pass
 
 
+def on_matrix_selection(new_selection):
+    """Callback function when matrix is selected."""
+    print(f"New matrix selected: {new_selection}")
+
+    if ss.matrix == "Interfaces DSM":
+        ss.fig = plot.mdm(
+            # leafs=g.leafs,
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    fields=[
+                        "mechanical",
+                        "electrical",
+                        "information",
+                        "hydraulic",
+                    ],
+                ),
+                palettes=dict(
+                    fields={
+                        "mechanical": {"categorical": "#de9c38"},
+                        "electrical": {"categorical": "#a64747"},
+                        "information": {"categorical": "#545a8e"},
+                        "hydraulic": {"categorical": "#389dfc"},
+                    }
+                ),
+            ),
+        )
+    elif ss.matrix == "Distance DSM":
+        ss.fig = plot.mdm(
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    display="weights",
+                    fields=[
+                        "distance",
+                    ],
+                    mode="relative",
+                ),
+                palettes=dict(
+                    fields={
+                        "distance": {"continuous": get_diverging_redblue()},
+                    }
+                ),
+            ),
+        )
+    elif ss.matrix == "Risk DSM":
+        ss.fig = plot.mdm(
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    display="weights",
+                    fields=[
+                        "force_e",
+                        "force_t",
+                        "force_r",
+                        "electro_e",
+                        "electro_t",
+                        "electro_r",
+                        "thermo_e",
+                        "thermo_t",
+                        "thermo_r",
+                    ],
+                ),
+                palettes=dict(
+                    fields={
+                        "force_e": {"categorical": "#de9c38"},
+                        "force_t": {"categorical": "#de9c38"},
+                        "force_r": {"categorical": "#de9c38"},
+                        "electro_e": {"categorical": "#a64747"},
+                        "electro_t": {"categorical": "#a64747"},
+                        "electro_r": {"categorical": "#a64747"},
+                        "thermo_e": {"categorical": "#545a8e"},
+                        "thermo_t": {"categorical": "#545a8e"},
+                        "thermo_r": {"categorical": "#545a8e"},
+                    }
+                ),
+            ),
+        )
+
+    matrices.plotly_chart(
+        ss.fig,
+        use_container_width=True,
+        config={
+            "displayModeBar": False,
+            "displaylogo": False,
+            "modeBarButtonsToRemove": [
+                "zoom2d",
+                "zoomIn2d",
+                "zoomOut2d",
+                "resetScale2d",
+                "toggleSpikelines",
+                "pan2d",
+                "lasso2d",
+                "select2d",
+                "autoScale2d",
+                "hoverClosestCartesian",
+                "hoverCompareCartesian",
+            ],
+        },
+    )
+
+    ss.fig.update_layout(
+        {
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"fixedrange": True},
+        }
+    )
+
+
 def on_mitigations_selection(selection):
     """Callback function when mitigation is selected."""
     print(f"Mitigations selected for {ss.system}: {selection}")
@@ -260,7 +374,7 @@ def calculate_ms(new_df: pd.DataFrame | None = None):
 if "market_sizes" not in ss:
     ss.market_sizes = [10000, 20000, 40000]
 
-# Seelcted system
+# Selected system
 if "system" not in ss:
     ss.system = ""
 
@@ -270,30 +384,6 @@ def get_data(csv_file):
     return pd.read_csv(csv_file, sep=";", decimal=",")
 
 
-# Import data from data/Risks.csv into dataframe
-df_risks = get_data("data/TechRisks.csv")
-
-if (
-    "risks_selected_s1" not in ss
-    and "risks_selected_s2" not in ss
-    and "risks_selected_s3" not in ss
-):
-    ss.risks_selected_s1 = []
-    ss.risks_selected_s2 = []
-    ss.risks_selected_s3 = []
-
-# Import data from data/Mitigations.csv into dataframe
-df_mitigations = get_data("data/Mitigations.csv")
-
-if (
-    "mitigations_selected_s1" not in ss
-    and "mitigations_selected_s2" not in ss
-    and "mitigations_selected_s3" not in ss
-):
-    ss.mitigations_selected_s1 = []
-    ss.mitigations_selected_s2 = []
-    ss.mitigations_selected_s3 = []
-
 # Import data from data/Components.csv into dataframe
 # df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
 df_components = get_data("data/Components.csv")
@@ -301,12 +391,6 @@ df_components = get_data("data/Components.csv")
 # df_components_s1 = df_components[df_components["s1"] == True]
 # df_components_s2 = df_components[df_components["s2"] == True]
 # df_components_s3 = df_components[df_components["s3"] == True]
-
-# Original systems designs
-if "df_systems" not in ss:
-    # ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
-    ss.df_systems = get_data("data/Systems.csv")
-    calculate_ms()
 
 # DSMs
 # df_dsm = pd.read_csv("data/dsm.csv", sep=";", header=None, decimal=",").fillna(0)
@@ -323,6 +407,105 @@ kinds = {
     "I": "information",
     "H": "hydraulic",
 }
+
+# Import data from data/Risks.csv into dataframe
+df_risks = get_data("data/TechRisks.csv")
+
+if (
+    "risks_selected_s1" not in ss
+    and "risks_selected_s2" not in ss
+    and "risks_selected_s3" not in ss
+):
+    ss.risks_selected_s1 = []
+    ss.risks_selected_s2 = []
+    ss.risks_selected_s3 = []
+
+# Matrix fig
+if "matrix" not in ss:
+    ss.matrix = "Interfaces DSM"
+
+if "fig" not in ss:
+    ss.fig = None
+
+if "g" not in ss:
+    ss.g = Graph()
+
+    for component in df_components.iterrows():
+        # print(f'id: {component[1]["id"]} name:{component[1]["name"]}')
+        systems_full_names = {
+            "s1": "System 1",
+            "s2": "System 2",
+            "s3": "System 3",
+        }
+        labels = [
+            systems_full_names[s] for s in ["s1", "s2", "s3"] if component[1][s] == True
+        ]
+        fancy_node = Node(
+            name=component[1]["name"],
+            kind="component",
+            labels=labels,
+            weights={
+                "x": component[1]["x"],
+                "y": component[1]["y"],
+                "z": component[1]["z"],
+                "force_e": component[1]["force_e"],
+                "force_t": component[1]["force_t"],
+                "force_r": component[1]["force_r"],
+                "electro_e": component[1]["electro_e"],
+                "electro_t": component[1]["electro_t"],
+                "electro_r": component[1]["electro_r"],
+                "thermo_e": component[1]["thermo_e"],
+                "thermo_t": component[1]["thermo_t"],
+                "thermo_r": component[1]["thermo_r"],
+            },
+            annotations={
+                "id": component[1]["id"],
+            },
+        )
+        ss.g.add_node(fancy_node)
+
+    for i, row in df_dsm.iterrows():
+        for j, value in enumerate(row):
+            # print(i, j, value)
+            # print()
+            if i == j:
+                continue
+            if value in kinds.keys():
+                kind = kinds[value]
+            else:
+                kind = None
+            ss.g.add_edge(
+                Edge(
+                    source=ss.g.nodes[i],
+                    target=ss.g.nodes[j],
+                    name=f'{ss.g.nodes[i].annotations["id"]}_{ss.g.nodes[j].annotations["id"]}',
+                    kind=kind,
+                    labels=[],
+                    weights={
+                        "distance": df_distances.iloc[i, j],
+                    },
+                    annotations={},
+                )
+            )
+
+
+# Import data from data/mitigations.csv into dataframe
+df_mitigations = get_data("data/mitigations.csv").fillna(False)
+
+if (
+    "mitigations_selected_s1" not in ss
+    and "mitigations_selected_s2" not in ss
+    and "mitigations_selected_s3" not in ss
+):
+    ss.mitigations_selected_s1 = []
+    ss.mitigations_selected_s2 = []
+    ss.mitigations_selected_s3 = []
+
+# Original systems designs
+if "df_systems" not in ss:
+    # ss.df_systems = pd.read_csv("data/Systems.csv", sep=";", decimal=",")
+    ss.df_systems = get_data("data/Systems.csv")
+    calculate_ms()
 
 ###############################################################################
 # Head
@@ -452,13 +635,26 @@ with st.expander("Info", expanded=True):
             icon="👍",
         )
 
-with st.expander("Session State", expanded=True):
-    st.write(ss)
-
+# with st.expander("Session State", expanded=True):
+#     st.write(ss)
 
 # If the user has filled in the intro form correctly
 is_ready = (group != "Select") and consent
 if is_ready:
+
+    # with st.expander("**Select system**", expanded=False):
+    with st.sidebar:
+        system_logo = st.empty()
+        # Select system to display
+        ss.system = st.selectbox(
+            label="Select the system to analyze",
+            options=["System 1", "System 2", "System 3"],
+            index=0,
+            help="Select the system to analyze",
+            on_change=on_system_selection(),
+        )
+        system_logo.image(f"assets/system{ss.system[-1]}.png", width=245)
+
     # holder.empty()
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
@@ -821,25 +1017,24 @@ if is_ready:
     ###############################################################################
 
     with tab2:
-        st.subheader(f"Select system to analyze")
-
-        with st.expander("**Select system**", expanded=True):
-            # Select system to display
-            col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
-            with col_select_system_1:
-                ss.system = st.selectbox(
-                    label="Select the system to analyze",
-                    options=["System 1", "System 2", "System 3"],
-                    index=0,
-                    help="Select the system to analyze",
-                    on_change=on_system_selection(),
-                )
-            with col_select_system_2:
-                st.image(f"assets/system{ss.system[-1]}.png", width=245)
+        # st.subheader(f"Select system to analyze")
+        # with st.expander("**Select system**", expanded=False):
+        #     # Select system to display
+        #     col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
+        #     with col_select_system_1:
+        #         ss.system = st.selectbox(
+        #             label="Select the system to analyze",
+        #             options=["System 1", "System 2", "System 3"],
+        #             index=0,
+        #             help="Select the system to analyze",
+        #             on_change=on_system_selection(),
+        #         )
+        #     with col_select_system_2:
+        #         st.image(f"assets/system{ss.system[-1]}.png", width=245)
 
         st.subheader("2. Identify Risks")
 
-        with st.expander("**Technical Risk Registry**", expanded=True):
+        with st.expander(f"**Technical Risk Registry for {ss.system}**", expanded=True):
             st.markdown(
                 """
                 The following table lists the technical risks that have been identified for the system under consideration.
@@ -896,176 +1091,20 @@ if is_ready:
                 },
             )
 
-        with st.expander("**Matrices**", expanded=True):
-            matrix = st.radio(
-                "Select the matrix to display",
-                ["Interfaces DSM", "Distance DSM", "Risk DSM [TODO]"],
+        matrices = st.expander("**Matrices**", expanded=True)
+        with matrices:
+            ss.matrix = st.radio(
+                label="Select the matrix to display",
+                options=["Interfaces DSM", "Distance DSM", "Risk DSM"],
+                index=0,
                 captions=[
                     "Interfaces between components",
                     "Distances between components",
                     "Propagation of risks between components",
                 ],
                 horizontal=True,
-            )
-
-            g = Graph()
-
-            for component in df_components.iterrows():
-                # print(f'id: {component[1]["id"]} name:{component[1]["name"]}')
-                labels = [s for s in ["s2", "s2", "s3"] if component[1][s] == True]
-                fancy_node = Node(
-                    name=component[1]["name"],
-                    kind="component",
-                    labels=labels,
-                    weights={
-                        "x": component[1]["x"],
-                        "y": component[1]["y"],
-                        "z": component[1]["z"],
-                        "force_e": component[1]["force_e"],
-                        "force_t": component[1]["force_t"],
-                        "force_r": component[1]["force_r"],
-                        "electro_e": component[1]["electro_e"],
-                        "electro_t": component[1]["electro_t"],
-                        "electro_r": component[1]["electro_r"],
-                        "thermo_e": component[1]["thermo_e"],
-                        "thermo_t": component[1]["thermo_t"],
-                        "thermo_r": component[1]["thermo_r"],
-                    },
-                    annotations={
-                        "id": component[1]["id"],
-                    },
-                )
-                g.add_node(fancy_node)
-
-            for i, row in df_dsm.iterrows():
-                for j, value in enumerate(row):
-                    # print(i, j, value)
-                    # print()
-                    if i == j:
-                        continue
-                    if value in kinds.keys():
-                        kind = kinds[value]
-                    else:
-                        kind = None
-                    g.add_edge(
-                        Edge(
-                            source=g.nodes[i],
-                            target=g.nodes[j],
-                            name=f'{g.nodes[i].annotations["id"]}_{g.nodes[j].annotations["id"]}',
-                            kind=kind,
-                            labels=[],
-                            weights={
-                                "distance": df_distances.iloc[i, j],
-                            },
-                            annotations={},
-                        )
-                    )
-
-            if matrix == "Interfaces DSM":
-                fig = plot.mdm(
-                    leafs=g.leafs,
-                    edges=g.edges,
-                    style=plot.Style(
-                        piemap=dict(
-                            fields=[
-                                "mechanical",
-                                "electrical",
-                                "information",
-                                "hydraulic",
-                            ],
-                        ),
-                        palettes=dict(
-                            fields={
-                                "mechanical": {"categorical": "#de9c38"},
-                                "electrical": {"categorical": "#a64747"},
-                                "information": {"categorical": "#545a8e"},
-                                "hydraulic": {"categorical": "#389dfc"},
-                            }
-                        ),
-                    ),
-                )
-            elif matrix == "Distance DSM":
-                fig = plot.mdm(
-                    leafs=g.leafs,
-                    edges=g.edges,
-                    style=plot.Style(
-                        piemap=dict(
-                            display="weights",
-                            fields=[
-                                "distance",
-                            ],
-                            mode="relative",
-                        ),
-                        palettes=dict(
-                            fields={
-                                "distance": {"continuous": get_diverging_redblue()},
-                            }
-                        ),
-                    ),
-                )
-            elif matrix == "Risk DSM [TODO]":
-                fig = plot.mdm(
-                    leafs=g.leafs,
-                    edges=g.edges,
-                    style=plot.Style(
-                        piemap=dict(
-                            fields=[
-                                "force_e",
-                                "force_t",
-                                "force_r",
-                                "electro_e",
-                                "electro_t",
-                                "electro_r",
-                                "thermo_e",
-                                "thermo_t",
-                                "thermo_r",
-                            ],
-                        ),
-                        palettes=dict(
-                            fields={
-                                "force_e": {"categorical": "#de9c38"},
-                                "force_t": {"categorical": "#de9c38"},
-                                "force_r": {"categorical": "#de9c38"},
-                                "electro_e": {"categorical": "#a64747"},
-                                "electro_t": {"categorical": "#a64747"},
-                                "electro_r": {"categorical": "#a64747"},
-                                "thermo_e": {"categorical": "#545a8e"},
-                                "thermo_t": {"categorical": "#545a8e"},
-                                "thermo_r": {"categorical": "#545a8e"},
-                            }
-                        ),
-                    ),
-                )
-
-            fig.update_layout(
-                {
-                    "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                    "paper_bgcolor": "rgba(0, 0, 0, 0)",
-                    "xaxis": {"fixedrange": True},
-                    "yaxis": {"fixedrange": True},
-                }
-            )
-
-            st.plotly_chart(
-                fig,
-                use_container_width=True,
-                config={
-                    "displayModeBar": False,
-                    "displaylogo": False,
-                    "modeBarButtonsToRemove": [
-                        "zoom2d",
-                        "zoomIn2d",
-                        "zoomOut2d",
-                        "resetScale2d",
-                        "toggleSpikelines",
-                        "pan2d",
-                        "lasso2d",
-                        "select2d",
-                        "autoScale2d",
-                        "hoverClosestCartesian",
-                        "hoverCompareCartesian",
-                    ],
-                },
+                on_change=on_matrix_selection,
+                args=(ss.matrix,),
             )
 
         with st.expander(f"**Select {ss.system} risks for mitigation**", expanded=True):
@@ -1166,6 +1205,7 @@ if is_ready:
                 )
             else:
                 st.warning("Please select a system to explore.")
+
     ###############################################################################
     # Tab 3
     ###############################################################################
@@ -1173,336 +1213,53 @@ if is_ready:
     with tab3:
         st.subheader("3. Mitigate Risks")
 
-        with st.expander("**Where to place mitigations? TODO**", expanded=True):
-            if ss.system == "System 1":
-                n = 16
-            elif ss.system == "System 2":
-                n = 18
-            elif ss.system == "System 3":
-                n = 25
-            else:
-                n = 10
-
-            col_riskid_1, col_riskid_2 = st.columns([2, 1])
-
-            with col_riskid_1:
-                product_elements = [f"Element {i}" for i in range(1, n + 1)]
-
-                # df_dsm = pd.DataFrame(
-                #     np.random.rand(n, n), columns=("col %d" % i for i in range(n))
-                # )
-
-                # for i in range(n):
-                #     df_dsm[f"col {i}"][i] = "nan"
-                #     # df_dsm.loc[:, (f'col {i}', i)] = 'nan'
-
-                # fig_dsm = px.imshow(
-                #     df_dsm,
-                #     labels=dict(x="", y=""),
-                #     x=product_elements,
-                #     y=product_elements,
-                #     color_continuous_scale=[
-                #         [0, "#D81B60"],
-                #         [0.5, "#FFB000"],
-                #         [1, "#004D40"],
-                #     ],
-                #     # title='Combined Risk Matrix',
-                #     width=900,
-                #     height=900,
-                #     text_auto=".2f",
-                #     aspect="equal",
-                # )
-                # fig_dsm.update_layout(
-                #     xaxis={"side": "top"},
-                #     yaxis={"side": "left"},
-                # )
-                # risk_chart = st.plotly_chart(
-                #     fig_dsm,
-                #     use_container_width=True,
-                #     config={
-                #         "displaylogo": False,
-                #         "modeBarButtonsToRemove": [
-                #             "sendDataToCloud",
-                #             "lasso2d",
-                #             "zoomIn2d",
-                #             "zoomOut2d",
-                #             "autoScale2d",
-                #             "resetScale2d",
-                #             "hoverClosestCartesian",
-                #             "hoverCompareCartesian",
-                #             "toggleSpikelines",
-                #         ],
-                #     },
-                # )
-
-                #
-                x = [f"Element {i}" for i in range(1, n + 1)]
-                y = [f"Element {i}" for i in range(1, n + 1)]
-
-                data = [
-                    [0, 0, 5],
-                    [0, 1, 1],
-                    [0, 2, 0],
-                    [0, 3, 0],
-                    [0, 4, 0],
-                    [0, 5, 0],
-                    [0, 6, 0],
-                    [0, 7, 0],
-                    [0, 8, 0],
-                    [0, 9, 0],
-                    [0, 10, 0],
-                    [0, 11, 2],
-                    [0, 12, 4],
-                    [0, 13, 1],
-                    [0, 14, 1],
-                    [0, 15, 3],
-                    [0, 16, 4],
-                    [0, 17, 6],
-                    [0, 18, 4],
-                    [0, 19, 4],
-                    [0, 20, 3],
-                    [0, 21, 3],
-                    [0, 22, 2],
-                    [0, 23, 5],
-                    [1, 0, 7],
-                    [1, 1, 0],
-                    [1, 2, 0],
-                    [1, 3, 0],
-                    [1, 4, 0],
-                    [1, 5, 0],
-                    [1, 6, 0],
-                    [1, 7, 0],
-                    [1, 8, 0],
-                    [1, 9, 0],
-                    [1, 10, 5],
-                    [1, 11, 2],
-                    [1, 12, 2],
-                    [1, 13, 6],
-                    [1, 14, 9],
-                    [1, 15, 11],
-                    [1, 16, 6],
-                    [1, 17, 7],
-                    [1, 18, 8],
-                    [1, 19, 12],
-                    [1, 20, 5],
-                    [1, 21, 5],
-                    [1, 22, 7],
-                    [1, 23, 2],
-                    [2, 0, 1],
-                    [2, 1, 1],
-                    [2, 2, 0],
-                    [2, 3, 0],
-                    [2, 4, 0],
-                    [2, 5, 0],
-                    [2, 6, 0],
-                    [2, 7, 0],
-                    [2, 8, 0],
-                    [2, 9, 0],
-                    [2, 10, 3],
-                    [2, 11, 2],
-                    [2, 12, 1],
-                    [2, 13, 9],
-                    [2, 14, 8],
-                    [2, 15, 10],
-                    [2, 16, 6],
-                    [2, 17, 5],
-                    [2, 18, 5],
-                    [2, 19, 5],
-                    [2, 20, 7],
-                    [2, 21, 4],
-                    [2, 22, 2],
-                    [2, 23, 4],
-                    [3, 0, 7],
-                    [3, 1, 3],
-                    [3, 2, 0],
-                    [3, 3, 0],
-                    [3, 4, 0],
-                    [3, 5, 0],
-                    [3, 6, 0],
-                    [3, 7, 0],
-                    [3, 8, 1],
-                    [3, 9, 0],
-                    [3, 10, 5],
-                    [3, 11, 4],
-                    [3, 12, 7],
-                    [3, 13, 14],
-                    [3, 14, 13],
-                    [3, 15, 12],
-                    [3, 16, 9],
-                    [3, 17, 5],
-                    [3, 18, 5],
-                    [3, 19, 10],
-                    [3, 20, 6],
-                    [3, 21, 4],
-                    [3, 22, 4],
-                    [3, 23, 1],
-                    [4, 0, 1],
-                    [4, 1, 3],
-                    [4, 2, 0],
-                    [4, 3, 0],
-                    [4, 4, 0],
-                    [4, 5, 1],
-                    [4, 6, 0],
-                    [4, 7, 0],
-                    [4, 8, 0],
-                    [4, 9, 2],
-                    [4, 10, 4],
-                    [4, 11, 4],
-                    [4, 12, 2],
-                    [4, 13, 4],
-                    [4, 14, 4],
-                    [4, 15, 14],
-                    [4, 16, 12],
-                    [4, 17, 1],
-                    [4, 18, 8],
-                    [4, 19, 5],
-                    [4, 20, 3],
-                    [4, 21, 7],
-                    [4, 22, 3],
-                    [4, 23, 0],
-                    [5, 0, 2],
-                    [5, 1, 1],
-                    [5, 2, 0],
-                    [5, 3, 3],
-                    [5, 4, 0],
-                    [5, 5, 0],
-                    [5, 6, 0],
-                    [5, 7, 0],
-                    [5, 8, 2],
-                    [5, 9, 0],
-                    [5, 10, 4],
-                    [5, 11, 1],
-                    [5, 12, 5],
-                    [5, 13, 10],
-                    [5, 14, 5],
-                    [5, 15, 7],
-                    [5, 16, 11],
-                    [5, 17, 6],
-                    [5, 18, 0],
-                    [5, 19, 5],
-                    [5, 20, 3],
-                    [5, 21, 4],
-                    [5, 22, 2],
-                    [5, 23, 0],
-                    [6, 0, 1],
-                    [6, 1, 0],
-                    [6, 2, 0],
-                    [6, 3, 0],
-                    [6, 4, 0],
-                    [6, 5, 0],
-                    [6, 6, 0],
-                    [6, 7, 0],
-                    [6, 8, 0],
-                    [6, 9, 0],
-                    [6, 10, 1],
-                    [6, 11, 0],
-                    [6, 12, 2],
-                    [6, 13, 1],
-                    [6, 14, 3],
-                    [6, 15, 4],
-                    [6, 16, 0],
-                    [6, 17, 0],
-                    [6, 18, 0],
-                    [6, 19, 0],
-                    [6, 20, 1],
-                    [6, 21, 2],
-                    [6, 22, 2],
-                    [6, 23, 6],
-                ]
-                data = [[d[1], d[0], d[2] if d[2] != 0 else "-"] for d in data]
-
-                option = {
-                    "tooltip": {
-                        "position": "top",
-                        "formatter": "Origin:<br />{b}<br />Destination:<br />{c}",
-                        "valueFormatter": "(value) => '$'",
-                    },
-                    "grid": {"height": "50%", "top": "10%"},
-                    "xAxis": {
-                        "type": "category",
-                        "data": x,
-                        "splitArea": {"show": True},
-                    },
-                    "yAxis": {
-                        "type": "category",
-                        "data": y,
-                        "splitArea": {"show": True},
-                    },
-                    "visualMap": {
-                        "min": 0,
-                        "max": 10,
-                        "calculable": True,
-                        "orient": "horizontal",
-                        "left": "center",
-                        "bottom": "15%",
-                    },
-                    "series": [
-                        {
-                            "name": "Interfaces",
-                            "type": "heatmap",
-                            "data": data,
-                            "label": {"show": True},
-                            "emphasis": {
-                                "itemStyle": {
-                                    "shadowBlur": 10,
-                                    "shadowColor": "rgba(0, 0, 0, 0.5)",
-                                }
-                            },
-                        }
-                    ],
-                }
-                value = st_echarts(
-                    option,
-                    height="600px",
-                    key="echarts",
-                    events={
-                        "click": "function(params) { console.log(params.name); return params.name }"
-                    },
-                )
-
-            with col_riskid_2:
-                st.write("The selected system is: ", ss.system)
-                selected_points = []
-                st.write("The selected points are: ", value)
-
         with st.expander("**List of Mitigation Elements**", expanded=True):
             st.dataframe(
                 df_mitigations.style.background_gradient(
                     cmap=cm_g2r, subset=["Cost (k€)"]
-                ).format({3: "{:.2f}", 4: "{:.2f}"}, na_rep="MISS", precision=2),
+                )
+                .background_gradient(cmap=cm_r2g, subset=["Reliability gain"])
+                .format({3: "{:.2f}", 4: "{:.3f}"}, na_rep=False, precision=3),
                 height=400,
                 use_container_width=True,
                 hide_index=True,
                 column_config={
                     "ID": st.column_config.TextColumn(
-                        "Mitigation ID", help="Mitigation ID"
+                        "ID", help="Mitigation ID", width="small"
                     ),
                     "Risk Mitigation element": st.column_config.TextColumn(
-                        "Risk Mitigation element", help="Risk Mitigation element"
+                        "Risk Mitigation element",
+                        help="Risk Mitigation element",
+                        width="medium",
                     ),
-                    "Placed at the interface between ": st.column_config.TextColumn(
-                        "Placed at the interface between ",
-                        help="Placed at the interface between ",
+                    "Affects the interactions between (A-B)": st.column_config.TextColumn(
+                        "Affects the interactions between",
+                        help="Affects the interactions between",
+                        width="medium",
+                    ),
+                    "A": st.column_config.ListColumn(
+                        "A",
+                        help="A",
+                        width="small",
+                    ),
+                    "B": st.column_config.ListColumn(
+                        "B",
+                        help="B",
+                        width="small",
                     ),
                     "Cost (k€)": st.column_config.NumberColumn(
                         "Cost (k€)",
                         help="Cost (k€)",
-                        format="%.2f",
+                        width="small",
                     ),
                     "Reliability gain": st.column_config.NumberColumn(
                         "Reliability gain",
                         help="Reliability gain",
-                        format="%.3f",
+                        width="small",
                     ),
-                    "Mechanical": st.column_config.CheckboxColumn(
-                        "Mechanical", help="Mechanical"
-                    ),
-                    "Electromagnetic": st.column_config.CheckboxColumn(
-                        "Electromagnetic", help="Electromagnetic"
-                    ),
-                    "Thermal": st.column_config.CheckboxColumn(
-                        "Thermal", help="Thermal"
-                    ),
+                    "Mechanical": None,
+                    "Electromagnetic": None,
+                    "Thermal": None,
                     "id2": None,
                     "x": None,
                     "y": None,
@@ -1516,35 +1273,162 @@ if is_ready:
                     "thermo_e2": None,
                     "thermo_t": None,
                     "thermo_r": None,
+                    "s1": None,
+                    "s2": None,
+                    "s3": None,
                 },
             )
-        mitigations = [
-            "M01 - EMI Filter",
-            "M02 - Cable shielding ",
-            "M03 - Heat-resistant bearing",
-            "M04 - Regular inspection of hub alignment and torque values",
-            "M05 - Regular lubribation of moving parts",
-            "M06 - Temperature sensors or thermal monitoring devices",
-            "M07 - Heat sinks ",
-            "M08 - Hydraulic reservoir shutdown mechanism ",
-            "M09 - Cable shielding ",
-            "M10 - EMI Filter",
-            "M11 - Optical isolators",
-            "M12 - EMI shielded housing",
-            "M13 - Redundant angle sensor ",
-            "M14 - Load sensors",
-            "M15 - Motor Force Control and Feedback System",
-            "M16 - Load cells",
-            "M17 - Load cells",
-            "M18 - Load cells",
-            "M19 - Ventilation mechanism",
-            "M20 - Dampening mechanism ",
-            "M21 - Elastomeric mount ",
-            "M22 - Electromagnetic Shielding",
-            "M23 - Electric motor housing with conductive materials",
-            "M24 - Heat-resistant material",
-            "M25 - Ventilation system",
-        ]
+
+
+        with st.expander(f"**Select mitigations for {ss.system}**", expanded=True):
+            st.markdown(
+                f"""
+                Which of the available mitigations would you add to **{ss.system}**?
+                """
+            )
+
+            questions_tab3_col1, questions_tab3_col2 = st.columns(2)
+
+            if ss.system == "System 1":
+                questions_tab3_col1.multiselect(
+                    label="Select the mitigations you would like to mitigate.",
+                    options=df_mitigations[df_mitigations["s1"] == True].ID,
+                    help="Select the mitigations you would like to mitigate.",
+                    key="mitigations_selected_s1",
+                    on_change=on_mitigations_selection(ss.mitigations_selected_s1),
+                )
+                questions_tab3_col2.dataframe(
+                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s1)],
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "ID", help="ID", width="small"
+                        ),
+                        "Risk Mitigation element": st.column_config.TextColumn(
+                            "Name", help="Risk Mitigation element", width="medium"
+                        ),
+                        "Affects the interactions between": None,
+                        "A": None,
+                        "B": None,
+                        "Cost (k€)": None,
+                        "id2": None,
+                        "x": None,
+                        "y": None,
+                        "z": None,
+                        "force_e2": None,
+                        "force_t": None,
+                        "force_r": None,
+                        "electro_e2": None,
+                        "electro_t": None,
+                        "electro_r": None,
+                        "thermo_e2": None,
+                        "thermo_t": None,
+                        "thermo_r": None,
+                        "Reliability gain": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
+                )
+            elif ss.system == "System 2":
+                questions_tab3_col1.multiselect(
+                    label="Select the mitigations you would like to mitigate.",
+                    options=df_mitigations[df_mitigations["s2"] == True].ID,
+                    help="Select the mitigations you would like to mitigate.",
+                    key="mitigations_selected_s2",
+                    on_change=on_risks_selection(ss.mitigations_selected_s2),
+                )
+                questions_tab3_col2.dataframe(
+                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s2)],
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "ID", help="ID", width="small"
+                        ),
+                        "Risk Mitigation element": st.column_config.TextColumn(
+                            "Name", help="Risk Mitigation element", width="medium"
+                        ),
+                        "Affects the interactions between": None,
+                        "A": None,
+                        "B": None,
+                        "Cost (k€)": None,
+                        "id2": None,
+                        "x": None,
+                        "y": None,
+                        "z": None,
+                        "force_e2": None,
+                        "force_t": None,
+                        "force_r": None,
+                        "electro_e2": None,
+                        "electro_t": None,
+                        "electro_r": None,
+                        "thermo_e2": None,
+                        "thermo_t": None,
+                        "thermo_r": None,
+                        "Reliability gain": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
+                )
+            elif ss.system == "System 3":
+                questions_tab3_col1.multiselect(
+                    label="Select the mitigations you would like to mitigate.",
+                    options=df_mitigations[df_mitigations["s3"] == True].ID,
+                    help="Select the mitigations you would like to mitigate.",
+                    key="mitigations_selected_s3",
+                    on_change=on_risks_selection(ss.mitigations_selected_s3),
+                )
+                questions_tab3_col2.dataframe(
+                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s3)],
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "ID", help="ID", width="small"
+                        ),
+                        "Risk Mitigation element": st.column_config.TextColumn(
+                            "Name", help="Risk Mitigation element", width="medium"
+                        ),
+                        "Affects the interactions between": None,
+                        "A": None,
+                        "B": None,
+                        "Cost (k€)": None,
+                        "id2": None,
+                        "x": None,
+                        "y": None,
+                        "z": None,
+                        "force_e2": None,
+                        "force_t": None,
+                        "force_r": None,
+                        "electro_e2": None,
+                        "electro_t": None,
+                        "electro_r": None,
+                        "thermo_e2": None,
+                        "thermo_t": None,
+                        "thermo_r": None,
+                        "Reliability gain": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
+                )
+            else:
+                st.warning("Please select a system to explore.")
 
         with st.form(key="risk_mitigation_form"):
             st.markdown(
@@ -1556,7 +1440,7 @@ if is_ready:
             # multiple selection
             mitigation = st.multiselect(
                 "Mitigation",
-                mitigations,
+                options=df_mitigations["Risk Mitigation element"].unique(),
                 help="Select the mitigation you would like to add to the risk mitigation registry.",
             )
             # Submit button
