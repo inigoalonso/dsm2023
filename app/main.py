@@ -150,12 +150,6 @@ def get_timestamp():
     return timestamp
 
 
-def on_data_update(data):
-    """Callback function when data is updated."""
-    # print("Data updated (not uploaded):", data)
-    pass
-
-
 def on_system_selection():
     """Callback function when system is selected."""
     # print(f"{ss.system} selected")
@@ -503,7 +497,10 @@ if "consent" not in ss:
     ss.consent = None
 
 if "role" not in ss:
-    ss.role = None
+    ss.role = []
+
+if "sector" not in ss:
+    ss.sector = []
 
 if "experience" not in ss:
     ss.experience = None
@@ -1031,21 +1028,6 @@ if is_ready:
     ###############################################################################
 
     with tab2:
-        # st.subheader(f"Select system to analyze")
-        # with st.expander("**Select system**", expanded=False):
-        #     # Select system to display
-        #     col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
-        #     with col_select_system_1:
-        #         ss.system = st.selectbox(
-        #             label="Select the system to analyze",
-        #             options=["System 1", "System 2", "System 3"],
-        #             index=0,
-        #             help="Select the system to analyze",
-        #             on_change=on_system_selection(),
-        #         )
-        #     with col_select_system_2:
-        #         st.image(f"assets/system{ss.system[-1]}.png", width=245)
-
         st.subheader("2. Identify Risks")
 
         with st.expander(f"**Technical Risk Registry for {ss.system}**", expanded=True):
@@ -1553,14 +1535,14 @@ if is_ready:
     with tab4:
         # show text if time is over 3pm onn October 4
         start = datetime.datetime(2023, 10, 4, 15, 0, 0)
-        if datetime.datetime.now() < start:
+        if datetime.datetime.now() > start:
             st.error(
                 "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
                 icon="🕒",
             )
         else:
             st.subheader("Questionnaire")
-            with st.form(key="questionnaire_form"):
+            with st.expander("**Questions**", expanded=True):
                 st.markdown(
                     """**To develop my solution to the challenge, I based my reasoning on...**"""
                 )
@@ -1569,7 +1551,6 @@ if is_ready:
                 )
                 ss.q1 = st.slider(
                     "My previous experience",
-                    key="q1",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1578,7 +1559,6 @@ if is_ready:
                 st.divider()
                 ss.q2 = st.slider(
                     "Discussion with my colleagues",
-                    key="q2",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1587,7 +1567,6 @@ if is_ready:
                 st.divider()
                 ss.q3 = st.slider(
                     "Risk registry",
-                    key="q3",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1596,7 +1575,6 @@ if is_ready:
                 st.divider()
                 ss.q4 = st.slider(
                     "Value analysis models",
-                    key="q4",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1605,7 +1583,6 @@ if is_ready:
                 st.divider()
                 ss.q5 = st.slider(
                     "Interfaces DSMs",
-                    key="q5",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1614,7 +1591,6 @@ if is_ready:
                 st.divider()
                 ss.q6 = st.slider(
                     "Numerical (Spatial/Distance) DSMs",
-                    key="q6",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1623,7 +1599,6 @@ if is_ready:
                 st.divider()
                 ss.q7 = st.slider(
                     "Risk propagation matrices",
-                    key="q7",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1632,7 +1607,6 @@ if is_ready:
                 st.divider()
                 ss.q8 = st.slider(
                     "Risk mitigations registry",
-                    key="q8",
                     min_value=0.0,
                     max_value=5.0,
                     value=2.5,
@@ -1705,20 +1679,12 @@ if is_ready:
                     index=None,
                     help="Select your professional role here.",
                 )
-                # role_other = person_col1.text_input(
-                #     label="Other professional role",
-                #     help="Enter your professional role here if not on the list above.",
-                # )
-                sector = person_col2.selectbox(
+                ss.sector = person_col2.selectbox(
                     label="Professional sector",
                     options=sectors,
                     index=None,
                     help="Select your professional sector here.",
                 )
-                # sector_other = person_col2.text_input(
-                #     label="Other professional sector",
-                #     help="Enter your professional sector here if not on the list above.",
-                # )
                 ss.experience = person_col3.number_input(
                     label="Professional experience (years)",
                     help="Enter your years of professional experience here.",
@@ -1727,106 +1693,63 @@ if is_ready:
                     max_value=100,
                 )
                 st.divider()
-                # Submit button
-                submit_button = st.form_submit_button(
+                
+                submit_button = st.button(
                     label="Submit", help="Click here to submit your answers."
                 )
                 if submit_button:
-                    #
-                    # session_id = get_session_id()
-                    # response_ref = db.collection("responses").document(session_id)
-                    # # And then uploading the data to that reference
-                    # response_ref.set(
-                    #     {
-                    #         "session_id": session_id,
-                    #         "timestamp": get_timestamp(),
-                    #         "group": ss.group,
-                    #         "consent": ss.consent,
-                    #         "role": ss.role,
-                    #         "experience": ss.experience,
-                    #         "q1": q1,
-                    #         "q2": q2,
-                    #         "q3": q3,
-                    #         "q4": q4,
-                    #         "q5": q5,
-                    #         "q6": q6,
-                    #         "q7": q7,
-                    #         "q8": q8,
-                    #         "session_state": "TODO",
-                    #     }
-                    # )
-                    # st.toast("Response data uploaded to database", icon="📡")
-                    # st.success(
-                    #     body="Your answers have been submitted. Thank you for participating!",
-                    #     icon="👍",
-                    # )
                     st.balloons()
-
-        questions_tab4 = st.expander("**Questions**", expanded=True)
 
     ###############################################################################
     # Tab 5 Help
     ###############################################################################
 
-    with tab5:
-        st.subheader("Help")
-        with st.expander("**How to use this webapp?**", expanded=True):
-            st.markdown(
-                """
-            **Markets and systems**: In this section, you can see the market sizes and the characteristics of the systems under consideration.
+    # with tab5:
+    #     st.subheader("Help")
+    #     with st.expander("**How to use this webapp?**", expanded=True):
+    #         st.markdown(
+    #             """
+    #         **Markets and systems**: In this section, you can see the market sizes and the characteristics of the systems under consideration.
 
-            **Value Analysis**: In this section, you can see the market shares, revenues, and profits of the systems under consideration.
+    #         **Value Analysis**: In this section, you can see the market shares, revenues, and profits of the systems under consideration.
 
-            **Risk Identification**: In this tab, you can see the risk matrix of the systems under consideration.
+    #         **Risk Identification**: In this tab, you can see the risk matrix of the systems under consideration.
 
-            **Risk Mitigation**: In this tab, you can see the risk registry of the systems under consideration.
+    #         **Risk Mitigation**: In this tab, you can see the risk registry of the systems under consideration.
 
-            **Questionnaire**: In this tab, you can answer the questionnaire.
+    #         **Questionnaire**: In this tab, you can answer the questionnaire.
 
-            **Help**: In this tab, you can find help on how to use the app.
+    #         **Help**: In this tab, you can find help on how to use the app.
 
-            For additional information, please contact the workshop in-person facilitators.
-            """
-            )
-        with st.expander("**Contact**", expanded=False):
-            st.markdown(
-                """
-            **Facilitators**: 
-            - Massimo Panarotto
-            - Iñigo Alonso Fernandez
-            """
-            )
-        # with st.expander("**References**", expanded=False):
-        #     st.markdown(
-        #         """
-        #     **Value Analysis**:
-        #     - ...
-
-        #     **Risk Identification**:
-        #     - ...
-
-        #     **Risk Mitigation**:
-        #     - ...
-        #     """
-        #     )
-        with st.expander("**Acknowledgements**", expanded=False):
-            st.markdown(
-                """
-            **Acknowledgements**:
-            - Volvo Trucks
-            - VINNOVA
-            - Design Society
-            - Chalmers University of Technology
-            - DSM Conference
-            """
-            )
+    #         For additional information, please contact the workshop in-person facilitators.
+    #         """
+    #         )
+    #     with st.expander("**Contact**", expanded=False):
+    #         st.markdown(
+    #             """
+    #         **Facilitators**: 
+    #         - Massimo Panarotto
+    #         - Iñigo Alonso Fernandez
+    #         """
+    #         )
+    #     with st.expander("**Acknowledgements**", expanded=False):
+    #         st.markdown(
+    #             """
+    #         **Acknowledgements**:
+    #         - Volvo Trucks
+    #         - VINNOVA
+    #         - Design Society
+    #         - Chalmers University of Technology
+    #         - DSM Conference
+    #         """
+    #         )
 
 ###############################################################################
 # Session state
 ###############################################################################
 
-# with st.expander("Session State", expanded=True):
-#     st.write(ss)
+with st.expander("Session State", expanded=True):
+    st.write(ss)
 
 # print("Here's the session state:")
 # print([key for key in ss.keys()])
@@ -1843,6 +1766,8 @@ try:
             "session_id": get_session_id(),
             "timestamp": get_timestamp(),
             "role": ss.role,
+            "sector": ss.sector,
+            "experience": ss.experience,
             "group": ss.group,
             "risks_selected_s1": ss.risks_selected_s1,
             "risks_selected_s2": ss.risks_selected_s2,

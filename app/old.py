@@ -763,3 +763,57 @@ st.markdown(
 
 ###############################################################################
 
+
+        # st.subheader(f"Select system to analyze")
+        # with st.expander("**Select system**", expanded=False):
+        #     # Select system to display
+        #     col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
+        #     with col_select_system_1:
+        #         ss.system = st.selectbox(
+        #             label="Select the system to analyze",
+        #             options=["System 1", "System 2", "System 3"],
+        #             index=0,
+        #             help="Select the system to analyze",
+        #             on_change=on_system_selection(),
+        #         )
+        #     with col_select_system_2:
+        #         st.image(f"assets/system{ss.system[-1]}.png", width=245)
+
+
+###############################################################################
+
+
+                if submit_button:
+                    #
+                    # session_id = get_session_id()
+                    # response_ref = db.collection("responses").document(session_id)
+                    # # And then uploading the data to that reference
+                    # response_ref.set(
+                    #     {
+                    #         "session_id": session_id,
+                    #         "timestamp": get_timestamp(),
+                    #         "group": ss.group,
+                    #         "consent": ss.consent,
+                    #         "role": ss.role,
+                    #         "experience": ss.experience,
+                    #         "q1": q1,
+                    #         "q2": q2,
+                    #         "q3": q3,
+                    #         "q4": q4,
+                    #         "q5": q5,
+                    #         "q6": q6,
+                    #         "q7": q7,
+                    #         "q8": q8,
+                    #         "session_state": "TODO",
+                    #     }
+                    # )
+                    # st.toast("Response data uploaded to database", icon="📡")
+                    # st.success(
+                    #     body="Your answers have been submitted. Thank you for participating!",
+                    #     icon="👍",
+                    # )
+                    st.balloons()
+
+
+###############################################################################
+
