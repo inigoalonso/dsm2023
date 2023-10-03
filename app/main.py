@@ -478,7 +478,7 @@ if "g" not in ss:
 
 if "matrix" not in ss:
     ss.matrix = "Interfaces DSM"
-    on_matrix_selection(ss.matrix)
+    #on_matrix_selection(ss.matrix)
 
 # Import data from data/mitigations.csv into dataframe
 df_mitigations = get_data("data/mitigations.csv").fillna(False)
@@ -1805,8 +1805,8 @@ if is_ready:
 # Session state
 ###############################################################################
 
-with st.expander("Session State", expanded=True):
-    st.write(ss)
+# with st.expander("Session State", expanded=True):
+#     st.write(ss)
 
 # print("Here's the session state:")
 # print([key for key in ss.keys()])
