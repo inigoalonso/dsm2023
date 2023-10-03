@@ -58,6 +58,10 @@ hide_streamlit_style = """
                 header {
                 background: rgba(250,250,250, 0) !important;
                 }
+                .stActionButton {
+                display: none;
+                visibility: hidden;
+                }
                 footer {
                 visibility: hidden;
                 height: 0%;
