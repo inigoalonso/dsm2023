@@ -160,13 +160,25 @@ def on_data_update(data):
 
 def on_system_selection():
     """Callback function when system is selected."""
-    print("System selected:", ss.system)
+    print(f"{ss.system} selected")
     for item in [
         "risks_selected_s1",
         "risks_selected_s2",
         "risks_selected_s3",
     ]:
         ss[item] = ss[item]
+    pass
+
+
+def on_risks_selection(selection):
+    """Callback function when risk is selected."""
+    print(f"Risks selected for {ss.system}: {selection}")
+    pass
+
+
+def on_mitigations_selection(selection):
+    """Callback function when mitigation is selected."""
+    print(f"Mitigations selected for {ss.system}: {selection}")
     pass
 
 
@@ -256,6 +268,7 @@ if "system" not in ss:
 @st.cache_data
 def get_data(csv_file):
     return pd.read_csv(csv_file, sep=";", decimal=",")
+
 
 # Import data from data/Risks.csv into dataframe
 df_risks = get_data("data/TechRisks.csv")
@@ -438,6 +451,10 @@ with st.expander("Info", expanded=True):
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
             icon="👍",
         )
+
+with st.expander("Session State", expanded=True):
+    st.write(ss)
+
 
 # If the user has filled in the intro form correctly
 is_ready = (group != "Select") and consent
@@ -1051,10 +1068,10 @@ if is_ready:
                 },
             )
 
-        with st.expander("**Select risks for mitigation**", expanded=True):
+        with st.expander(f"**Select {ss.system} risks for mitigation**", expanded=True):
             st.markdown(
-                """
-                Which of the risks would you select for mitigation? Select the risk you would like to mitigate.
+                f"""
+                Which of the risks present in **{ss.system}** would you select for mitigation?
                 """
             )
 
@@ -1066,6 +1083,7 @@ if is_ready:
                     options=df_risks[df_risks["s1"] == True].ID,
                     help="Select the risks you would like to mitigate.",
                     key="risks_selected_s1",
+                    on_change=on_risks_selection(ss.risks_selected_s1),
                 )
                 questions_tab2_col2.dataframe(
                     df_risks[df_risks.ID.isin(ss.risks_selected_s1)],
@@ -1094,6 +1112,7 @@ if is_ready:
                     options=df_risks[df_risks["s2"] == True].ID,
                     help="Select the risks you would like to mitigate.",
                     key="risks_selected_s2",
+                    on_change=on_risks_selection(ss.risks_selected_s2),
                 )
                 questions_tab2_col2.dataframe(
                     df_risks[df_risks.ID.isin(ss.risks_selected_s2)],
@@ -1122,6 +1141,7 @@ if is_ready:
                     options=df_risks[df_risks["s3"] == True].ID,
                     help="Select the risks you would like to mitigate.",
                     key="risks_selected_s3",
+                    on_change=on_risks_selection(ss.risks_selected_s3),
                 )
                 questions_tab2_col2.dataframe(
                     df_risks[df_risks.ID.isin(ss.risks_selected_s3)],
