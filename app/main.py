@@ -445,7 +445,7 @@ if is_ready:
     ###############################################################################
 
     with tab1:
-        st.subheader("📋 Markets and systems")
+        st.subheader("Markets and systems")
         with st.expander("**Markets**", expanded=True):
             st.markdown(
                 """Potential number of trucks sold each year per application)"""
@@ -721,7 +721,7 @@ if is_ready:
                 ]
             )
 
-        st.subheader("🔍 1. Analyze Value")
+        st.subheader("1. Analyze Value")
 
         with st.expander("**Profits**", expanded=True):
             col_profits_1, col_profits_2, col_profits_3 = st.columns(3)
@@ -774,7 +774,7 @@ if is_ready:
     ###############################################################################
 
     with tab2:
-        st.subheader(f"🚚 Select system to analyze")
+        st.subheader(f"Select system to analyze")
 
         with st.expander("**Select system**", expanded=True):
             # Select system to display
@@ -799,7 +799,7 @@ if is_ready:
             }
             ss.system = image_to_system.get(img, "")
 
-        st.subheader("🗹 2. Identify Risks")
+        st.subheader("2. Identify Risks")
 
         with st.expander("**Technical risk registry**", expanded=True):
             st.markdown(
@@ -1035,7 +1035,7 @@ if is_ready:
     ###############################################################################
 
     with tab3:
-        st.subheader("🛡️ 3. Mitigate Risks")
+        st.subheader("3. Mitigate Risks")
 
         with st.expander("**Where to place mitigations? TODO**", expanded=True):
             if ss.system == "System 1":
@@ -1443,7 +1443,7 @@ if is_ready:
                 icon="🕒",
             )
         else:
-            st.subheader("❔ Questionnaire")
+            st.subheader("Questionnaire")
             with st.form(key="questionnaire_form"):
                 st.markdown(
                     """**To develop my solution to the challenge, I based my reasoning on...**"""
@@ -1653,7 +1653,7 @@ if is_ready:
     ###############################################################################
 
     with tab5:
-        st.subheader("ℹ️ Help")
+        st.subheader("Help")
         with st.expander("**How to use this webapp?**", expanded=True):
             st.markdown(
                 """
