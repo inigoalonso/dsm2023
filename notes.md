@@ -2,16 +2,29 @@
 
 ## Streamlit
 
-## My apps
+### My apps
 
 [DSM2023](https://dsm2023.streamlit.app/)
 [CPM](https://sed-cpm.streamlit.app/)
+
+### Extensions
+
+[Select Image](https://image-select.streamlit.app/)
 
 ### State
 
 [Add statefulness to apps](https://docs.streamlit.io/library/advanced-features/session-state)
 
 [Demo Mode: Using State in Streamlit](https://dev.to/alexeversmeyer/demo-mode-using-state-in-streamlit-1482)
+
+If a widget disappears, its key will be removed from session state automatically.
+There is a hack to get around this, which is to explicitly set the session state.
+If you add this at the bottom of your “change window” calback, then the problem goes away:
+
+´´´python
+    for k, v in st.session_state.items():
+        st.session_state[k] = v
+´´´
 
 ### Cookies
 
