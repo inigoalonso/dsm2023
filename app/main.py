@@ -1824,7 +1824,6 @@ try:
             "timestamp": get_timestamp(),
             "role": ss.role,
             "group": ss.group,
-            "session_state": "TODO",
             "risks_selected_s1": ss.risks_selected_s1,
             "risks_selected_s2": ss.risks_selected_s2,
             "risks_selected_s3": ss.risks_selected_s3,
