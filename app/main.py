@@ -480,8 +480,8 @@ if "matrix" not in ss:
     ss.matrix = "Interfaces DSM"
     #on_matrix_selection(ss.matrix)
 
-# Import data from data/mitigations.csv into dataframe
-df_mitigations = get_data("data/mitigations.csv").fillna(False)
+# Import data from data/Mitigations.csv into dataframe
+df_mitigations = get_data("data/Mitigations.csv").fillna(False)
 
 if (
     "mitigations_selected_s1" not in ss
