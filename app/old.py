@@ -137,5 +137,31 @@ import altair as alt
             # else:
             #     n = 10
 
+###############################################################################
 
+            # img = image_select(
+            #     label="The following steps will be performed for the selected system. You can flip between the systems at any time.",
+            #     images=[
+            #         "assets/system1.png",
+            #         "assets/system2.png",
+            #         "assets/system3.png",
+            #     ],
+            #     captions=[
+            #         "System 1 - Only front steering",
+            #         "System 2 - Front + Back steering (hydraulic)",
+            #         "System 3 - Front + Back steering (electric)",
+            #     ],
+            #     use_container_width=True,
+            #     return_value="original",
+            #     key="system_selection",
+            # )
+            # image_to_system = {
+            #     "assets/system1.png": "System 1",
+            #     "assets/system2.png": "System 2",
+            #     "assets/system3.png": "System 3",
+            # }
+            # ss.system = image_to_system.get(img, "")
+
+
+###############################################################################
 

@@ -29,7 +29,6 @@ from ragraph import plot
 from ragraph.colors import (
     get_diverging_redblue,
 )
-from streamlit_image_select import image_select
 
 ###############################################################################
 # Formatting
@@ -166,6 +165,12 @@ def get_timestamp():
 def on_data_update(data):
     """Callback function when data is updated."""
     # print("Data updated (not uploaded):", data)
+    pass
+
+
+def on_system_selection():
+    """Callback function when system is selected."""
+    print("System selected:", ss.system)
     pass
 
 
@@ -796,28 +801,19 @@ if is_ready:
 
         with st.expander("**Select system**", expanded=True):
             # Select system to display
-            img = image_select(
-                label="The following steps will be performed for the selected system. You can flip between the systems at any time.",
-                images=[
-                    "assets/system1.png",
-                    "assets/system2.png",
-                    "assets/system3.png",
-                ],
-                captions=[
-                    "System 1 - Only front steering",
-                    "System 2 - Front + Back steering (hydraulic)",
-                    "System 3 - Front + Back steering (electric)",
-                ],
-                use_container_width=True,
-                return_value="original",
-                key="system_selection",
-            )
-            image_to_system = {
-                "assets/system1.png": "System 1",
-                "assets/system2.png": "System 2",
-                "assets/system3.png": "System 3",
-            }
-            ss.system = image_to_system.get(img, "")
+            col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
+            with col_select_system_1:
+                system_select = st.selectbox(
+                    label="Select the system to analyze",
+                    options=["Select", "System 1", "System 2", "System 3"],
+                    index=0,
+                    help="Select the system to analyze",
+                    on_change=on_system_selection(),
+                )
+                ss.system = system_select
+            with col_select_system_2:
+                if ss.system != "Select":
+                    st.image(f"assets/system{ss.system[-1]}.png", width=245)
 
         st.subheader("2. Identify Risks")
 
