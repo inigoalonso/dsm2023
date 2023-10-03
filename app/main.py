@@ -377,10 +377,10 @@ with col_system:
 
 #         st.markdown(
 #             """
-#             This website is meant to guide the participants of the Industry Sprint Workshop. It will be available on the day of the workshop, Wednesday October 4th. 
-            
+#             This website is meant to guide the participants of the Industry Sprint Workshop. It will be available on the day of the workshop, Wednesday October 4th.
+
 #             Come back then for the full experience! Thank you :)
-            
+
 #             Meanwhile, you can check out some of these links for more information about the conference and DSMs:
 
 #             - [The 25th International DSM Conference](https://www.dsm-conference.org/)
@@ -389,7 +389,7 @@ with col_system:
 #             - [Design Society](https://www.designsociety.org/)
 #             - [dsmweb.org](https://DSMweb.org/)
 
-            
+
 #             If you still want a sneak peak and pinky swear not to cheat during the workshop, you can click on the "Info" section bellow to access the website.
 #             """,
 #         )
@@ -808,6 +808,8 @@ if is_ready:
                     "System 2 - Front + Back steering (hydraulic)",
                     "System 3 - Front + Back steering (electric)",
                 ],
+                use_container_width=True,
+                return_value="original",
                 key="system_selection",
             )
             image_to_system = {
