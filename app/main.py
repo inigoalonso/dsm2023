@@ -1817,6 +1817,9 @@ if is_ready:
         "Name": st.column_config.TextColumn(
             "Name", help="Name", width="large", disabled=True
         ),
+        "s1": None,
+        "s2": None,
+        "s3": None,
     }
     if ss.system == "System 1":
         questions_tab2_col1.data_editor(
