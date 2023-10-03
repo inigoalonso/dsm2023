@@ -123,6 +123,7 @@ cm_r2g = sns.diverging_palette(12, 130, as_cmap=True)
 # Classes
 ###############################################################################
 
+
 # System
 class System:
     """A class to represent a system."""
@@ -181,14 +182,16 @@ def get_session_id() -> str:
         return None
     return session_info._session_id
 
+
 def upload():
-    '''Upload the session state to Firestore'''
+    """Upload the session state to Firestore"""
     session_id = get_session_id()
     session_ref = db.collection("sessions").document(session_id)
     session_ref.set(
         {"session_id": session_id, "timestamp": get_timestamp(), "session_state": ss}
     )
     st.toast("Session state uploaded to database", icon="📡")
+
 
 def calculate_ms(new_df: pd.DataFrame | None = None):
     """Calculate market shares and update the dataframe."""
@@ -248,15 +251,17 @@ if "market_sizes" not in ss:
 if "system" not in ss:
     ss.system = ""
 
+
 @st.cache_data
 def get_data(csv_file):
     return pd.read_csv(csv_file, sep=";", decimal=",")
+
 
 if "df_risks" not in ss:
     ss.df_risks = get_data("data/TechRisks.csv")
 
 
-df_risks_selected = ss.df_risks[["ID", "Name","s1","s2","s3"]].copy()
+df_risks_selected = ss.df_risks[["ID", "Name", "s1", "s2", "s3"]].copy()
 new_col_risks = ["False" for i in range(len(df_risks_selected))]
 df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
 
@@ -264,7 +269,11 @@ df_risks_s1 = ss.df_risks[ss.df_risks["s1"] == True]
 df_risks_s2 = ss.df_risks[ss.df_risks["s2"] == True]
 df_risks_s3 = ss.df_risks[ss.df_risks["s3"] == True]
 
-if ("df_risks_selected_s1" not in ss and "df_risks_selected_s2" not in ss and "df_risks_selected_s3" not in ss):
+if (
+    "df_risks_selected_s1" not in ss
+    and "df_risks_selected_s2" not in ss
+    and "df_risks_selected_s3" not in ss
+):
     df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
     df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
     df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
