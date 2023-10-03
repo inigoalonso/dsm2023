@@ -161,8 +161,12 @@ def on_data_update(data):
 def on_system_selection():
     """Callback function when system is selected."""
     print("System selected:", ss.system)
-    # for item in ["risks_selected_s1","risks_selected_s2","risks_selected_s3"]:
-    #     ss[item] = ss[item]
+    for item in [
+        "risks_selected_s1",
+        "risks_selected_s2",
+        "risks_selected_s3",
+    ]:
+        ss[item] = ss[item]
     pass
 
 
@@ -253,41 +257,37 @@ if "system" not in ss:
 def get_data(csv_file):
     return pd.read_csv(csv_file, sep=";", decimal=",")
 
-
+# Import data from data/Risks.csv into dataframe
 df_risks = get_data("data/TechRisks.csv")
 
-df_risks_selected = df_risks[["ID", "Name", "s1", "s2", "s3"]].copy()
-new_col_risks = ["False" for i in range(len(df_risks_selected))]
-df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
-
-df_risks_s1 = df_risks[df_risks["s1"] == True]
-df_risks_s2 = df_risks[df_risks["s2"] == True]
-df_risks_s3 = df_risks[df_risks["s3"] == True]
-
 if (
-    "df_risks_selected_s1" not in ss
-    and "df_risks_selected_s2" not in ss
-    and "df_risks_selected_s3" not in ss
+    "risks_selected_s1" not in ss
+    and "risks_selected_s2" not in ss
+    and "risks_selected_s3" not in ss
 ):
-    ss.df_risks_selected_s1 = df_risks_selected[df_risks_selected["s1"] == True].copy()
-    ss.df_risks_selected_s2 = df_risks_selected[df_risks_selected["s2"] == True].copy()
-    ss.df_risks_selected_s3 = df_risks_selected[df_risks_selected["s3"] == True].copy()
-
-# if "risks_selected_s1" not in ss and "risks_selected_s2" not in ss and "risks_selected_s3" not in ss:
-#     ss.risks_selected_s1 = None
-#     ss.risks_selected_s2 = None
-#     ss.risks_selected_s3 = None
+    ss.risks_selected_s1 = []
+    ss.risks_selected_s2 = []
+    ss.risks_selected_s3 = []
 
 # Import data from data/Mitigations.csv into dataframe
 df_mitigations = get_data("data/Mitigations.csv")
+
+if (
+    "mitigations_selected_s1" not in ss
+    and "mitigations_selected_s2" not in ss
+    and "mitigations_selected_s3" not in ss
+):
+    ss.mitigations_selected_s1 = []
+    ss.mitigations_selected_s2 = []
+    ss.mitigations_selected_s3 = []
 
 # Import data from data/Components.csv into dataframe
 # df_components = pd.read_csv("data/Components.csv", sep=";", decimal=",")
 df_components = get_data("data/Components.csv")
 # Components per system
-df_components_s1 = df_components[df_components["s1"] == True]
-df_components_s2 = df_components[df_components["s2"] == True]
-df_components_s3 = df_components[df_components["s3"] == True]
+# df_components_s1 = df_components[df_components["s1"] == True]
+# df_components_s2 = df_components[df_components["s2"] == True]
+# df_components_s3 = df_components[df_components["s3"] == True]
 
 # Original systems designs
 if "df_systems" not in ss:
@@ -810,21 +810,19 @@ if is_ready:
             # Select system to display
             col_select_system_1, buff, col_select_system_2 = st.columns([0.5, 0.2, 0.3])
             with col_select_system_1:
-                system_select = st.selectbox(
+                ss.system = st.selectbox(
                     label="Select the system to analyze",
-                    options=["Select", "System 1", "System 2", "System 3"],
+                    options=["System 1", "System 2", "System 3"],
                     index=0,
                     help="Select the system to analyze",
                     on_change=on_system_selection(),
                 )
-                ss.system = system_select
             with col_select_system_2:
-                if ss.system != "Select":
-                    st.image(f"assets/system{ss.system[-1]}.png", width=245)
+                st.image(f"assets/system{ss.system[-1]}.png", width=245)
 
         st.subheader("2. Identify Risks")
 
-        with st.expander("**Technical risk registry**", expanded=True):
+        with st.expander("**Technical Risk Registry**", expanded=True):
             st.markdown(
                 """
                 The following table lists the technical risks that have been identified for the system under consideration.
@@ -834,11 +832,11 @@ if is_ready:
             )
 
             if ss.system == "System 1":
-                df_risks_to_display = df_risks_s1
+                df_risks_to_display = df_risks[df_risks["s1"] == True]
             elif ss.system == "System 2":
-                df_risks_to_display = df_risks_s2
+                df_risks_to_display = df_risks[df_risks["s2"] == True]
             elif ss.system == "System 3":
-                df_risks_to_display = df_risks_s3
+                df_risks_to_display = df_risks[df_risks["s3"] == True]
             else:
                 df_risks_to_display = df_risks
 
@@ -850,24 +848,29 @@ if is_ready:
                 use_container_width=True,
                 hide_index=True,
                 column_config={
-                    "ID": st.column_config.TextColumn("Risk ID", help="Risk ID"),
+                    "ID": st.column_config.TextColumn(
+                        "Risk ID", help="Risk ID", width="small"
+                    ),
                     "Name": st.column_config.TextColumn(
-                        "Risk name", help="Risk description"
+                        "Risk name", help="Risk description", width="large"
                     ),
                     "Mechanical": st.column_config.NumberColumn(
                         "Mechanical",
                         help="Mechanical risk",
                         format="%.2f",
+                        width="small",
                     ),
                     "Electromagnetic": st.column_config.NumberColumn(
                         "Electromagnetic",
                         help="Electromagnetic risk",
                         format="%.2f",
+                        width="small",
                     ),
                     "Thermal": st.column_config.NumberColumn(
                         "Thermal",
                         help="Thermal risk",
                         format="%.2f",
+                        width="small",
                     ),
                     "Comments": None,
                     "s1": None,
@@ -1058,17 +1061,14 @@ if is_ready:
             questions_tab2_col1, questions_tab2_col2 = st.columns(2)
 
             if ss.system == "System 1":
-                test_risks_selected_s1 = questions_tab2_col1.multiselect(
+                questions_tab2_col1.multiselect(
                     label="Select the risks you would like to mitigate.",
-                    options=df_risks_selected.ID,
+                    options=df_risks[df_risks["s1"] == True].ID,
                     help="Select the risks you would like to mitigate.",
-                    key="test_risks_selected_s1",
+                    key="risks_selected_s1",
                 )
                 questions_tab2_col2.dataframe(
-                    df_risks_selected[
-                        df_risks_selected.ID.isin(test_risks_selected_s1)
-                    ],
-                    height=400,
+                    df_risks[df_risks.ID.isin(ss.risks_selected_s1)],
                     use_container_width=True,
                     hide_index=True,
                     column_config={
@@ -1080,24 +1080,69 @@ if is_ready:
                             "Risk name", help="Risk description", width="large"
                         ),
                         "Comments": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
                         "s1": None,
                         "s2": None,
                         "s3": None,
                     },
                 )
             elif ss.system == "System 2":
-                test_risks_selected_s2 = questions_tab2_col1.multiselect(
+                questions_tab2_col1.multiselect(
                     label="Select the risks you would like to mitigate.",
-                    options=df_risks_selected.ID,
+                    options=df_risks[df_risks["s2"] == True].ID,
                     help="Select the risks you would like to mitigate.",
-                    key="test_risks_selected_s2",
+                    key="risks_selected_s2",
+                )
+                questions_tab2_col2.dataframe(
+                    df_risks[df_risks.ID.isin(ss.risks_selected_s2)],
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "Risk ID", help="Risk ID", width="small"
+                        ),
+                        "Name": st.column_config.TextColumn(
+                            "Risk name", help="Risk description", width="large"
+                        ),
+                        "Comments": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
                 )
             elif ss.system == "System 3":
-                test_risks_selected_s3 = questions_tab2_col1.multiselect(
+                questions_tab2_col1.multiselect(
                     label="Select the risks you would like to mitigate.",
-                    options=df_risks_selected.ID,
+                    options=df_risks[df_risks["s3"] == True].ID,
                     help="Select the risks you would like to mitigate.",
-                    key="test_risks_selected_s3",
+                    key="risks_selected_s3",
+                )
+                questions_tab2_col2.dataframe(
+                    df_risks[df_risks.ID.isin(ss.risks_selected_s3)],
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={
+                        "Selected": None,
+                        "ID": st.column_config.TextColumn(
+                            "Risk ID", help="Risk ID", width="small"
+                        ),
+                        "Name": st.column_config.TextColumn(
+                            "Risk name", help="Risk description", width="large"
+                        ),
+                        "Comments": None,
+                        "Mechanical": None,
+                        "Electromagnetic": None,
+                        "Thermal": None,
+                        "s1": None,
+                        "s2": None,
+                        "s3": None,
+                    },
                 )
             else:
                 st.warning("Please select a system to explore.")

@@ -346,3 +346,21 @@ import altair as alt
 
 ###############################################################################
 
+
+df_risks_selected = df_risks[["ID", "Name", "s1", "s2", "s3"]].copy()
+new_col_risks = ["False" for i in range(len(df_risks_selected))]
+df_risks_selected.insert(loc=0, column="Selected", value=new_col_risks)
+
+
+if (
+    "df_risks_selected_s1" not in ss
+    and "df_risks_selected_s2" not in ss
+    and "df_risks_selected_s3" not in ss
+):
+    ss.df_risks_selected_s1 = df_risks[df_risks["s1"] == True].copy()
+    ss.df_risks_selected_s2 = df_risks[df_risks["s2"] == True].copy()
+    ss.df_risks_selected_s3 = df_risks[df_risks["s3"] == True].copy()
+
+
+###############################################################################
+
