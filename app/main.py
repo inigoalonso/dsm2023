@@ -411,10 +411,7 @@ if (
     ss.risks_selected_s2 = []
     ss.risks_selected_s3 = []
 
-# Matrix fig
-if "matrix" not in ss:
-    ss.matrix = "Interfaces DSM"
-
+# Matrices: fig, g, matrix
 if "fig" not in ss:
     ss.fig = None
 
@@ -479,6 +476,9 @@ if "g" not in ss:
                 )
             )
 
+if "matrix" not in ss:
+    ss.matrix = "Interfaces DSM"
+    on_matrix_selection(ss.matrix)
 
 # Import data from data/mitigations.csv into dataframe
 df_mitigations = get_data("data/mitigations.csv").fillna(False)
