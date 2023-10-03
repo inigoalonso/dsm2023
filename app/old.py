@@ -665,3 +665,92 @@ if (
 
 ###############################################################################
 
+
+with col_system:
+    st.write("")
+    st.write("")
+    selected_system_logo = st.empty()
+
+# Timer and warning
+
+# import asyncio
+
+# start_conf = datetime.datetime(2023, 10, 4, 9, 45, 0)
+# is_early = datetime.datetime.now() < start_conf
+
+# holder = st.empty()
+# countdown = holder.expander("Coundown", expanded=True)
+# if is_early:
+#     with countdown:
+#         st.markdown(
+#             """
+#             <style>
+#             .time {
+#                 font-size: 60px !important;
+#                 font-weight: 100 !important;
+#                 color: rgb(125, 53, 59) !important;
+#             }
+#             </style>
+#             """,
+#             unsafe_allow_html=True,
+#         )
+
+#         async def watch(test):
+#             while True:
+#                 time_left = start_conf - datetime.datetime.now()
+#                 test.markdown(
+#                     f"""
+#                     <p class="time">
+#                         {str(time_left.days)} days, {str(time_left.seconds//3600)} hours, {str((time_left.seconds//60)%60)} minutes, {str(time_left.seconds%60)} seconds
+#                     </p>
+#                     """,
+#                     unsafe_allow_html=True,
+#                 )
+#                 r = await asyncio.sleep(1)
+
+#         test = st.empty()
+
+#         st.markdown(
+#             """
+#             This website is meant to guide the participants of the Industry Sprint Workshop. It will be available on the day of the workshop, Wednesday October 4th.
+
+#             Come back then for the full experience! Thank you :)
+
+#             Meanwhile, you can check out some of these links for more information about the conference and DSMs:
+
+#             - [The 25th International DSM Conference](https://www.dsm-conference.org/)
+#             - [Conference Programme](https://dsm-conference.org/conference-programme/)
+#             - [Conference Proceedings](https://dsm-conference.org/conference-proceedings-dsm-2023/)
+#             - [Design Society](https://www.designsociety.org/)
+#             - [dsmweb.org](https://DSMweb.org/)
+
+
+#             If you still want a sneak peak and pinky swear not to cheat during the workshop, you can click on the "Info" section bellow to access the website.
+#             """,
+#         )
+
+# Group and consent
+# with st.expander("Info", expanded=not (is_early)):
+
+
+###############################################################################
+# Housekeeping
+###############################################################################
+
+# Show selected system logo in the top right corner
+if ss.system == "System 1":
+    selected_system_logo.image("assets/system1.png", width=115)
+elif ss.system == "System 2":
+    selected_system_logo.image("assets/system2.png", width=115)
+elif ss.system == "System 3":
+    selected_system_logo.image("assets/system3.png", width=115)
+else:
+    selected_system_logo.image("assets/system0.png", width=115)
+
+# if not (is_ready):
+#     asyncio.run(watch(test))
+# else:
+#     holder.empty()
+
+###############################################################################
+

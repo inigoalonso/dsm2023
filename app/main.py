@@ -160,7 +160,7 @@ def on_data_update(data):
 
 def on_system_selection():
     """Callback function when system is selected."""
-    print(f"{ss.system} selected")
+    # print(f"{ss.system} selected")
     for item in [
         "risks_selected_s1",
         "risks_selected_s2",
@@ -172,13 +172,14 @@ def on_system_selection():
 
 def on_risks_selection(selection):
     """Callback function when risk is selected."""
-    print(f"Risks selected for {ss.system}: {selection}")
+    # print(f"Risks selected for {ss.system}: {selection}")
     pass
 
 
 def on_matrix_selection(new_selection):
     """Callback function when matrix is selected."""
-    print(f"New matrix selected: {new_selection}")
+    # print(f"New matrix selected: {new_selection}")
+    pass
 
     if ss.matrix == "Interfaces DSM":
         ss.fig = plot.mdm(
@@ -292,7 +293,7 @@ def on_matrix_selection(new_selection):
 
 def on_mitigations_selection(selection):
     """Callback function when mitigation is selected."""
-    print(f"Mitigations selected for {ss.system}: {selection}")
+    # print(f"Mitigations selected for {ss.system}: {selection}")
     pass
 
 
@@ -308,16 +309,6 @@ def get_session_id() -> str:
     except Exception as e:
         return None
     return session_info._session_id
-
-
-def upload():
-    """Upload the session state to Firestore"""
-    session_id = get_session_id()
-    session_ref = db.collection("sessions").document(session_id)
-    session_ref.set(
-        {"session_id": session_id, "timestamp": get_timestamp(), "session_state": ss}
-    )
-    st.toast("Session state uploaded to database", icon="📡")
 
 
 def calculate_ms(new_df: pd.DataFrame | None = None):
@@ -376,7 +367,7 @@ if "market_sizes" not in ss:
 
 # Selected system
 if "system" not in ss:
-    ss.system = ""
+    ss.system = None
 
 
 @st.cache_data
@@ -507,12 +498,82 @@ if "df_systems" not in ss:
     ss.df_systems = get_data("data/Systems.csv")
     calculate_ms()
 
+if "group" not in ss:
+    ss.group = None
+
+if "consent" not in ss:
+    ss.consent = None
+
+if "role" not in ss:
+    ss.role = None
+
+if "experience" not in ss:
+    ss.experience = None
+
+if (
+    "q1" not in ss
+    and "q2" not in ss
+    and "q3" not in ss
+    and "q4" not in ss
+    and "q5" not in ss
+    and "q6" not in ss
+    and "q7" not in ss
+    and "q8" not in ss
+):
+    ss.q1 = None
+    ss.q2 = None
+    ss.q3 = None
+    ss.q4 = None
+    ss.q5 = None
+    ss.q6 = None
+    ss.q7 = None
+    ss.q8 = None
+
+if (
+    "before_artic_s1" not in ss
+    and "before_artic_s2" not in ss
+    and "before_artic_s3" not in ss
+    and "before_desert_s1" not in ss
+    and "before_desert_s2" not in ss
+    and "before_desert_s3" not in ss
+    and "before_special_s1" not in ss
+    and "before_special_s2" not in ss
+    and "before_special_s3" not in ss
+    and "after_artic_s1" not in ss
+    and "after_artic_s2" not in ss
+    and "after_artic_s3" not in ss
+    and "after_desert_s1" not in ss
+    and "after_desert_s2" not in ss
+    and "after_desert_s3" not in ss
+    and "after_special_s1" not in ss
+    and "after_special_s2" not in ss
+    and "after_special_s3" not in ss
+):
+    ss.before_artic_s1 = None
+    ss.before_artic_s2 = None
+    ss.before_artic_s3 = None
+    ss.before_desert_s1 = None
+    ss.before_desert_s2 = None
+    ss.before_desert_s3 = None
+    ss.before_special_s1 = None
+    ss.before_special_s2 = None
+    ss.before_special_s3 = None
+    ss.after_artic_s1 = None
+    ss.after_artic_s2 = None
+    ss.after_artic_s3 = None
+    ss.after_desert_s1 = None
+    ss.after_desert_s2 = None
+    ss.after_desert_s3 = None
+    ss.after_special_s1 = None
+    ss.after_special_s2 = None
+    ss.after_special_s3 = None
+
 ###############################################################################
 # Head
 ###############################################################################
 
 # Logo and title
-col_logo, col_title, col_system = st.columns([0.2, 1, 0.2])
+col_logo, col_title = st.columns([0.2, 1])
 with col_logo:
     st.write("")
     st.write("")
@@ -522,71 +583,6 @@ with col_title:
     st.title("Industry Sprint Workshop 2023")
     st.caption("**Workshop Facilitator** for _The 25th International DSM Conference_")
 
-with col_system:
-    st.write("")
-    st.write("")
-    selected_system_logo = st.empty()
-
-# Timer and warning
-
-# import asyncio
-
-# start_conf = datetime.datetime(2023, 10, 4, 9, 45, 0)
-# is_early = datetime.datetime.now() < start_conf
-
-# holder = st.empty()
-# countdown = holder.expander("Coundown", expanded=True)
-# if is_early:
-#     with countdown:
-#         st.markdown(
-#             """
-#             <style>
-#             .time {
-#                 font-size: 60px !important;
-#                 font-weight: 100 !important;
-#                 color: rgb(125, 53, 59) !important;
-#             }
-#             </style>
-#             """,
-#             unsafe_allow_html=True,
-#         )
-
-#         async def watch(test):
-#             while True:
-#                 time_left = start_conf - datetime.datetime.now()
-#                 test.markdown(
-#                     f"""
-#                     <p class="time">
-#                         {str(time_left.days)} days, {str(time_left.seconds//3600)} hours, {str((time_left.seconds//60)%60)} minutes, {str(time_left.seconds%60)} seconds
-#                     </p>
-#                     """,
-#                     unsafe_allow_html=True,
-#                 )
-#                 r = await asyncio.sleep(1)
-
-#         test = st.empty()
-
-#         st.markdown(
-#             """
-#             This website is meant to guide the participants of the Industry Sprint Workshop. It will be available on the day of the workshop, Wednesday October 4th.
-
-#             Come back then for the full experience! Thank you :)
-
-#             Meanwhile, you can check out some of these links for more information about the conference and DSMs:
-
-#             - [The 25th International DSM Conference](https://www.dsm-conference.org/)
-#             - [Conference Programme](https://dsm-conference.org/conference-programme/)
-#             - [Conference Proceedings](https://dsm-conference.org/conference-proceedings-dsm-2023/)
-#             - [Design Society](https://www.designsociety.org/)
-#             - [dsmweb.org](https://DSMweb.org/)
-
-
-#             If you still want a sneak peak and pinky swear not to cheat during the workshop, you can click on the "Info" section bellow to access the website.
-#             """,
-#         )
-
-# Group and consent
-# with st.expander("Info", expanded=not (is_early)):
 with st.expander("Info", expanded=True):
     st.markdown(
         """
@@ -594,7 +590,7 @@ with st.expander("Info", expanded=True):
             """
     )
 
-    group = st.radio(
+    ss.group = st.radio(
         label="Workshop group",
         help="Select your assigned group here.",
         options=(
@@ -606,40 +602,27 @@ with st.expander("Info", expanded=True):
             "5",
             "6",
             "7",
-            "8",
-            "9",
         ),
         horizontal=True,
     )
-    consent = st.checkbox(
+    ss.consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of data collected from your interaction with this website for research purposes.",
     )
 
-    if not ((group != "Select") and consent):
+    if not ((ss.group != "Select") and ss.consent):
         warning = st.warning(
             body="Please make sure to enter your group correctly.",
             icon="⚠️",
         )
     else:
-        # Creating a NEW document for each participant
-        session_id = get_session_id()
-        session_ref = db.collection("sessions").document(session_id)
-        # And then uploading the data to that reference
-        session_ref.set(
-            {"session_id": session_id, "timestamp": get_timestamp(), "group": group}
-        )
-        st.toast("Session data uploaded to database", icon="📡")
         st.success(
             body="You are ready to go! Click on the top right arrow to minimize this section. The tabs bellow will guide you through the workshop.",
             icon="👍",
         )
 
-# with st.expander("Session State", expanded=True):
-#     st.write(ss)
-
 # If the user has filled in the intro form correctly
-is_ready = (group != "Select") and consent
+is_ready = (ss.group != "Select") and ss.consent
 if is_ready:
 
     # with st.expander("**Select system**", expanded=False):
@@ -654,6 +637,28 @@ if is_ready:
             on_change=on_system_selection(),
         )
         system_logo.image(f"assets/system{ss.system[-1]}.png", width=245)
+
+        systems_ids = {
+                    "System 1": 0,
+                    "System 2": 1,
+                    "System 3": 2,
+                }
+
+        st.markdown(
+            f"""
+            {ss["df_systems"]["description"][systems_ids[ss.system]]}
+
+            **Min turning radius**: {ss["df_systems"]["min_R"][systems_ids[ss.system]]} m
+
+            **Reliability**: {ss["df_systems"]["reliability"][systems_ids[ss.system]]}
+
+            **Unit Price**: {ss["df_systems"]["price"][systems_ids[ss.system]]} k€
+
+            **Unit Cost**: {ss["df_systems"]["cost"][systems_ids[ss.system]]} k€
+
+            **Profit**: {ss["df_systems"]["total_profit"][systems_ids[ss.system]]/1000} M€
+            """
+        )
 
     # holder.empty()
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
@@ -963,11 +968,11 @@ if is_ready:
                 with col_cont_artic_0:
                     st.image("assets/artic.jpg")
                 with col_cont_artic_1:
-                    artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+                    ss.before_artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
                 with col_cont_artic_2:
-                    artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+                    ss.before_artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
                 with col_cont_artic_3:
-                    artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
+                    ss.before_artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
 
             cont_market_desert = form_tab1.container()
             with cont_market_desert:
@@ -981,11 +986,11 @@ if is_ready:
                 with col_cont_desert_0:
                     st.image("assets/desert.jpg")
                 with col_cont_desert_1:
-                    desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
                 with col_cont_desert_2:
-                    desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
                 with col_cont_desert_3:
-                    desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
+                    ss.before_desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
 
             cont_market_special = form_tab1.container()
             with cont_market_special:
@@ -999,11 +1004,11 @@ if is_ready:
                 with col_cont_special_0:
                     st.image("assets/special.jpg")
                 with col_cont_special_1:
-                    special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                    ss.before_special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
                 with col_cont_special_2:
-                    special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                    ss.before_special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
                 with col_cont_special_3:
-                    special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
+                    ss.before_special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
 
             form_tab1_submitted = st.form_submit_button(
                 label="Submit",
@@ -1430,24 +1435,6 @@ if is_ready:
             else:
                 st.warning("Please select a system to explore.")
 
-        with st.form(key="risk_mitigation_form"):
-            st.markdown(
-                """**Please select the mitigation you would like to add to the risk mitigation registry.**"""
-            )
-            st.caption(
-                "Please select mitigation you would like to add to the risk mitigation registry."
-            )
-            # multiple selection
-            mitigation = st.multiselect(
-                "Mitigation",
-                options=df_mitigations["Risk Mitigation element"].unique(),
-                help="Select the mitigation you would like to add to the risk mitigation registry.",
-            )
-            # Submit button
-            submit_button = st.form_submit_button(
-                label="Submit", help="Click here to submit your answers."
-            )
-
         # Questions Tab 3
         questions_tab3 = st.expander("**Questions**", expanded=True)
 
@@ -1455,7 +1442,7 @@ if is_ready:
 
         with form_tab3:
             form_tab3.write(
-                "Please reasses the potential of the new design with mitigations compared with the baseline designs:"
+                "Please reasses the potential of the new designs with mitigations compared with the baseline designs:"
             )
             form_tab3.caption(
                 "Please rate from 1 to 10, where 1 means low potential and 10 high potential."
@@ -1468,20 +1455,16 @@ if is_ready:
                     col_cont_systems_1,
                     col_cont_systems_2,
                     col_cont_systems_3,
-                    col_cont_systems_4,
-                ) = st.columns(5)
+                ) = st.columns(4)
                 with col_cont_systems_1:
-                    st.write("System 1")
+                    st.write("System 1 + mitigations")
                     st.image("assets/system1.png")
                 with col_cont_systems_2:
-                    st.write("System 2")
+                    st.write("System 2 + mitigations")
                     st.image("assets/system2.png")
                 with col_cont_systems_3:
-                    st.write("System 3")
+                    st.write("System 3 + mitigations")
                     st.image("assets/system3.png")
-                with col_cont_systems_4:
-                    st.write("Your System")
-                    st.image("assets/system4.png")
             cont_market_artic = form_tab3.container()
             with cont_market_artic:
                 st.write("Artic Market")
@@ -1490,18 +1473,15 @@ if is_ready:
                     col_cont_artic_1,
                     col_cont_artic_2,
                     col_cont_artic_3,
-                    col_cont_artic_4,
-                ) = st.columns(5)
+                ) = st.columns(4)
                 with col_cont_artic_0:
                     st.image("assets/artic.jpg")
                 with col_cont_artic_1:
-                    artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
+                    ss.after_artic_s1 = st.slider("System 1 in Artic Market", 1, 10, 5)
                 with col_cont_artic_2:
-                    artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
+                    ss.after_artic_s2 = st.slider("System 2 in Artic Market", 1, 10, 5)
                 with col_cont_artic_3:
-                    artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
-                with col_cont_artic_4:
-                    artic_s4 = st.slider("Your System in Artic Market", 1, 10, 5)
+                    ss.after_artic_s3 = st.slider("System 3 in Artic Market", 1, 10, 5)
 
             cont_market_desert = form_tab3.container()
             with cont_market_desert:
@@ -1511,18 +1491,15 @@ if is_ready:
                     col_cont_desert_1,
                     col_cont_desert_2,
                     col_cont_desert_3,
-                    col_cont_desert_4,
-                ) = st.columns(5)
+                ) = st.columns(4)
                 with col_cont_desert_0:
                     st.image("assets/desert.jpg")
                 with col_cont_desert_1:
-                    desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
+                    ss.after_desert_s1 = st.slider("System 1 in Desert Market", 1, 10, 5)
                 with col_cont_desert_2:
-                    desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
+                    ss.after_desert_s2 = st.slider("System 2 in Desert Market", 1, 10, 5)
                 with col_cont_desert_3:
-                    desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
-                with col_cont_desert_4:
-                    desert_s4 = st.slider("Your System in Desert Market", 1, 10, 5)
+                    ss.after_desert_s3 = st.slider("System 3 in Desert Market", 1, 10, 5)
 
             cont_market_special = form_tab3.container()
             with cont_market_special:
@@ -1532,18 +1509,15 @@ if is_ready:
                     col_cont_special_1,
                     col_cont_special_2,
                     col_cont_special_3,
-                    col_cont_special_4,
-                ) = st.columns(5)
+                ) = st.columns(4)
                 with col_cont_special_0:
                     st.image("assets/special.jpg")
                 with col_cont_special_1:
-                    special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
+                    ss.after_special_s1 = st.slider("System 1 in Special Market", 1, 10, 5)
                 with col_cont_special_2:
-                    special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
+                    ss.after_special_s2 = st.slider("System 2 in Special Market", 1, 10, 5)
                 with col_cont_special_3:
-                    special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
-                with col_cont_special_4:
-                    special_s4 = st.slider("Your System in Special Market", 1, 10, 5)
+                    ss.after_special_s3 = st.slider("System 3 in Special Market", 1, 10, 5)
 
             form_tab3_submitted = st.form_submit_button(
                 label="Submit",
@@ -1573,7 +1547,7 @@ if is_ready:
                 st.caption(
                     "Please rate the following options from 0 (not at all) to 5 (very much)."
                 )
-                q1 = st.slider(
+                ss.q1 = st.slider(
                     "My previous experience",
                     key="q1",
                     min_value=0.0,
@@ -1582,7 +1556,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q2 = st.slider(
+                ss.q2 = st.slider(
                     "Discussion with my colleagues",
                     key="q2",
                     min_value=0.0,
@@ -1591,7 +1565,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q3 = st.slider(
+                ss.q3 = st.slider(
                     "Risk registry",
                     key="q3",
                     min_value=0.0,
@@ -1600,7 +1574,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q4 = st.slider(
+                ss.q4 = st.slider(
                     "Value analysis models",
                     key="q4",
                     min_value=0.0,
@@ -1609,7 +1583,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q5 = st.slider(
+                ss.q5 = st.slider(
                     "Interfaces DSMs",
                     key="q5",
                     min_value=0.0,
@@ -1618,7 +1592,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q6 = st.slider(
+                ss.q6 = st.slider(
                     "Numerical (Spatial/Distance) DSMs",
                     key="q6",
                     min_value=0.0,
@@ -1627,7 +1601,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q7 = st.slider(
+                ss.q7 = st.slider(
                     "Risk propagation matrices",
                     key="q7",
                     min_value=0.0,
@@ -1636,7 +1610,7 @@ if is_ready:
                     step=0.1,
                 )
                 st.divider()
-                q8 = st.slider(
+                ss.q8 = st.slider(
                     "Risk mitigations registry",
                     key="q8",
                     min_value=0.0,
@@ -1705,7 +1679,7 @@ if is_ready:
                     "Other",
                 ]
 
-                role = person_col1.selectbox(
+                ss.role = person_col1.selectbox(
                     label="Professional role",
                     options=roles,
                     index=None,
@@ -1725,7 +1699,7 @@ if is_ready:
                 #     label="Other professional sector",
                 #     help="Enter your professional sector here if not on the list above.",
                 # )
-                experience = person_col3.number_input(
+                ss.experience = person_col3.number_input(
                     label="Professional experience (years)",
                     help="Enter your years of professional experience here.",
                     value=None,
@@ -1739,33 +1713,33 @@ if is_ready:
                 )
                 if submit_button:
                     #
-                    session_id = get_session_id()
-                    response_ref = db.collection("responses").document(session_id)
-                    # And then uploading the data to that reference
-                    response_ref.set(
-                        {
-                            "session_id": session_id,
-                            "timestamp": get_timestamp(),
-                            "group": group,
-                            "consent": consent,
-                            "role": role,
-                            "experience": experience,
-                            "q1": q1,
-                            "q2": q2,
-                            "q3": q3,
-                            "q4": q4,
-                            "q5": q5,
-                            "q6": q6,
-                            "q7": q7,
-                            "q8": q8,
-                            "session_state": "TODO",
-                        }
-                    )
-                    st.toast("Response data uploaded to database", icon="📡")
-                    st.success(
-                        body="Your answers have been submitted. Thank you for participating!",
-                        icon="👍",
-                    )
+                    # session_id = get_session_id()
+                    # response_ref = db.collection("responses").document(session_id)
+                    # # And then uploading the data to that reference
+                    # response_ref.set(
+                    #     {
+                    #         "session_id": session_id,
+                    #         "timestamp": get_timestamp(),
+                    #         "group": ss.group,
+                    #         "consent": ss.consent,
+                    #         "role": ss.role,
+                    #         "experience": ss.experience,
+                    #         "q1": q1,
+                    #         "q2": q2,
+                    #         "q3": q3,
+                    #         "q4": q4,
+                    #         "q5": q5,
+                    #         "q6": q6,
+                    #         "q7": q7,
+                    #         "q8": q8,
+                    #         "session_state": "TODO",
+                    #     }
+                    # )
+                    # st.toast("Response data uploaded to database", icon="📡")
+                    # st.success(
+                    #     body="Your answers have been submitted. Thank you for participating!",
+                    #     icon="👍",
+                    # )
                     st.balloons()
 
         questions_tab4 = st.expander("**Questions**", expanded=True)
@@ -1831,42 +1805,66 @@ if is_ready:
 # Session state
 ###############################################################################
 
+with st.expander("Session State", expanded=True):
+    st.write(ss)
+
 # print("Here's the session state:")
 # print([key for key in ss.keys()])
 # print(ss)
 
+print(f"Session ID: {get_session_id()}")
+
 try:
-    session_state_ref = db.collection("session_states").document(get_session_id())
+    document_name = f"{get_session_id()}_{get_timestamp()}"
+    session_state_ref = db.collection("session_states").document(document_name)
     # And then uploading the data to that reference
     session_state_ref.set(
         {
             "session_id": get_session_id(),
-            "role": role,
-            "group": group,
+            "timestamp": get_timestamp(),
+            "role": ss.role,
+            "group": ss.group,
             "session_state": "TODO",
+            "risks_selected_s1": ss.risks_selected_s1,
+            "risks_selected_s2": ss.risks_selected_s2,
+            "risks_selected_s3": ss.risks_selected_s3,
+            "mitigations_selected_s1": ss.mitigations_selected_s1,
+            "mitigations_selected_s2": ss.mitigations_selected_s2,
+            "mitigations_selected_s3": ss.mitigations_selected_s3,
+            "matrix": ss.matrix,
+            "q1": ss.q1,
+            "q2": ss.q2,
+            "q3": ss.q3,
+            "q4": ss.q4,
+            "q5": ss.q5,
+            "q6": ss.q6,
+            "q7": ss.q7,
+            "q8": ss.q8,
+            "before": {
+                "artic_s1": ss.before_artic_s1,
+                "artic_s2": ss.before_artic_s2,
+                "artic_s3": ss.before_artic_s3,
+                "desert_s1": ss.before_desert_s1,
+                "desert_s2": ss.before_desert_s2,
+                "desert_s3": ss.before_desert_s3,
+                "special_s1": ss.before_special_s1,
+                "special_s2": ss.before_special_s2,
+                "special_s3": ss.before_special_s3,
+            },
+            "after": {
+                "artic_s1": ss.after_artic_s1,
+                "artic_s2": ss.after_artic_s2,
+                "artic_s3": ss.after_artic_s3,
+                "desert_s1": ss.after_desert_s1,
+                "desert_s2": ss.after_desert_s2,
+                "desert_s3": ss.after_desert_s3,
+                "special_s1": ss.after_special_s1,
+                "special_s2": ss.after_special_s2,
+                "special_s3": ss.after_special_s3,
+            },
         }
     )
     st.toast("Session state data uploaded to database", icon="📡")
 except Exception as e:
-    print("Session state data not uploaded to database")
-    print(e)
+    st.toast(f"Session state data not uploaded to database: {e}", icon="📡")
     pass
-
-###############################################################################
-# Housekeeping
-###############################################################################
-
-# Show selected system logo in the top right corner
-if ss.system == "System 1":
-    selected_system_logo.image("assets/system1.png", width=115)
-elif ss.system == "System 2":
-    selected_system_logo.image("assets/system2.png", width=115)
-elif ss.system == "System 3":
-    selected_system_logo.image("assets/system3.png", width=115)
-else:
-    selected_system_logo.image("assets/system0.png", width=115)
-
-# if not (is_ready):
-#     asyncio.run(watch(test))
-# else:
-#     holder.empty()
