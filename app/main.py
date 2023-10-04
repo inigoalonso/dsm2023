@@ -285,6 +285,7 @@ def on_risks_selection(selection):
 def on_mitigations_selection(selection):
     """Callback function when mitigation is selected."""
     # print(f"Mitigations selected for {ss.system}: {selection}")
+    calculate_ms()
     pass
 
 
@@ -1394,11 +1395,11 @@ if is_ready:
             ss.cost_mitigations[0] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s1)
             ]["Cost (k€)"].sum()
-            new_cost_s1 = ss["df_systems"]["cost"][0] + ss.cost_mitigations[0]
+            ss["df_systems"]["cost"][0] = ss["df_systems"]["cost"][0] + ss.cost_mitigations[0]
             ss.reliability_mitigations[0] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s1)
             ]["Reliability gain"].sum()
-            new_reliability_s1 = (
+            ss["df_systems"]["reliability"][0] = (
                 ss["df_systems"]["reliability"][0] + ss.reliability_mitigations[0]
             )
             questions_tab3_s1_col2.markdown(
@@ -1466,11 +1467,11 @@ if is_ready:
             ss.cost_mitigations[1] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s2)
             ]["Cost (k€)"].sum()
-            new_cost_s1 = ss["df_systems"]["cost"][1] + ss.cost_mitigations[1]
+            ss["df_systems"]["cost"][1] = ss["df_systems"]["cost"][1] + ss.cost_mitigations[1]
             ss.reliability_mitigations[1] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s2)
             ]["Reliability gain"].sum()
-            new_reliability_s1 = (
+            ss["df_systems"]["reliability"][1] = (
                 ss["df_systems"]["reliability"][1] + ss.reliability_mitigations[1]
             )
             questions_tab3_s2_col2.markdown(
@@ -1538,11 +1539,11 @@ if is_ready:
             ss.cost_mitigations[2] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s3)
             ]["Cost (k€)"].sum()
-            new_cost_s1 = ss["df_systems"]["cost"][2] + ss.cost_mitigations[2]
+            ss["df_systems"]["cost"][2] = ss["df_systems"]["cost"][2] + ss.cost_mitigations[2]
             ss.reliability_mitigations[2] = df_mitigations[
                 df_mitigations.ID.isin(ss.mitigations_selected_s3)
             ]["Reliability gain"].sum()
-            new_reliability_s1 = (
+            ss["df_systems"]["reliability"][2] = (
                 ss["df_systems"]["reliability"][2] + ss.reliability_mitigations[2]
             )
             questions_tab3_s3_col2.markdown(
