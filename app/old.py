@@ -817,3 +817,175 @@ st.markdown(
 
 ###############################################################################
 
+
+
+            if ss.matrix == "Interfaces DSM":
+                fig = plot.mdm(
+                    # leafs=g.leafs,
+                    leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+                    edges=ss.g.edges,
+                    style=plot.Style(
+                        piemap=dict(
+                            fields=[
+                                "mechanical",
+                                "electrical",
+                                "information",
+                                "hydraulic",
+                            ],
+                        ),
+                        palettes=dict(
+                            fields={
+                                "mechanical": {"categorical": "#de9c38"},
+                                "electrical": {"categorical": "#a64747"},
+                                "information": {"categorical": "#545a8e"},
+                                "hydraulic": {"categorical": "#389dfc"},
+                            }
+                        ),
+                    ),
+                )
+                matrices.plotly_chart(
+                    fig,
+                    use_container_width=True,
+                    config={
+                        "displayModeBar": False,
+                        "displaylogo": False,
+                        "modeBarButtonsToRemove": [
+                            "zoom2d",
+                            "zoomIn2d",
+                            "zoomOut2d",
+                            "resetScale2d",
+                            "toggleSpikelines",
+                            "pan2d",
+                            "lasso2d",
+                            "select2d",
+                            "autoScale2d",
+                            "hoverClosestCartesian",
+                            "hoverCompareCartesian",
+                        ],
+                    },
+                )
+
+                fig.update_layout(
+                    {
+                        "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                        "paper_bgcolor": "rgba(0, 0, 0, 0)",
+                        "xaxis": {"fixedrange": True},
+                        "yaxis": {"fixedrange": True},
+                    }
+                )
+            elif ss.matrix == "Distance DSM":
+                fig = plot.mdm(
+                    leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+                    edges=ss.g.edges,
+                    style=plot.Style(
+                        piemap=dict(
+                            display="weights",
+                            fields=[
+                                "distance",
+                            ],
+                            mode="relative",
+                        ),
+                        palettes=dict(
+                            fields={
+                                "distance": {"continuous": get_diverging_redblue()},
+                            }
+                        ),
+                    ),
+                )
+                
+                matrices.plotly_chart(
+                    fig,
+                    use_container_width=True,
+                    config={
+                        "displayModeBar": False,
+                        "displaylogo": False,
+                        "modeBarButtonsToRemove": [
+                            "zoom2d",
+                            "zoomIn2d",
+                            "zoomOut2d",
+                            "resetScale2d",
+                            "toggleSpikelines",
+                            "pan2d",
+                            "lasso2d",
+                            "select2d",
+                            "autoScale2d",
+                            "hoverClosestCartesian",
+                            "hoverCompareCartesian",
+                        ],
+                    },
+                )
+
+                fig.update_layout(
+                    {
+                        "plot_bgcolor": "rgba(0, 0, 0, 0)",
+                        "paper_bgcolor": "rgba(0, 0, 0, 0)",
+                        "xaxis": {"fixedrange": True},
+                        "yaxis": {"fixedrange": True},
+                    }
+                )
+            elif ss.matrix == "Risk DSM":
+                # fig = plot.mdm(
+                #     leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+                #     edges=ss.g.edges,
+                #     style=plot.Style(
+                #         piemap=dict(
+                #             display="weights",
+                #             fields=[
+                #                 "force_e",
+                #                 "force_t",
+                #                 "force_r",
+                #                 "electro_e",
+                #                 "electro_t",
+                #                 "electro_r",
+                #                 "thermo_e",
+                #                 "thermo_t",
+                #                 "thermo_r",
+                #             ],
+                #         ),
+                #         palettes=dict(
+                #             fields={
+                #                 "force_e": {"categorical": "#de9c38"},
+                #                 "force_t": {"categorical": "#de9c38"},
+                #                 "force_r": {"categorical": "#de9c38"},
+                #                 "electro_e": {"categorical": "#a64747"},
+                #                 "electro_t": {"categorical": "#a64747"},
+                #                 "electro_r": {"categorical": "#a64747"},
+                #                 "thermo_e": {"categorical": "#545a8e"},
+                #                 "thermo_t": {"categorical": "#545a8e"},
+                #                 "thermo_r": {"categorical": "#545a8e"},
+                #             }
+                #         ),
+                #     ),
+                # )
+                if ss.system == "System 1":
+                    st.dataframe(
+                        df_risk_s1.style.background_gradient(cmap=cm_g2r).format(
+                            {2: "{:.2f}"}, na_rep="", precision=2
+                        ),
+                        height=400,
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                elif ss.system == "System 2":
+                    st.dataframe(
+                        df_risk_s2.style.background_gradient(cmap=cm_g2r).format(
+                            {2: "{:.2f}"}, na_rep="", precision=2
+                        ),
+                        height=400,
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                elif ss.system == "System 3":
+                    st.dataframe(
+                        df_risk_s3.style.background_gradient(cmap=cm_g2r).format(
+                            {2: "{:.2f}"}, na_rep="", precision=2
+                        ),
+                        height=400,
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+
+###############################################################################
+
+

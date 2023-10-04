@@ -168,118 +168,119 @@ def on_risks_selection(selection):
     pass
 
 
-# def on_matrix_selection(new_selection):
-#     """Callback function when matrix is selected."""
-#     # print(f"New matrix selected: {new_selection}")
+def on_matrix_selection(new_selection):
+    """Callback function when matrix is selected."""
+    # print(f"New matrix selected: {new_selection}")
+    pass
 
-#     if ss.matrix == "Interfaces DSM":
-#         fig = plot.mdm(
-#             # leafs=g.leafs,
-#             leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
-#             edges=ss.g.edges,
-#             style=plot.Style(
-#                 piemap=dict(
-#                     fields=[
-#                         "mechanical",
-#                         "electrical",
-#                         "information",
-#                         "hydraulic",
-#                     ],
-#                 ),
-#                 palettes=dict(
-#                     fields={
-#                         "mechanical": {"categorical": "#de9c38"},
-#                         "electrical": {"categorical": "#a64747"},
-#                         "information": {"categorical": "#545a8e"},
-#                         "hydraulic": {"categorical": "#389dfc"},
-#                     }
-#                 ),
-#             ),
-#         )
-#     elif ss.matrix == "Distance DSM":
-#         fig = plot.mdm(
-#             leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
-#             edges=ss.g.edges,
-#             style=plot.Style(
-#                 piemap=dict(
-#                     display="weights",
-#                     fields=[
-#                         "distance",
-#                     ],
-#                     mode="relative",
-#                 ),
-#                 palettes=dict(
-#                     fields={
-#                         "distance": {"continuous": get_diverging_redblue()},
-#                     }
-#                 ),
-#             ),
-#         )
-#     elif ss.matrix == "Risk DSM":
-#         fig = plot.mdm(
-#             leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
-#             edges=ss.g.edges,
-#             style=plot.Style(
-#                 piemap=dict(
-#                     display="weights",
-#                     fields=[
-#                         "force_e",
-#                         "force_t",
-#                         "force_r",
-#                         "electro_e",
-#                         "electro_t",
-#                         "electro_r",
-#                         "thermo_e",
-#                         "thermo_t",
-#                         "thermo_r",
-#                     ],
-#                 ),
-#                 palettes=dict(
-#                     fields={
-#                         "force_e": {"categorical": "#de9c38"},
-#                         "force_t": {"categorical": "#de9c38"},
-#                         "force_r": {"categorical": "#de9c38"},
-#                         "electro_e": {"categorical": "#a64747"},
-#                         "electro_t": {"categorical": "#a64747"},
-#                         "electro_r": {"categorical": "#a64747"},
-#                         "thermo_e": {"categorical": "#545a8e"},
-#                         "thermo_t": {"categorical": "#545a8e"},
-#                         "thermo_r": {"categorical": "#545a8e"},
-#                     }
-#                 ),
-#             ),
-#         )
+    if ss.matrix == "Interfaces DSM":
+        fig = plot.mdm(
+            # leafs=g.leafs,
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    fields=[
+                        "mechanical",
+                        "electrical",
+                        "information",
+                        "hydraulic",
+                    ],
+                ),
+                palettes=dict(
+                    fields={
+                        "mechanical": {"categorical": "#de9c38"},
+                        "electrical": {"categorical": "#a64747"},
+                        "information": {"categorical": "#545a8e"},
+                        "hydraulic": {"categorical": "#389dfc"},
+                    }
+                ),
+            ),
+        )
+    elif ss.matrix == "Distance DSM":
+        fig = plot.mdm(
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    display="weights",
+                    fields=[
+                        "distance",
+                    ],
+                    mode="relative",
+                ),
+                palettes=dict(
+                    fields={
+                        "distance": {"continuous": get_diverging_redblue()},
+                    }
+                ),
+            ),
+        )
+    elif ss.matrix == "Risk DSM":
+        fig = plot.mdm(
+            leafs=[leaf for leaf in ss.g.leafs if ss.system in leaf.labels],
+            edges=ss.g.edges,
+            style=plot.Style(
+                piemap=dict(
+                    display="weights",
+                    fields=[
+                        "force_e",
+                        "force_t",
+                        "force_r",
+                        "electro_e",
+                        "electro_t",
+                        "electro_r",
+                        "thermo_e",
+                        "thermo_t",
+                        "thermo_r",
+                    ],
+                ),
+                palettes=dict(
+                    fields={
+                        "force_e": {"categorical": "#de9c38"},
+                        "force_t": {"categorical": "#de9c38"},
+                        "force_r": {"categorical": "#de9c38"},
+                        "electro_e": {"categorical": "#a64747"},
+                        "electro_t": {"categorical": "#a64747"},
+                        "electro_r": {"categorical": "#a64747"},
+                        "thermo_e": {"categorical": "#545a8e"},
+                        "thermo_t": {"categorical": "#545a8e"},
+                        "thermo_r": {"categorical": "#545a8e"},
+                    }
+                ),
+            ),
+        )
 
-#     matrices.plotly_chart(
-#         fig,
-#         use_container_width=True,
-#         config={
-#             "displayModeBar": False,
-#             "displaylogo": False,
-#             "modeBarButtonsToRemove": [
-#                 "zoom2d",
-#                 "zoomIn2d",
-#                 "zoomOut2d",
-#                 "resetScale2d",
-#                 "toggleSpikelines",
-#                 "pan2d",
-#                 "lasso2d",
-#                 "select2d",
-#                 "autoScale2d",
-#                 "hoverClosestCartesian",
-#                 "hoverCompareCartesian",
-#             ],
-#         },
-#     )
+    matrices.plotly_chart(
+        fig,
+        use_container_width=True,
+        config={
+            "displayModeBar": False,
+            "displaylogo": False,
+            "modeBarButtonsToRemove": [
+                "zoom2d",
+                "zoomIn2d",
+                "zoomOut2d",
+                "resetScale2d",
+                "toggleSpikelines",
+                "pan2d",
+                "lasso2d",
+                "select2d",
+                "autoScale2d",
+                "hoverClosestCartesian",
+                "hoverCompareCartesian",
+            ],
+        },
+    )
 
-#     fig.update_layout(
-#         {
-#             "plot_bgcolor": "rgba(0, 0, 0, 0)",
-#             "paper_bgcolor": "rgba(0, 0, 0, 0)",
-#             "xaxis": {"fixedrange": True},
-#             "yaxis": {"fixedrange": True},
-#         }
-#     )
+    fig.update_layout(
+        {
+            "plot_bgcolor": "rgba(0, 0, 0, 0)",
+            "paper_bgcolor": "rgba(0, 0, 0, 0)",
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"fixedrange": True},
+        }
+    )
 
 
 def on_mitigations_selection(selection):
@@ -380,29 +381,7 @@ df_dsm = get_data("data/dsm.csv").fillna(0)
 
 # Distances
 # df_distances = pd.read_csv("data/distances.csv", sep=";", header=None, decimal=",").fillna(0)
-df_distances = pd.read_csv(
-    "data/distances.csv", index_col=False, header=None, sep=";", decimal=","
-).fillna(0)
-
-
-# Combined risks from CPM
-df_risk_s1 = pd.read_csv(
-    "data/risk/s1_risk.csv", index_col=False, header=None, sep=";", decimal=","
-).fillna(0)
-#df_risk_s1.columns = df_components[df_components["s1"] == True]['name']
-df_risk_s1.insert(0, "id", df_components[df_components["s1"] == True]['name'])
-
-df_risk_s2 = pd.read_csv(
-    "data/risk/s2_risk.csv", index_col=False, header=None, sep=";", decimal=","
-).fillna(0)
-#df_risk_s2.columns = df_components[df_components["s2"] == True]['name']
-df_risk_s2.insert(0, "id", df_components[df_components["s2"] == True]['name'])
-
-df_risk_s3 = pd.read_csv(
-    "data/risk/s3_risk.csv", index_col=False, header=None, sep=";", decimal=","
-).fillna(0)
-#df_risk_s3.columns = df_components[df_components["s3"] == True]['name']
-df_risk_s3.insert(0, "id", df_components[df_components["s3"] == True]['name'])
+df_distances = get_data("data/distances.csv").fillna(0)
 
 # Kinds of interfaces
 kinds = {
@@ -467,7 +446,7 @@ if "g" not in ss:
 
     for i, row in df_dsm.iterrows():
         for j, value in enumerate(row):
-            print(i, j, value)
+            # print(i, j, value)
             # print()
             if i == j:
                 continue
@@ -505,12 +484,9 @@ if (
     ss.mitigations_selected_s2 = []
     ss.mitigations_selected_s3 = []
 
-if "mitigations_selected" not in ss:
-    ss.mitigations_selected = [[], [], []]
-
-if "cost_mitigations" not in ss and "reliability_mitigations" not in ss:
-    ss.cost_mitigations = [0, 0, 0]
-    ss.reliability_mitigations = [0, 0, 0]
+if ("cost_mitigations" not in ss and "reliability_mitigations" not in ss):
+    ss.cost_mitigations = [0,0,0]
+    ss.reliability_mitigations = [0,0,0]
 
 # Original systems designs
 if "df_systems" not in ss:
@@ -591,10 +567,9 @@ if (
     ss.after_special_s2 = None
     ss.after_special_s3 = None
 
-if "cost_mitigations" not in ss and "reliability_mitigations" not in ss:
-    ss.cost_mitigations = [0, 0, 0]
-    ss.reliability_mitigations = [0, 0, 0]
-
+if ("cost_mitigations" not in ss and "reliability_mitigations" not in ss):
+    ss.cost_mitigations = [0,0,0]
+    ss.reliability_mitigations = [0,0,0]
 
 ###############################################################################
 # Head
@@ -669,11 +644,6 @@ if is_ready:
             "System 1": 0,
             "System 2": 1,
             "System 3": 2,
-        }
-        systems_shorts = {
-            "System 1": "s1",
-            "System 2": "s2",
-            "System 3": "s3",
         }
 
         st.markdown(
@@ -1137,30 +1107,21 @@ if is_ready:
                     "Propagation of risks between components",
                 ],
                 horizontal=True,
+                on_change=on_matrix_selection,
+                args=(ss.matrix,),
             )
-
             if ss.matrix == "Interfaces DSM":
-                if ss.system == "System 1":
-                    st.image("assets/s1_interfaces.png")
-                elif ss.system == "System 2":
-                    st.image("assets/s2_interfaces.png")
-                elif ss.system == "System 3":
-                    st.image("assets/s3_interfaces.png")
+                st.write(
+                    "The following matrix shows the interfaces between components of the system."
+                )
             elif ss.matrix == "Distance DSM":
-                if ss.system == "System 1":
-                    st.image("assets/s1_distances.png")
-                elif ss.system == "System 2":
-                    st.image("assets/s2_distances.png")
-                elif ss.system == "System 3":
-                    st.image("assets/s3_distances.png")
+                st.write(
+                    "The following matrix shows the distances between components of the system."
+                )
             elif ss.matrix == "Risk DSM":
-                if ss.system == "System 1":
-                    st.image("assets/s1_risk.png")
-                elif ss.system == "System 2":
-                    st.image("assets/s2_risk.png")
-                elif ss.system == "System 3":
-                    st.image("assets/s3_risk.png")
-
+                st.write(
+                    "The following matrix shows the propagation of risks between components of the system."
+                )
 
         with st.expander(f"**Select {ss.system} risks for mitigation**", expanded=True):
             st.markdown(
@@ -1343,69 +1304,11 @@ if is_ready:
 
             questions_tab3_col1, questions_tab3_col2 = st.columns(2)
 
-            # ss.mitigations_selected[systems_ids[ss.system]] = questions_tab3_col1.multiselect(
-            #     label="Select the mitigations you would like to mitigate.",
-            #     options=df_mitigations[df_mitigations[systems_shorts[ss.system]] == True].ID,
-            #     help="Select the mitigations you would like to mitigate.",
-            #     #on_change=on_mitigations_selection(ss.mitigations_selected[systems_ids[ss.system]]),
-            # )
-            # questions_tab3_col2.dataframe(
-            #     df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])],
-            #     use_container_width=True,
-            #     hide_index=True,
-            #     column_config={
-            #         "Selected": None,
-            #         "ID": st.column_config.TextColumn(
-            #             "ID", help="ID", width="small"
-            #         ),
-            #         "Risk Mitigation element": st.column_config.TextColumn(
-            #             "Name", help="Risk Mitigation element", width="large"
-            #         ),
-            #         "Affects the interactions between": None,
-            #         "A": None,
-            #         "B": None,
-            #         "Cost (k€)": None,
-            #         "id2": None,
-            #         "x": None,
-            #         "y": None,
-            #         "z": None,
-            #         "force_e2": None,
-            #         "force_t": None,
-            #         "force_r": None,
-            #         "electro_e2": None,
-            #         "electro_t": None,
-            #         "electro_r": None,
-            #         "thermo_e2": None,
-            #         "thermo_t": None,
-            #         "thermo_r": None,
-            #         "Reliability gain": None,
-            #         "Mechanical": None,
-            #         "Electromagnetic": None,
-            #         "Thermal": None,
-            #         "s1": None,
-            #         "s2": None,
-            #         "s3": None,
-            #     },
-            # )
-            # # Added cost and reliability by the selected mitigations
-            # ss.cost_mitigations[systems_ids[ss.system]] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])]['Cost (k€)'].sum()
-            # new_cost_s1 = ss["df_systems"]["cost"][systems_ids[ss.system]] + ss.cost_mitigations[systems_ids[ss.system]]
-            # ss.reliability_mitigations[systems_ids[ss.system]] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])]['Reliability gain'].sum()
-            # new_reliability_s1 = ss["df_systems"]["reliability"][systems_ids[ss.system]] + ss.reliability_mitigations[systems_ids[ss.system]]
-            # questions_tab3_col2.markdown(
-            #     f"""
-            #     The total cost of the selected mitigations is **{ss.cost_mitigations[0]:.3f} k€** per unit.
-
-            #     The total increase in reliability is **{ss.reliability_mitigations[0]:.3f}**.
-            #     """
-            # )
-
             if ss.system == "System 1":
-                questions_tab3_col1.multiselect(
+                ss.mitigations_selected_s1 = questions_tab3_col1.multiselect(
                     label="Select the mitigations you would like to mitigate.",
                     options=df_mitigations[df_mitigations["s1"] == True].ID,
                     help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s1",
                     on_change=on_mitigations_selection(ss.mitigations_selected_s1),
                 )
                 questions_tab3_col2.dataframe(
@@ -1447,16 +1350,10 @@ if is_ready:
                     },
                 )
                 # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[0] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s1)
-                ]["Cost (k€)"].sum()
+                ss.cost_mitigations[0] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s1)]['Cost (k€)'].sum()
                 new_cost_s1 = ss["df_systems"]["cost"][0] + ss.cost_mitigations[0]
-                ss.reliability_mitigations[0] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s1)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][0] + ss.reliability_mitigations[0]
-                )
+                ss.reliability_mitigations[0] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s1)]['Reliability gain'].sum()
+                new_reliability_s1 = ss["df_systems"]["reliability"][0] + ss.reliability_mitigations[0]
                 questions_tab3_col2.markdown(
                     f"""
                     The total cost of the selected mitigations is **{ss.cost_mitigations[0]:.3f} k€** per unit.
@@ -1465,11 +1362,10 @@ if is_ready:
                     """
                 )
             elif ss.system == "System 2":
-                questions_tab3_col1.multiselect(
+                ss.mitigations_selected_s2 = questions_tab3_col1.multiselect(
                     label="Select the mitigations you would like to mitigate.",
                     options=df_mitigations[df_mitigations["s2"] == True].ID,
                     help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s2",
                     on_change=on_risks_selection(ss.mitigations_selected_s2),
                 )
                 questions_tab3_col2.dataframe(
@@ -1511,16 +1407,10 @@ if is_ready:
                     },
                 )
                 # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[1] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s2)
-                ]["Cost (k€)"].sum()
+                ss.cost_mitigations[1] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s2)]['Cost (k€)'].sum()
                 new_cost_s1 = ss["df_systems"]["cost"][1] + ss.cost_mitigations[1]
-                ss.reliability_mitigations[1] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s2)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][1] + ss.reliability_mitigations[1]
-                )
+                ss.reliability_mitigations[1] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s2)]['Reliability gain'].sum()
+                new_reliability_s1 = ss["df_systems"]["reliability"][1] + ss.reliability_mitigations[1]
                 questions_tab3_col2.markdown(
                     f"""
                     The total cost of the selected mitigations is **{ss.cost_mitigations[1]:.3f} k€** per unit.
@@ -1529,11 +1419,10 @@ if is_ready:
                     """
                 )
             elif ss.system == "System 3":
-                questions_tab3_col1.multiselect(
+                ss.mitigations_selected_s3 = questions_tab3_col1.multiselect(
                     label="Select the mitigations you would like to mitigate.",
                     options=df_mitigations[df_mitigations["s3"] == True].ID,
                     help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s3",
                     on_change=on_risks_selection(ss.mitigations_selected_s3),
                 )
                 questions_tab3_col2.dataframe(
@@ -1575,16 +1464,10 @@ if is_ready:
                     },
                 )
                 # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[2] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s3)
-                ]["Cost (k€)"].sum()
+                ss.cost_mitigations[2] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s3)]['Cost (k€)'].sum()
                 new_cost_s1 = ss["df_systems"]["cost"][2] + ss.cost_mitigations[2]
-                ss.reliability_mitigations[2] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s3)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][2] + ss.reliability_mitigations[2]
-                )
+                ss.reliability_mitigations[2] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s3)]['Reliability gain'].sum()
+                new_reliability_s1 = ss["df_systems"]["reliability"][2] + ss.reliability_mitigations[2]
                 questions_tab3_col2.markdown(
                     f"""
                     The total cost of the selected mitigations is **{ss.cost_mitigations[2]:.3f} k€** per unit.
@@ -1918,8 +1801,8 @@ if is_ready:
 # Session state
 ###############################################################################
 
-# with st.expander("Session State", expanded=True):
-#     st.write(ss)
+with st.expander("Session State", expanded=True):
+    st.write(ss)
 
 # print("Here's the session state:")
 # print([key for key in ss.keys()])
