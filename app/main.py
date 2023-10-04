@@ -467,7 +467,7 @@ if "g" not in ss:
 
     for i, row in df_dsm.iterrows():
         for j, value in enumerate(row):
-            print(i, j, value)
+            #print(i, j, value)
             # print()
             if i == j:
                 continue
