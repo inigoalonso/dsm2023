@@ -635,8 +635,9 @@ with st.expander("Info", expanded=True):
     )
     ss.consent = st.checkbox(
         label="I consent to the use of my data for research purposes.",
-        help="Please check this box to consent to the use of data collected from your interaction with this website for research purposes.",
+        help="Please check this box to consent to the use of data collected from your interaction with this website for research purposes. No identifying information will be collected.",
     )
+    st.caption(f"To exercise your right to remove the collected data from the database at a later date, please contact the workshop facilitator with this Session ID: {get_session_id()}")
 
     if not ((ss.group != "Select") and ss.consent):
         warning = st.warning(
