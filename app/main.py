@@ -1664,12 +1664,7 @@ if is_ready:
     with tab4:
         # show text if time is over 3pm onn October 4
         start = datetime.datetime(2023, 10, 4, 15, 0, 0)
-        if datetime.datetime.now() < start:
-            st.error(
-                "  This questionnaire is not available yet. Please come back after 15:00. Thank you!",
-                icon="🕒",
-            )
-        else:
+        if True:
             st.subheader("Questionnaire")
             with st.expander("**Questions**", expanded=True):
                 st.markdown(
