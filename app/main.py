@@ -389,20 +389,20 @@ df_distances = pd.read_csv(
 df_risk_s1 = pd.read_csv(
     "data/risk/s1_risk.csv", index_col=False, header=None, sep=";", decimal=","
 ).fillna(0)
-#df_risk_s1.columns = df_components[df_components["s1"] == True]['name']
-df_risk_s1.insert(0, "id", df_components[df_components["s1"] == True]['name'])
+# df_risk_s1.columns = df_components[df_components["s1"] == True]['name']
+df_risk_s1.insert(0, "id", df_components[df_components["s1"] == True]["name"])
 
 df_risk_s2 = pd.read_csv(
     "data/risk/s2_risk.csv", index_col=False, header=None, sep=";", decimal=","
 ).fillna(0)
-#df_risk_s2.columns = df_components[df_components["s2"] == True]['name']
-df_risk_s2.insert(0, "id", df_components[df_components["s2"] == True]['name'])
+# df_risk_s2.columns = df_components[df_components["s2"] == True]['name']
+df_risk_s2.insert(0, "id", df_components[df_components["s2"] == True]["name"])
 
 df_risk_s3 = pd.read_csv(
     "data/risk/s3_risk.csv", index_col=False, header=None, sep=";", decimal=","
 ).fillna(0)
-#df_risk_s3.columns = df_components[df_components["s3"] == True]['name']
-df_risk_s3.insert(0, "id", df_components[df_components["s3"] == True]['name'])
+# df_risk_s3.columns = df_components[df_components["s3"] == True]['name']
+df_risk_s3.insert(0, "id", df_components[df_components["s3"] == True]["name"])
 
 # Kinds of interfaces
 kinds = {
@@ -467,7 +467,7 @@ if "g" not in ss:
 
     for i, row in df_dsm.iterrows():
         for j, value in enumerate(row):
-            #print(i, j, value)
+            # print(i, j, value)
             # print()
             if i == j:
                 continue
@@ -637,7 +637,9 @@ with st.expander("Info", expanded=True):
         label="I consent to the use of my data for research purposes.",
         help="Please check this box to consent to the use of data collected from your interaction with this website for research purposes. No identifying information will be collected.",
     )
-    st.caption(f"To exercise your right to remove the collected data from the database at a later date, please contact the workshop facilitator with this Session ID: {get_session_id()}")
+    st.caption(
+        f"To exercise your right to remove the collected data from the database at a later date, please contact the workshop facilitator with this Session ID: {get_session_id()}"
+    )
 
     if not ((ss.group != "Select") and ss.consent):
         warning = st.warning(
@@ -1162,7 +1164,6 @@ if is_ready:
                 elif ss.system == "System 3":
                     st.image("assets/s3_risk.png")
 
-
         with st.expander(f"**Select {ss.system} risks for mitigation**", expanded=True):
             st.markdown(
                 f"""
@@ -1343,63 +1344,6 @@ if is_ready:
             )
 
             questions_tab3_col1, questions_tab3_col2 = st.columns(2)
-
-            # ss.mitigations_selected[systems_ids[ss.system]] = questions_tab3_col1.multiselect(
-            #     label="Select the mitigations you would like to mitigate.",
-            #     options=df_mitigations[df_mitigations[systems_shorts[ss.system]] == True].ID,
-            #     help="Select the mitigations you would like to mitigate.",
-            #     #on_change=on_mitigations_selection(ss.mitigations_selected[systems_ids[ss.system]]),
-            # )
-            # questions_tab3_col2.dataframe(
-            #     df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])],
-            #     use_container_width=True,
-            #     hide_index=True,
-            #     column_config={
-            #         "Selected": None,
-            #         "ID": st.column_config.TextColumn(
-            #             "ID", help="ID", width="small"
-            #         ),
-            #         "Risk Mitigation element": st.column_config.TextColumn(
-            #             "Name", help="Risk Mitigation element", width="large"
-            #         ),
-            #         "Affects the interactions between": None,
-            #         "A": None,
-            #         "B": None,
-            #         "Cost (k€)": None,
-            #         "id2": None,
-            #         "x": None,
-            #         "y": None,
-            #         "z": None,
-            #         "force_e2": None,
-            #         "force_t": None,
-            #         "force_r": None,
-            #         "electro_e2": None,
-            #         "electro_t": None,
-            #         "electro_r": None,
-            #         "thermo_e2": None,
-            #         "thermo_t": None,
-            #         "thermo_r": None,
-            #         "Reliability gain": None,
-            #         "Mechanical": None,
-            #         "Electromagnetic": None,
-            #         "Thermal": None,
-            #         "s1": None,
-            #         "s2": None,
-            #         "s3": None,
-            #     },
-            # )
-            # # Added cost and reliability by the selected mitigations
-            # ss.cost_mitigations[systems_ids[ss.system]] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])]['Cost (k€)'].sum()
-            # new_cost_s1 = ss["df_systems"]["cost"][systems_ids[ss.system]] + ss.cost_mitigations[systems_ids[ss.system]]
-            # ss.reliability_mitigations[systems_ids[ss.system]] = df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected[systems_ids[ss.system]])]['Reliability gain'].sum()
-            # new_reliability_s1 = ss["df_systems"]["reliability"][systems_ids[ss.system]] + ss.reliability_mitigations[systems_ids[ss.system]]
-            # questions_tab3_col2.markdown(
-            #     f"""
-            #     The total cost of the selected mitigations is **{ss.cost_mitigations[0]:.3f} k€** per unit.
-
-            #     The total increase in reliability is **{ss.reliability_mitigations[0]:.3f}**.
-            #     """
-            # )
 
             if ss.system == "System 1":
                 questions_tab3_col1.multiselect(
