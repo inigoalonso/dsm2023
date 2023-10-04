@@ -1336,209 +1336,222 @@ if is_ready:
                 },
             )
 
-        with st.expander(f"**Select mitigations for {ss.system}**", expanded=True):
+        with st.expander(f"**Select mitigations for System 1**", expanded=True):
             st.markdown(
                 f"""
-                Which of the available mitigations would you add to **{ss.system}**?
+                Which of the available mitigations would you add to **System 1**?
                 """
             )
 
-            questions_tab3_col1, questions_tab3_col2 = st.columns(2)
+            questions_tab3_s1_col1, questions_tab3_s1_col2 = st.columns(2)
 
-            if ss.system == "System 1":
-                questions_tab3_col1.multiselect(
-                    label="Select the mitigations you would like to mitigate.",
-                    options=df_mitigations[df_mitigations["s1"] == True].ID,
-                    help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s1",
-                    on_change=on_mitigations_selection(ss.mitigations_selected_s1),
-                )
-                questions_tab3_col2.dataframe(
-                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s1)],
-                    use_container_width=True,
-                    hide_index=True,
-                    column_config={
-                        "Selected": None,
-                        "ID": st.column_config.TextColumn(
-                            "ID", help="ID", width="small"
-                        ),
-                        "Risk Mitigation element": st.column_config.TextColumn(
-                            "Name", help="Risk Mitigation element", width="large"
-                        ),
-                        "Affects the interactions between": None,
-                        "A": None,
-                        "B": None,
-                        "Cost (k€)": None,
-                        "id2": None,
-                        "x": None,
-                        "y": None,
-                        "z": None,
-                        "force_e2": None,
-                        "force_t": None,
-                        "force_r": None,
-                        "electro_e2": None,
-                        "electro_t": None,
-                        "electro_r": None,
-                        "thermo_e2": None,
-                        "thermo_t": None,
-                        "thermo_r": None,
-                        "Reliability gain": None,
-                        "Mechanical": None,
-                        "Electromagnetic": None,
-                        "Thermal": None,
-                        "s1": None,
-                        "s2": None,
-                        "s3": None,
-                    },
-                )
-                # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[0] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s1)
-                ]["Cost (k€)"].sum()
-                new_cost_s1 = ss["df_systems"]["cost"][0] + ss.cost_mitigations[0]
-                ss.reliability_mitigations[0] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s1)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][0] + ss.reliability_mitigations[0]
-                )
-                questions_tab3_col2.markdown(
-                    f"""
-                    The total cost of the selected mitigations is **{ss.cost_mitigations[0]:.3f} k€** per unit.
+            questions_tab3_s1_col1.multiselect(
+                label="Select the mitigations you would like to mitigate.",
+                options=df_mitigations[df_mitigations["s1"] == True].ID,
+                help="Select the mitigations you would like to mitigate.",
+                key="mitigations_selected_s1",
+                on_change=on_mitigations_selection(ss.mitigations_selected_s1),
+            )
+            questions_tab3_s1_col2.dataframe(
+                df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s1)],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Selected": None,
+                    "ID": st.column_config.TextColumn(
+                        "ID", help="ID", width="small"
+                    ),
+                    "Risk Mitigation element": st.column_config.TextColumn(
+                        "Name", help="Risk Mitigation element", width="large"
+                    ),
+                    "Affects the interactions between": None,
+                    "A": None,
+                    "B": None,
+                    "Cost (k€)": None,
+                    "id2": None,
+                    "x": None,
+                    "y": None,
+                    "z": None,
+                    "force_e2": None,
+                    "force_t": None,
+                    "force_r": None,
+                    "electro_e2": None,
+                    "electro_t": None,
+                    "electro_r": None,
+                    "thermo_e2": None,
+                    "thermo_t": None,
+                    "thermo_r": None,
+                    "Reliability gain": None,
+                    "Mechanical": None,
+                    "Electromagnetic": None,
+                    "Thermal": None,
+                    "s1": None,
+                    "s2": None,
+                    "s3": None,
+                },
+            )
+            # Added cost and reliability by the selected mitigations
+            ss.cost_mitigations[0] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s1)
+            ]["Cost (k€)"].sum()
+            new_cost_s1 = ss["df_systems"]["cost"][0] + ss.cost_mitigations[0]
+            ss.reliability_mitigations[0] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s1)
+            ]["Reliability gain"].sum()
+            new_reliability_s1 = (
+                ss["df_systems"]["reliability"][0] + ss.reliability_mitigations[0]
+            )
+            questions_tab3_s1_col2.markdown(
+                f"""
+                The total cost of the selected mitigations is **{ss.cost_mitigations[0]:.3f} k€** per unit.
 
-                    The total increase in reliability is **{ss.reliability_mitigations[0]:.3f}**.
-                    """
-                )
-            elif ss.system == "System 2":
-                questions_tab3_col1.multiselect(
-                    label="Select the mitigations you would like to mitigate.",
-                    options=df_mitigations[df_mitigations["s2"] == True].ID,
-                    help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s2",
-                    on_change=on_risks_selection(ss.mitigations_selected_s2),
-                )
-                questions_tab3_col2.dataframe(
-                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s2)],
-                    use_container_width=True,
-                    hide_index=True,
-                    column_config={
-                        "Selected": None,
-                        "ID": st.column_config.TextColumn(
-                            "ID", help="ID", width="small"
-                        ),
-                        "Risk Mitigation element": st.column_config.TextColumn(
-                            "Name", help="Risk Mitigation element", width="large"
-                        ),
-                        "Affects the interactions between": None,
-                        "A": None,
-                        "B": None,
-                        "Cost (k€)": None,
-                        "id2": None,
-                        "x": None,
-                        "y": None,
-                        "z": None,
-                        "force_e2": None,
-                        "force_t": None,
-                        "force_r": None,
-                        "electro_e2": None,
-                        "electro_t": None,
-                        "electro_r": None,
-                        "thermo_e2": None,
-                        "thermo_t": None,
-                        "thermo_r": None,
-                        "Reliability gain": None,
-                        "Mechanical": None,
-                        "Electromagnetic": None,
-                        "Thermal": None,
-                        "s1": None,
-                        "s2": None,
-                        "s3": None,
-                    },
-                )
-                # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[1] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s2)
-                ]["Cost (k€)"].sum()
-                new_cost_s1 = ss["df_systems"]["cost"][1] + ss.cost_mitigations[1]
-                ss.reliability_mitigations[1] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s2)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][1] + ss.reliability_mitigations[1]
-                )
-                questions_tab3_col2.markdown(
-                    f"""
-                    The total cost of the selected mitigations is **{ss.cost_mitigations[1]:.3f} k€** per unit.
+                The total increase in reliability is **{ss.reliability_mitigations[0]:.3f}**.
+                """
+            )
+        with st.expander(f"**Select mitigations for System 2**", expanded=True):
+            st.markdown(
+                f"""
+                Which of the available mitigations would you add to **System 2**?
+                """
+            )
 
-                    The total increase in reliability is **{ss.reliability_mitigations[1]:.3f}**.
-                    """
-                )
-            elif ss.system == "System 3":
-                questions_tab3_col1.multiselect(
-                    label="Select the mitigations you would like to mitigate.",
-                    options=df_mitigations[df_mitigations["s3"] == True].ID,
-                    help="Select the mitigations you would like to mitigate.",
-                    key="mitigations_selected_s3",
-                    on_change=on_risks_selection(ss.mitigations_selected_s3),
-                )
-                questions_tab3_col2.dataframe(
-                    df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s3)],
-                    use_container_width=True,
-                    hide_index=True,
-                    column_config={
-                        "Selected": None,
-                        "ID": st.column_config.TextColumn(
-                            "ID", help="ID", width="small"
-                        ),
-                        "Risk Mitigation element": st.column_config.TextColumn(
-                            "Name", help="Risk Mitigation element", width="large"
-                        ),
-                        "Affects the interactions between": None,
-                        "A": None,
-                        "B": None,
-                        "Cost (k€)": None,
-                        "id2": None,
-                        "x": None,
-                        "y": None,
-                        "z": None,
-                        "force_e2": None,
-                        "force_t": None,
-                        "force_r": None,
-                        "electro_e2": None,
-                        "electro_t": None,
-                        "electro_r": None,
-                        "thermo_e2": None,
-                        "thermo_t": None,
-                        "thermo_r": None,
-                        "Reliability gain": None,
-                        "Mechanical": None,
-                        "Electromagnetic": None,
-                        "Thermal": None,
-                        "s1": None,
-                        "s2": None,
-                        "s3": None,
-                    },
-                )
-                # Added cost and reliability by the selected mitigations
-                ss.cost_mitigations[2] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s3)
-                ]["Cost (k€)"].sum()
-                new_cost_s1 = ss["df_systems"]["cost"][2] + ss.cost_mitigations[2]
-                ss.reliability_mitigations[2] = df_mitigations[
-                    df_mitigations.ID.isin(ss.mitigations_selected_s3)
-                ]["Reliability gain"].sum()
-                new_reliability_s1 = (
-                    ss["df_systems"]["reliability"][2] + ss.reliability_mitigations[2]
-                )
-                questions_tab3_col2.markdown(
-                    f"""
-                    The total cost of the selected mitigations is **{ss.cost_mitigations[2]:.3f} k€** per unit.
+            questions_tab3_s2_col1, questions_tab3_s2_col2 = st.columns(2)
 
-                    The total increase in reliability is **{ss.reliability_mitigations[2]:.3f}**.
-                    """
-                )
-            else:
-                st.warning("Please select a system to explore.")
+            questions_tab3_s2_col1.multiselect(
+                label="Select the mitigations you would like to mitigate.",
+                options=df_mitigations[df_mitigations["s2"] == True].ID,
+                help="Select the mitigations you would like to mitigate.",
+                key="mitigations_selected_s2",
+                on_change=on_risks_selection(ss.mitigations_selected_s2),
+            )
+            questions_tab3_s2_col2.dataframe(
+                df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s2)],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Selected": None,
+                    "ID": st.column_config.TextColumn(
+                        "ID", help="ID", width="small"
+                    ),
+                    "Risk Mitigation element": st.column_config.TextColumn(
+                        "Name", help="Risk Mitigation element", width="large"
+                    ),
+                    "Affects the interactions between": None,
+                    "A": None,
+                    "B": None,
+                    "Cost (k€)": None,
+                    "id2": None,
+                    "x": None,
+                    "y": None,
+                    "z": None,
+                    "force_e2": None,
+                    "force_t": None,
+                    "force_r": None,
+                    "electro_e2": None,
+                    "electro_t": None,
+                    "electro_r": None,
+                    "thermo_e2": None,
+                    "thermo_t": None,
+                    "thermo_r": None,
+                    "Reliability gain": None,
+                    "Mechanical": None,
+                    "Electromagnetic": None,
+                    "Thermal": None,
+                    "s1": None,
+                    "s2": None,
+                    "s3": None,
+                },
+            )
+            # Added cost and reliability by the selected mitigations
+            ss.cost_mitigations[1] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s2)
+            ]["Cost (k€)"].sum()
+            new_cost_s1 = ss["df_systems"]["cost"][1] + ss.cost_mitigations[1]
+            ss.reliability_mitigations[1] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s2)
+            ]["Reliability gain"].sum()
+            new_reliability_s1 = (
+                ss["df_systems"]["reliability"][1] + ss.reliability_mitigations[1]
+            )
+            questions_tab3_s2_col2.markdown(
+                f"""
+                The total cost of the selected mitigations is **{ss.cost_mitigations[1]:.3f} k€** per unit.
+
+                The total increase in reliability is **{ss.reliability_mitigations[1]:.3f}**.
+                """
+            )
+        with st.expander(f"**Select mitigations for System 3**", expanded=True):
+            st.markdown(
+                f"""
+                Which of the available mitigations would you add to **System 3**?
+                """
+            )
+
+            questions_tab3_s3_col1, questions_tab3_s3_col2 = st.columns(2)
+
+            questions_tab3_s3_col1.multiselect(
+                label="Select the mitigations you would like to mitigate.",
+                options=df_mitigations[df_mitigations["s3"] == True].ID,
+                help="Select the mitigations you would like to mitigate.",
+                key="mitigations_selected_s3",
+                on_change=on_risks_selection(ss.mitigations_selected_s3),
+            )
+            questions_tab3_s3_col2.dataframe(
+                df_mitigations[df_mitigations.ID.isin(ss.mitigations_selected_s3)],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Selected": None,
+                    "ID": st.column_config.TextColumn(
+                        "ID", help="ID", width="small"
+                    ),
+                    "Risk Mitigation element": st.column_config.TextColumn(
+                        "Name", help="Risk Mitigation element", width="large"
+                    ),
+                    "Affects the interactions between": None,
+                    "A": None,
+                    "B": None,
+                    "Cost (k€)": None,
+                    "id2": None,
+                    "x": None,
+                    "y": None,
+                    "z": None,
+                    "force_e2": None,
+                    "force_t": None,
+                    "force_r": None,
+                    "electro_e2": None,
+                    "electro_t": None,
+                    "electro_r": None,
+                    "thermo_e2": None,
+                    "thermo_t": None,
+                    "thermo_r": None,
+                    "Reliability gain": None,
+                    "Mechanical": None,
+                    "Electromagnetic": None,
+                    "Thermal": None,
+                    "s1": None,
+                    "s2": None,
+                    "s3": None,
+                },
+            )
+            # Added cost and reliability by the selected mitigations
+            ss.cost_mitigations[2] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s3)
+            ]["Cost (k€)"].sum()
+            new_cost_s1 = ss["df_systems"]["cost"][2] + ss.cost_mitigations[2]
+            ss.reliability_mitigations[2] = df_mitigations[
+                df_mitigations.ID.isin(ss.mitigations_selected_s3)
+            ]["Reliability gain"].sum()
+            new_reliability_s1 = (
+                ss["df_systems"]["reliability"][2] + ss.reliability_mitigations[2]
+            )
+            questions_tab3_s3_col2.markdown(
+                f"""
+                The total cost of the selected mitigations is **{ss.cost_mitigations[2]:.3f} k€** per unit.
+
+                The total increase in reliability is **{ss.reliability_mitigations[2]:.3f}**.
+                """
+            )
 
         # Questions Tab 3
         questions_tab3 = st.expander("**Questions**", expanded=True)

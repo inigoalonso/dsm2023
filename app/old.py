@@ -990,6 +990,15 @@ st.markdown(
 
 
 
+        with st.expander(f"**Select mitigations for {ss.system}**", expanded=True):
+            st.markdown(
+                f"""
+                Which of the available mitigations would you add to **{ss.system}**?
+                """
+            )
+
+            questions_tab3_col1, questions_tab3_col2 = st.columns(2)
+
 
             # ss.mitigations_selected[systems_ids[ss.system]] = questions_tab3_col1.multiselect(
             #     label="Select the mitigations you would like to mitigate.",
