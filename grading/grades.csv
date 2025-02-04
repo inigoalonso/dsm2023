@@ -1,0 +1,127 @@
+judge;group;criteria;grade
+joakim;1;Business Strategy Analysis;3
+joakim;1;Failure Analysis;3
+joakim;1;Cost and Schedule Analysis;4
+joakim;1;Recommendation;4
+joakim;1;DSM Insights;3
+joakim;1;Presentation Quality/Clarity;4
+joakim;2;Business Strategy Analysis;3
+joakim;2;Failure Analysis;3
+joakim;2;Cost and Schedule Analysis;3
+joakim;2;Recommendation;4
+joakim;2;DSM Insights;3
+joakim;2;Presentation Quality/Clarity;4
+joakim;3;Business Strategy Analysis;4
+joakim;3;Failure Analysis;3
+joakim;3;Cost and Schedule Analysis;4
+joakim;3;Recommendation;5
+joakim;3;DSM Insights;4
+joakim;3;Presentation Quality/Clarity;5
+joakim;4;Business Strategy Analysis;4
+joakim;4;Failure Analysis;4
+joakim;4;Cost and Schedule Analysis;4
+joakim;4;Recommendation;5
+joakim;4;DSM Insights;3
+joakim;4;Presentation Quality/Clarity;5
+joakim;5;Business Strategy Analysis;3
+joakim;5;Failure Analysis;4
+joakim;5;Cost and Schedule Analysis;3
+joakim;5;Recommendation;4
+joakim;5;DSM Insights;2
+joakim;5;Presentation Quality/Clarity;4
+joakim;6;Business Strategy Analysis;4
+joakim;6;Failure Analysis;3
+joakim;6;Cost and Schedule Analysis;4
+joakim;6;Recommendation;3
+joakim;6;DSM Insights;3
+joakim;6;Presentation Quality/Clarity;2
+joakim;7;Business Strategy Analysis;3
+joakim;7;Failure Analysis;3
+joakim;7;Cost and Schedule Analysis;2
+joakim;7;Recommendation;4
+joakim;7;DSM Insights;2
+joakim;7;Presentation Quality/Clarity;3
+soren;1;Business Strategy Analysis;3
+soren;1;Failure Analysis;4
+soren;1;Cost and Schedule Analysis;3
+soren;1;Recommendation;4
+soren;1;DSM Insights;4
+soren;1;Presentation Quality/Clarity;4
+soren;2;Business Strategy Analysis;3
+soren;2;Failure Analysis;3
+soren;2;Cost and Schedule Analysis;3
+soren;2;Recommendation;3
+soren;2;DSM Insights;2
+soren;2;Presentation Quality/Clarity;4
+soren;3;Business Strategy Analysis;4
+soren;3;Failure Analysis;4
+soren;3;Cost and Schedule Analysis;3
+soren;3;Recommendation;4
+soren;3;DSM Insights;5
+soren;3;Presentation Quality/Clarity;5
+soren;4;Business Strategy Analysis;3
+soren;4;Failure Analysis;3
+soren;4;Cost and Schedule Analysis;3
+soren;4;Recommendation;3
+soren;4;DSM Insights;3
+soren;4;Presentation Quality/Clarity;5
+soren;5;Business Strategy Analysis;3
+soren;5;Failure Analysis;4
+soren;5;Cost and Schedule Analysis;4
+soren;5;Recommendation;4
+soren;5;DSM Insights;3
+soren;5;Presentation Quality/Clarity;4
+soren;6;Business Strategy Analysis;3
+soren;6;Failure Analysis;3
+soren;6;Cost and Schedule Analysis;2
+soren;6;Recommendation;3
+soren;6;DSM Insights;2
+soren;6;Presentation Quality/Clarity;3
+soren;7;Business Strategy Analysis;3
+soren;7;Failure Analysis;3
+soren;7;Cost and Schedule Analysis;2
+soren;7;Recommendation;2
+soren;7;DSM Insights;2
+soren;7;Presentation Quality/Clarity;3
+steve;1;Business Strategy Analysis;4
+steve;1;Failure Analysis;4
+steve;1;Cost and Schedule Analysis;5
+steve;1;Recommendation;4
+steve;1;DSM Insights;4
+steve;1;Presentation Quality/Clarity;3
+steve;2;Business Strategy Analysis;4
+steve;2;Failure Analysis;3
+steve;2;Cost and Schedule Analysis;3
+steve;2;Recommendation;4
+steve;2;DSM Insights;4
+steve;2;Presentation Quality/Clarity;4
+steve;3;Business Strategy Analysis;5
+steve;3;Failure Analysis;4
+steve;3;Cost and Schedule Analysis;5
+steve;3;Recommendation;5
+steve;3;DSM Insights;5
+steve;3;Presentation Quality/Clarity;4
+steve;4;Business Strategy Analysis;4
+steve;4;Failure Analysis;4
+steve;4;Cost and Schedule Analysis;3
+steve;4;Recommendation;4
+steve;4;DSM Insights;4
+steve;4;Presentation Quality/Clarity;4
+steve;5;Business Strategy Analysis;5
+steve;5;Failure Analysis;4
+steve;5;Cost and Schedule Analysis;4
+steve;5;Recommendation;5
+steve;5;DSM Insights;4
+steve;5;Presentation Quality/Clarity;4
+steve;6;Business Strategy Analysis;3
+steve;6;Failure Analysis;4
+steve;6;Cost and Schedule Analysis;4
+steve;6;Recommendation;3
+steve;6;DSM Insights;4
+steve;6;Presentation Quality/Clarity;3
+steve;7;Business Strategy Analysis;3
+steve;7;Failure Analysis;3
+steve;7;Cost and Schedule Analysis;2
+steve;7;Recommendation;4
+steve;7;DSM Insights;4
+steve;7;Presentation Quality/Clarity;2
